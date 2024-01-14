@@ -1,21 +1,26 @@
 from twitchio.ext import commands
 from playsound import playsound
+import pyperclip
 import requests
 import random
 import time
 import os
 import asyncio
+import re
 
 # Variables definition
 ProjectPath= os.path.dirname(os.path.abspath(__file__))
 SaveFilesPath = "D:/Desktop"
+GiveAwayStarted = False
+GiveAwayList = []
+SendDemosStarted = False
+DemosList = {}
+UserDemoSended = []
 
-FrequencyMessagesTime = 300
+FrequencyMessagesTime = 1200
 DiscordLink = "https://discord.gg/prWCuWU5JM"
 YoutubeLink = "https://www.youtube.com/@SkullOwnerGaming"
 InstagramLink = "https://www.instagram.com/skullowner83/"
-GiveAwayStarted = False
-GiveAwayList = []
 
 #Read the config file lines and split each line to save data in the dictionary
 with open(f"{ProjectPath}/config.txt", "r") as File:
@@ -45,10 +50,12 @@ bot = commands.Bot(
 @bot.event
 async def event_ready():
     print("Hi, I'm ready!")
+    Channel = bot.get_channel(bot.initial_channels[0])
+    await Channel.send("Hola, soy el bot bonito del Skull.")
 
     while True:
-        await FrequentMessage()
         await asyncio.sleep(FrequencyMessagesTime)
+        await FrequentMessage()
 
 # send random messages Frequently in the first bot Channel
 async def FrequentMessage():
@@ -101,8 +108,8 @@ def AdminCheck(ctx):
         return True
     else:
         return False
-    
-    
+
+
 # Check chat messages event
 @bot.event
 async def event_message(ctx):
@@ -114,7 +121,7 @@ async def event_message(ctx):
 
 @bot.command(name="help")
 async def help(ctx):
-    await ctx.send("!horario, !discord, !onlyfans, !gay, !leentro")
+    await ctx.send("!horario, !discord, !onlyfans, !gay, !memide, !leentro")
 
 # Show the stream schedule command
 @bot.command(name="horario")
@@ -136,14 +143,96 @@ async def gay(ctx):
     print(GiveAwayStarted)
     await ctx.send("Quien? El Owl?")  
 
-# Start, finish and Save username in a list for the raffle when it starts
-@bot.command(name="giveawaystart")
-async def giveawaystart(ctx):
-    global GiveAwayStarted
+@bot.command(name="memide")
+async def memide(ctx):
+    Size = random.randint(1, 100)
+    await ctx.send(f"{ctx.author.name} le mide {Size}cm")  
 
-    if GiveAwayStarted == False and AdminCheck(ctx):
-        GiveAwayStarted = True
-        await ctx.send("Iniciamos con la recopilación de participantes para el sorteo. Recuerda seguirme para poder participar. Para entrar escribe el comando !leentro")
+# Send demos commands
+@bot.command(name="senddemo")    
+async def SendDemo(ctx, *args):
+    global SendDemosStarted
+    global DemosList
+
+    # Check if ther is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        Command = args[0].lower()
+    
+    if AdminCheck(ctx):
+        # Start the demos collection 
+        if Command == "start":
+            if SendDemosStarted == False:
+                SendDemosStarted = True
+                DemosList.clear()
+                await ctx.send("Comenzamos con la recopilación de demos. Recuerda seguirme para poder participar, ademas de enviar un enlace de Youtube o Soundcloud. Para enviar tu demo, escribe el comando !demo, seguido del link de tu demo.")
+
+        # Finish the demos collection. Choose a user at random and copy his link to the clipboard
+        if Command == "finish":
+            if SendDemosStarted == True:
+                SendDemosStarted = False
+                await ctx.send("La lista para poder enviar tu demo, ha finalizado! Ahora se escogera un demo de manera aleatoria. Suerte a todos!")
+                await asyncio.sleep(3)
+                UserWinner = random.choice(list(DemosList.keys()))
+                await ctx.send(f"El usuario elegido fue @{UserWinner}. Se ha copiado su link en el portapapeles del streamer.")
+                print(f"Se ha copiado el link del demo al portapapeles.")
+                pyperclip.copy(DemosList[UserWinner])            
+
+@bot.command(name="demo")
+async def Demo(ctx, *args):
+    YoutubePattern = re.compile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+$")
+    SouncloudPattern = re.compile(r'https?://soundcloud\.com/[\w-]+/[\w-]+')
+    global SendDemosStarted
+    global DemosList
+
+    # Check if ther is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        Link = args[0].lower()
+
+    # Check if the argument is a linka and is valid
+    if SendDemosStarted == True:
+        if YoutubePattern.match(Link) or SouncloudPattern.match(Link):
+            if not ctx.author.name in DemosList:
+                DemosList[ctx.author.name] = Link
+                print(f"Se añadió el demo de {ctx.author.name} a la lista!")
+            else:
+                await ctx.send(f"@{ctx.author.name} solo puedes enviar un demo!")
+        else:
+            await ctx.send(f"@{ctx.author.name} envia un enlace válido!")
+    else:
+        await ctx.send(f"@{ctx.author.name} eh perate! Todavía no puedes enviar un demo!")
+
+# Give away commands
+@bot.command(name="giveaway")
+async def giveawaystart(ctx, *args):
+    global GiveAwayStarted
+    global GiveAwayList
+
+    # Check if ther is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        Command = args[0].lower()
+    
+    if AdminCheck(ctx):
+        # Start the participant collection 
+        if Command == "start":
+            if GiveAwayStarted == False:
+                GiveAwayStarted = True
+                GiveAwayList.clear()
+                await ctx.send("Iniciamos con la recopilación de participantes para el sorteo. Recuerda seguirme para poder participar. Para entrar escribe el comando !leentro")
+
+        # Finish the give away, save the list in a text file and copy it tol the clipboard
+        if Command == "finish":
+            if GiveAwayStarted == True:
+                await ctx.send("La lista para entrar al sorte, ha finalizado! Suete a todos.")
+
+                with open(f"{SaveFilesPath}/Lista.txt", "w") as File:
+                    for Element in GiveAwayList:
+                        File.write(f"{Element}\n")
+                    
+                print(f"Se ha guardado la lista de participantes correctame en la ruta: {SaveFilesPath}")
+                ListString = '\n'.join(map(str, GiveAwayList))
+                pyperclip.copy(ListString)
+                print(f"Se ha copiado la lista de participantes al portapapeles.")
+                GiveAwayStarted = False
 
 @bot.command(name="leentro")
 async def GiveAway(ctx):
@@ -157,26 +246,11 @@ async def GiveAway(ctx):
             if User not in GiveAwayList:
                 GiveAwayList.append(User)
                 await ctx.send(f"{User} se unió a la rifa!")            
+                print(f"Se añadió el nombre de {ctx.author.name} a la lista!")
         else:
             await ctx.send(f"{User}, debes seguir al skull para poder participar.")
     else:
         await ctx.send(f"{User} eh perate. ¿A dónde le quieres entrar?")
-
-@bot.command(name="giveawayfinish")
-async def giveawayfinish(ctx):
-    global GiveAwayStarted
-    global GiveAwayList
-
-    # Check if the admin sent the command to finish the giveaway and save the list in one file text
-    if GiveAwayStarted == True and AdminCheck(ctx):
-        await ctx.send("La lista para entrar al sorte, ha finalizado! Suete a todos.")
-
-        with open(f"{SaveFilesPath}/Lista.txt", "w") as File:
-            for Element in GiveAwayList:
-                File.write(f"{Element}\n")
-            
-        print(f"Se ha guardado la lista de participantes correctame en la ruta: {SaveFilesPath}")
-        GiveAwayStarted = False
 
 # Execute bot on loop
 if __name__ == '__main__':
