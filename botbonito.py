@@ -1,5 +1,6 @@
 from twitchio.ext import commands
 from playsound import playsound
+import pygame
 import pyperclip
 import requests
 import random
@@ -11,13 +12,16 @@ import re
 # Variables definition
 ProjectPath= os.path.dirname(os.path.abspath(__file__))
 SaveFilesPath = "D:/Desktop"
+FrequencyMessagesTime = 1200
+SndLastUsage = {}
+SndCoolDown = 60
+
 GiveAwayStarted = False
 GiveAwayList = []
 SendDemosStarted = False
 DemosList = {}
 UserDemoSended = []
 
-FrequencyMessagesTime = 1200
 DiscordLink = "https://discord.gg/prWCuWU5JM"
 YoutubeLink = "https://www.youtube.com/@SkullOwnerGaming"
 InstagramLink = "https://www.instagram.com/skullowner83/"
@@ -50,6 +54,8 @@ bot = commands.Bot(
 @bot.event
 async def event_ready():
     print("Hi, I'm ready!")
+    pygame.init()
+    pygame.mixer.init()
     Channel = bot.get_channel(bot.initial_channels[0])
     await Channel.send("Hola, soy el bot bonito del Skull.")
 
@@ -59,13 +65,13 @@ async def event_ready():
 
 # send random messages Frequently in the first bot Channel
 async def FrequentMessage():
-    MessagesList = ["Ya tomaste awua uwu?",
+    MessagesList = ["¿Ya tomaste awua uwu?",
                     "Esta bonito tu stream mijito! uwu",
-                    "Se estan pasando un buen rato? :3",
+                    "¿Se estan pasando un buen rato? :3",
                     "Gracias a los que estan viendo el directo :D",
                     f"Recuerden entrar a mi discord: {DiscordLink}",
-                    f"Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
-                    f"Ya me seguiste en instagram? {InstagramLink}"]
+                    f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
+                    f"¿Ya me seguiste en instagram? {InstagramLink}"]
 
     Channel = bot.get_channel(bot.initial_channels[0])
 
@@ -121,17 +127,26 @@ async def event_message(ctx):
 
 @bot.command(name="help")
 async def help(ctx):
-    await ctx.send("!horario, !discord, !onlyfans, !gay, !memide, !leentro")
+    await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
+    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro")
 
 # Show the stream schedule command
 @bot.command(name="horario")
-async def horario(ctx):
+async def schedule(ctx):
     await ctx.send(f"Hola @{ctx.author.name}! El horario es: Martes y Jueves a partir de las 8:00pm (Zona Horaria GMT-6). Domingo si hay oportunidad, a partir de la misma hora")     
 
 # Show social media commads
 @bot.command(name="discord")
 async def discord(ctx):
     await ctx.send(f"{DiscordLink}")     
+
+@bot.command(name="youtube")
+async def discord(ctx):
+    await ctx.send(f"{YoutubeLink}")     
+
+@bot.command(name="instagram")
+async def discord(ctx):
+    await ctx.send(f"{InstagramLink}")   
 
 # Another random commands
 @bot.command(name="onlyfans")
@@ -145,8 +160,45 @@ async def gay(ctx):
 
 @bot.command(name="memide")
 async def memide(ctx):
-    Size = random.randint(1, 100)
+    Size = random.randint(1, 50)
     await ctx.send(f"{ctx.author.name} le mide {Size}cm")  
+
+# Play sounds commands
+@bot.command(name="play")
+async def PlaySound(ctx, *args):
+    global SndLastUsage
+    global SndCoolDown
+
+    # Check if ther is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        Command = args[0].lower()
+    
+    # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
+    UserCoolDown = SndLastUsage.get(ctx.author.name, 0)
+    CurrentTime = time.time()
+
+    # Substract the cooldown time minus the time when the user used a sound minus the current time to get the rest time
+    RestTime = SndCoolDown - (CurrentTime - UserCoolDown)
+
+    # Check if the user cooldown has already passed to play the sound
+    if RestTime <= 0:
+        match Command:
+            case "holi": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Holi.wav")
+            case "Comoestas" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ayy como estas.wav")
+            case "ahuevo": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/A huevo jaja.wav")
+            case "comochilla": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ah como chilla la niña.wav")
+            case "callate" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Callate.wav")
+            case "bonito" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Esta Bonito.wav")
+            case "risa" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Risa de alien.wav")
+            case "nodigaseso" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ey ey ey pequeña no digas eso.wav")
+            case "vamonos": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ya vamonos sofia.wav")
+            case "help" : await ctx.send("!holi, !comoestas, !ahuevo, !comochilla, !callate, !bonito, !risa, !nodigaseso, !vamonos")    
+
+        # Play the sound specified and update the time on the user cooldown register
+        Sound.play()
+        SndLastUsage[ctx.author.name] = time.time()
+    else:
+        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)}s)")
 
 # Send demos commands
 @bot.command(name="senddemo")    
@@ -233,6 +285,12 @@ async def giveawaystart(ctx, *args):
                 pyperclip.copy(ListString)
                 print(f"Se ha copiado la lista de participantes al portapapeles.")
                 GiveAwayStarted = False
+        
+        if Command == "help":
+            await ctx.send("Utiliza el comando !giveaway start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
+            await ctx.send(f"Utiliza el comando !giveaway finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {SaveFilesPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
+            await ctx.send(f"Utiliza el comando !giveaway copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
+
 
 @bot.command(name="leentro")
 async def GiveAway(ctx):
