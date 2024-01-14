@@ -1,5 +1,6 @@
 from twitchio.ext import commands
 from playsound import playsound
+from gtts import gTTS
 import pygame
 import pyperclip
 import requests
@@ -15,6 +16,8 @@ SaveFilesPath = "D:/Desktop"
 FrequencyMessagesTime = 1200
 SndLastUsage = {}
 SndCoolDown = 60
+SpkLastUsage = {}
+SpkCoolDown = 300
 
 GiveAwayStarted = False
 GiveAwayList = []
@@ -128,7 +131,7 @@ async def event_message(ctx):
 @bot.command(name="help")
 async def help(ctx):
     await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
-    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro")
+    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak")
 
 # Show the stream schedule command
 @bot.command(name="horario")
@@ -199,6 +202,33 @@ async def PlaySound(ctx, *args):
         SndLastUsage[ctx.author.name] = time.time()
     else:
         await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)}s)")
+
+# Speak text commands
+@bot.command(name="speak")
+async def Speak(ctx, *args):
+    global SpkLastUsage
+    global SpkCoolDown
+
+     # Check if ther is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        Command = "".join(args).lower()
+
+    # Check if the user has used a speaker and is still on cooldown. Also, take the current time to set the next cooldown
+    SpkCoolDown = SpkLastUsage.get(ctx.author.name, 0)
+    CurrentTime = time.time()
+
+    # Substract the cooldown time minus the time when the user used a speaker minus the current time to get the rest time
+    RestTime = SpkCoolDown - (CurrentTime - SpkCoolDown)
+
+    # Check if the user cooldown has already passed to speak the text
+    if RestTime <= 0:
+        Speaker = gTTS(text=Command, lang="es", slow=False)
+        Speaker.save("LastSpeech.mp3")
+        Sound = pygame.mixer.Sound("LastSpeech.mp3")
+        Sound.play()
+        SpkLastUsage[ctx.author.name] = time.time()
+    else: 
+        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(RestTime)}s)")
 
 # Send demos commands
 @bot.command(name="senddemo")    
