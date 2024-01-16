@@ -1,5 +1,5 @@
+from modules import get, file
 from twitchio.ext import commands
-from playsound import playsound
 from gtts import gTTS
 import pygame
 import pyperclip
@@ -9,10 +9,14 @@ import time
 import os
 import asyncio
 import re
+import json
 
 # Variables definition
-ProjectPath= os.path.dirname(os.path.abspath(__file__))
+ProjectPath = os.path.dirname(os.path.abspath(__file__))
+ConfigPath = f"{ProjectPath}/config/"
 SaveFilesPath = "D:/Desktop"
+Credentials = {}
+
 FrequencyMessagesTime = 1200
 SndLastUsage = {}
 SndCoolDown = 60
@@ -29,22 +33,32 @@ DiscordLink = "https://discord.gg/prWCuWU5JM"
 YoutubeLink = "https://www.youtube.com/@SkullOwnerGaming"
 InstagramLink = "https://www.instagram.com/skullowner83/"
 
-#Read the config file lines and split each line to save data in the dictionary
-with open(f"{ProjectPath}/config.txt", "r") as File:
-    Lines = File.readlines()
-    Config = {}
+pygame.init()
+pygame.mixer.init()
 
-    for Line in Lines:
-        Parts = Line.replace("\n","").split("=")
-        Config[Parts[0]] = Parts[1]
+#Read the config file lines and get a data dictionary
+Credentials = file.ReadDictionary(f"{ConfigPath}/credentials.txt")
+SoundList = file.ReadDictionary(f"{ConfigPath}/soundlist.txt")
 
-# Bot configuration
-BotName = Config["BOT_NICK"]
-idClient = Config["CLIENT_ID"]
-ircToken = Config["TOKEN"]
-Prefix = Config["BOT_PREFIX"]
-Channel = Config["CHANNEL"]
+# Bot configuration with username and his oauth token to get the permissions to send message from the account
+# The idClient and ClientSecret are found in the application created on twitch developer        
+BotName = Credentials["BOT_NICK"]
+idClient = Credentials["CLIENT_ID"] 
+ircToken = Credentials["TOKEN"]
+Prefix = Credentials["BOT_PREFIX"]
+Channel = Credentials["CHANNEL"]
+ClientSecret = Credentials["CLIENT_SECRET"]
 
+# Check if the Oauth Token of bot account It hasn't expired yet.
+ValidToken = get.TokenValidattion(ircToken)
+
+while ValidToken == False:
+    ircToken = input("Tu oauth token no es valido. Ingresa un token nuevo:")
+    ValidToken = get.TokenValidattion(ircToken)
+    
+print(ValidToken)
+
+# Creation of bot with previous configuration 
 bot = commands.Bot(
     irc_token = ircToken,
     client_id = idClient,
@@ -57,8 +71,6 @@ bot = commands.Bot(
 @bot.event
 async def event_ready():
     print("Hi, I'm ready!")
-    pygame.init()
-    pygame.mixer.init()
     Channel = bot.get_channel(bot.initial_channels[0])
     await Channel.send("Hola, soy el bot bonito del Skull.")
 
@@ -85,35 +97,36 @@ async def FrequentMessage():
 
 # Check if the user that sent the command, follows the channel
 def FollowCheck(ctx):
-     # Call twitch API to get the user data
-    ChannelName = ctx.channel.name
-    Url = f"https://api.twitch.tv/helix/users/follows?from_id={ctx.author.id}&to_name={ChannelName}"
+    Url = "https://api.twitch.tv/helix/channels/followers"
+    AppToken =  get.AppToken(idClient, ClientSecret)
+    idBroadcaster = get.BroadcasterId(Channel, idClient, AppToken)
+    idUser = get.UserId(ctx.author.name, idClient, AppToken)
 
-    Headers = {
-        "Client-ID": idClient,
-        "Authorization": "Bearer " + ircToken
+    UriRedirect = "https:/localhost:300"
+    Scope="user:read:follows"
+    UserToken = f"https://id.twitch.tv/oauth2/authorize?client_id={idClient}&redirect_uri={UriRedirect}I&response_type=token&scope={Scope}"
+    print(UserToken)
+
+    url = 'https://api.twitch.tv/helix/channels/followers'
+    params = {'broadcaster_id': {idBroadcaster}}
+
+    headers = {
+        'Authorization': 'Bearer ' + AppToken,
+        'Client-Id': idClient
     }
 
-    Response = requests.get(Url, headers=Headers)
+    response = requests.get(url, params=params, headers=headers)
 
-    # if the response was successful (code: 200), check if the user that send the command, is follower
-    if Response.status_code == 200:
-        Data = Response.json()
-        Follows = Data.get("total", 0)
+    # Imprime el código de estado y la respuesta del servidor
+    print(f"Response ({response.status_code}): {response.json()}")
+    return True #Para que funcionen las funciones en lo que se arregla esta
 
-        if Follows > 0:
-            return True
-        else:
-            return False
-    else:
-        print(f"Error: {Response}! Algo salio mal.")
-        return False
     
 # Check if the user that sent the command, is the admin    
 def AdminCheck(ctx):
     User = ctx.author.name
 
-    if User == "skull_owner":
+    if User == Channel:
         return True
     else:
         return False
@@ -125,6 +138,9 @@ async def event_message(ctx):
     if ctx.author.name.lower() == BotName:
         return
     
+    if "a" == ctx.content.lower():
+        print(FollowCheck(ctx))
+
     # Check if the message is a command
     await bot.handle_commands(ctx)
 
@@ -171,6 +187,8 @@ async def memide(ctx):
 async def PlaySound(ctx, *args):
     global SndLastUsage
     global SndCoolDown
+    global SoundList
+    SoundListCommands = SoundList.keys()
 
     # Check if ther is text next to the comand and get the first word as an argument
     if len(args) > 0:
@@ -183,25 +201,19 @@ async def PlaySound(ctx, *args):
     # Substract the cooldown time minus the time when the user used a sound minus the current time to get the rest time
     RestTime = SndCoolDown - (CurrentTime - UserCoolDown)
 
-    # Check if the user cooldown has already passed to play the sound
+    # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
     if RestTime <= 0:
-        match Command:
-            case "holi": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Holi.wav")
-            case "Comoestas" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ayy como estas.wav")
-            case "ahuevo": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/A huevo jaja.wav")
-            case "comochilla": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ah como chilla la niña.wav")
-            case "callate" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Callate.wav")
-            case "bonito" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Esta Bonito.wav")
-            case "risa" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Risa de alien.wav")
-            case "nodigaseso" : Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ey ey ey pequeña no digas eso.wav")
-            case "vamonos": Sound = pygame.mixer.Sound("D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ya vamonos sofia.wav")
-            case "help" : await ctx.send("!holi, !comoestas, !ahuevo, !comochilla, !callate, !bonito, !risa, !nodigaseso, !vamonos")    
+        if Command in SoundList:
+            Sound = pygame.mixer.Sound(SoundList[Command])
 
-        # Play the sound specified and update the time on the user cooldown register
-        Sound.play()
-        SndLastUsage[ctx.author.name] = time.time()
+            # Play the sound specified and update the time on the user cooldown register
+            Sound.play()
+            SndLastUsage[ctx.author.name] = time.time()
+        else:
+            if Command == "help":
+                await ctx.send(f"Para reproducir un sonido, escribe el comando !play, seguido del nombre de uno de los siguientes sonidos (!play holi): {list(SoundListCommands)}")
     else:
-        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)}s)")
+        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)})")
 
 # Speak text commands
 @bot.command(name="speak")
@@ -330,7 +342,7 @@ async def GiveAway(ctx):
     global GiveAwayList
 
     if GiveAwayStarted == True:
-        if isFollow == False:
+        if isFollow == True:
             if User not in GiveAwayList:
                 GiveAwayList.append(User)
                 await ctx.send(f"{User} se unió a la rifa!")            
