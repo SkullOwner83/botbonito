@@ -18,20 +18,24 @@ SaveFilesPath = "D:/Desktop"
 Credentials = {}
 
 FrequencyMessagesTime = 1200
+PlaySoundEnable = True
+SpeakEnable = True
 SndLastUsage = {}
-SndCoolDown = 60
 SpkLastUsage = {}
-SpkCoolDown = 300
+SndCoolDown = 60
+SpkCoolDown = 180
+SpkMaxLen = 200
 
 GiveAwayStarted = False
-GiveAwayList = []
 SendDemosStarted = False
-DemosList = {}
+GiveAwayList = []
 UserDemoSended = []
+DemosList = {}
 
 DiscordLink = "https://discord.gg/prWCuWU5JM"
 YoutubeLink = "https://www.youtube.com/@SkullOwnerGaming"
 InstagramLink = "https://www.instagram.com/skullowner83/"
+FacebookLink = ""
 
 pygame.init()
 pygame.mixer.init()
@@ -120,7 +124,6 @@ def FollowCheck(ctx):
     # Imprime el código de estado y la respuesta del servidor
     print(f"Response ({response.status_code}): {response.json()}")
     return True #Para que funcionen las funciones en lo que se arregla esta
-
     
 # Check if the user that sent the command, is the admin    
 def AdminCheck(ctx):
@@ -130,7 +133,6 @@ def AdminCheck(ctx):
         return True
     else:
         return False
-
 
 # Check chat messages event
 @bot.event
@@ -185,62 +187,99 @@ async def memide(ctx):
 # Play sounds commands
 @bot.command(name="play")
 async def PlaySound(ctx, *args):
+    global PlaySoundEnable
     global SndLastUsage
     global SndCoolDown
     global SoundList
+    UserCoolDown = 0
     SoundListCommands = SoundList.keys()
 
     # Check if ther is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Command = args[0].lower()
+
+     # Activate or desactivate the play sound command
+    if AdminCheck(ctx):
+        if Command == "enable":
+            PlaySoundEnable = True
+            await ctx.send(f"Se ha activado el comando play sound.")
+            return
+        
+        if Command == "disable":
+            PlaySoundEnable = False
+            await ctx.send(f"Se ha desactivado el comando play sound.")
+            return
     
-    # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
-    UserCoolDown = SndLastUsage.get(ctx.author.name, 0)
-    CurrentTime = time.time()
+    if PlaySoundEnable == True:
+        # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
+        UserCoolDown = SndLastUsage.get(ctx.author.name, 0)
+        CurrentTime = time.time()
 
-    # Substract the cooldown time minus the time when the user used a sound minus the current time to get the rest time
-    RestTime = SndCoolDown - (CurrentTime - UserCoolDown)
+        # Substract the cooldown time minus the time when the user used a sound minus the current time to get the rest time
+        RestTime = SndCoolDown - (CurrentTime - UserCoolDown)
 
-    # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
-    if RestTime <= 0:
-        if Command in SoundList:
-            Sound = pygame.mixer.Sound(SoundList[Command])
+        # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
+        if RestTime <= 0 or AdminCheck(ctx):
+            if Command in SoundList:
+                Sound = pygame.mixer.Sound(SoundList[Command])
 
-            # Play the sound specified and update the time on the user cooldown register
-            Sound.play()
-            SndLastUsage[ctx.author.name] = time.time()
+                # Play the sound specified and update the time on the user cooldown register
+                Sound.play()
+                SndLastUsage[ctx.author.name] = time.time()
+            else:
+                if Command == "help":
+                    await ctx.send(f"Para reproducir un sonido, escribe el comando !play, seguido del nombre de uno de los siguientes sonidos (!play holi): {list(SoundListCommands)}")
         else:
-            if Command == "help":
-                await ctx.send(f"Para reproducir un sonido, escribe el comando !play, seguido del nombre de uno de los siguientes sonidos (!play holi): {list(SoundListCommands)}")
+            await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)})")
     else:
-        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(RestTime)})")
+        await ctx.send(f"@{ctx.author.name} Lo siento, el comando play sound esta desactivado :(")
 
 # Speak text commands
 @bot.command(name="speak")
 async def Speak(ctx, *args):
+    global SpeakEnable
     global SpkLastUsage
     global SpkCoolDown
+    UserCoolDown = 0
 
      # Check if ther is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Command = "".join(args).lower()
 
     # Check if the user has used a speaker and is still on cooldown. Also, take the current time to set the next cooldown
-    SpkCoolDown = SpkLastUsage.get(ctx.author.name, 0)
+    UserCoolDown = SpkLastUsage.get(ctx.author.name, 0)
     CurrentTime = time.time()
 
     # Substract the cooldown time minus the time when the user used a speaker minus the current time to get the rest time
-    RestTime = SpkCoolDown - (CurrentTime - SpkCoolDown)
+    RestTime = SpkCoolDown - (CurrentTime - UserCoolDown)
 
-    # Check if the user cooldown has already passed to speak the text
-    if RestTime <= 0:
-        Speaker = gTTS(text=Command, lang="es", slow=False)
-        Speaker.save("LastSpeech.mp3")
-        Sound = pygame.mixer.Sound("LastSpeech.mp3")
-        Sound.play()
-        SpkLastUsage[ctx.author.name] = time.time()
-    else: 
-        await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(RestTime)}s)")
+    # Activate or desactivate the speak command
+    if AdminCheck(ctx):
+        if Command == "enable":
+            SpeakEnable = True
+            await ctx.send(f"Se ha activado el comando speak.")
+            return
+        
+        if Command == "disable":
+            SpeakEnable = False
+            await ctx.send(f"Se ha desactivado el comando speak.")
+            return
+
+    if SpeakEnable == True:
+        if len(Command) <= SpkMaxLen:
+            # Check if the user cooldown has already passed to speak the text
+            if RestTime <= 0 or AdminCheck(ctx):
+                Speaker = gTTS(text=Command, lang="es", slow=False)
+                Speaker.save("LastSpeech.mp3")
+                Sound = pygame.mixer.Sound("LastSpeech.mp3")
+                Sound.play()
+                SpkLastUsage[ctx.author.name] = time.time()
+            else: 
+                await ctx.send(f"@{ctx.author.name} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(RestTime)}s)")
+        else:
+            await ctx.send(f"@{ctx.author.name} Has escrito un mensaje demasiado largo. El máximo de caracteres es {SpkMaxLen} caracteres")
+    else:
+        await ctx.send(f"@{ctx.author.name} Lo siento, el comando speak esta desactivado :(")
 
 # Send demos commands
 @bot.command(name="senddemo")    
@@ -332,7 +371,6 @@ async def giveawaystart(ctx, *args):
             await ctx.send("Utiliza el comando !giveaway start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
             await ctx.send(f"Utiliza el comando !giveaway finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {SaveFilesPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
             await ctx.send(f"Utiliza el comando !giveaway copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
-
 
 @bot.command(name="leentro")
 async def GiveAway(ctx):
