@@ -1,6 +1,7 @@
 from modules import get, file
 from twitchio.ext import commands
 from gtts import gTTS
+import webbrowser
 import pygame
 import pyperclip
 import requests
@@ -9,14 +10,17 @@ import time
 import os
 import asyncio
 import re
-import json
 
-# Variables definition
+# Load config and variable values from files
 ProjectPath = os.path.dirname(os.path.abspath(__file__))
 ConfigPath = f"{ProjectPath}/config/"
 SaveFilesPath = "D:/Desktop"
-Credentials = {}
 
+Credentials = file.ReadDictionary(f"{ConfigPath}/credentials.txt")
+SocialMedia = file.ReadDictionary(f"{ConfigPath}/socialmedia.txt")
+SoundList = file.ReadDictionary(f"{ConfigPath}/soundlist.txt")
+
+# Variable configuration
 FrequencyMessagesTime = 1200
 PlaySoundEnable = True
 SpeakEnable = True
@@ -32,17 +36,8 @@ GiveAwayList = []
 UserDemoSended = []
 DemosList = {}
 
-DiscordLink = "https://discord.gg/prWCuWU5JM"
-YoutubeLink = "https://www.youtube.com/@SkullOwnerGaming"
-InstagramLink = "https://www.instagram.com/skullowner83/"
-FacebookLink = ""
-
 pygame.init()
 pygame.mixer.init()
-
-#Read the config file lines and get a data dictionary
-Credentials = file.ReadDictionary(f"{ConfigPath}/credentials.txt")
-SoundList = file.ReadDictionary(f"{ConfigPath}/soundlist.txt")
 
 # Bot configuration with username and his oauth token to get the permissions to send message from the account
 # The idClient and ClientSecret are found in the application created on twitch developer        
@@ -52,6 +47,13 @@ ircToken = Credentials["TOKEN"]
 Prefix = Credentials["BOT_PREFIX"]
 Channel = Credentials["CHANNEL"]
 ClientSecret = Credentials["CLIENT_SECRET"]
+RedirectUri = Credentials["REDIRECT_URI"]
+
+DiscordLink = SocialMedia["Discord"]
+YoutubeLink = SocialMedia["Youtube"]
+InstagramLink = SocialMedia["Instagram"]
+FacebookLink = SocialMedia["Facebook"]
+TikTokLink = SocialMedia["TikTok"]
 
 # Check if the Oauth Token of bot account It hasn't expired yet.
 ValidToken = get.TokenValidattion(ircToken)
@@ -106,10 +108,9 @@ def FollowCheck(ctx):
     idBroadcaster = get.BroadcasterId(Channel, idClient, AppToken)
     idUser = get.UserId(ctx.author.name, idClient, AppToken)
 
-    UriRedirect = "https:/localhost:300"
     Scope="user:read:follows"
-    UserToken = f"https://id.twitch.tv/oauth2/authorize?client_id={idClient}&redirect_uri={UriRedirect}I&response_type=token&scope={Scope}"
-    print(UserToken)
+    UserToken = f"https://id.twitch.tv/oauth2/authorize?client_id={idClient}&redirect_uri={RedirectUri}I&response_type=token&scope={Scope}"
+    webbrowser.open(UserToken)
 
     url = 'https://api.twitch.tv/helix/channels/followers'
     params = {'broadcaster_id': {idBroadcaster}}
@@ -139,9 +140,6 @@ def AdminCheck(ctx):
 async def event_message(ctx):
     if ctx.author.name.lower() == BotName:
         return
-    
-    if "a" == ctx.content.lower():
-        print(FollowCheck(ctx))
 
     # Check if the message is a command
     await bot.handle_commands(ctx)
@@ -167,7 +165,15 @@ async def discord(ctx):
 
 @bot.command(name="instagram")
 async def discord(ctx):
-    await ctx.send(f"{InstagramLink}")   
+    await ctx.send(f"{InstagramLink}")
+
+@bot.command(name="facebook")
+async def discord(ctx):
+    await ctx.send(f"{FacebookLink}")
+
+@bot.command(name="tiktok")
+async def discord(ctx):
+    await ctx.send(f"{TikTokLink}")
 
 # Another random commands
 @bot.command(name="onlyfans")
