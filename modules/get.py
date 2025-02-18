@@ -1,40 +1,21 @@
 import requests
 
-def UserToken(idClient, ClientSecret, RedirectUri, Code):
-    url = "https://id.twitch.tv/oauth2/token"
-    params = {
-        'client_id': idClient,
-        'client_secret': ClientSecret,
-        'code': Code,
-        'grant_type': 'authorization_code',
-        'redirect_uri': RedirectUri,
-    }
-
-    response = requests.post(url, params=params)
-    return response.json().get('access_token')
-
-# Check if the oauth token is still valid
-def TokenValidattion(OAuth):
+# Check if the oauth token is valid
+def TokenValidattion(Token):
     Url = 'https://id.twitch.tv/oauth2/validate'
 
     Headers = {
-        'Authorization': 'OAuth ' + OAuth.replace("oauth:","")
+        'Authorization': f'OAuth {Token}'
     }
 
     try:
-        Response = requests.get(Url, headers=Headers)
-        Response.raise_for_status()
-        Data = Response.json
-        return Data
-    except requests.exceptions.HTTPError as errh:
-        print(f"Error HTTP: {errh}")
-    except requests.exceptions.ConnectionError as errc:
-        print(f"Error de conexión: {errc}")
-    except requests.exceptions.Timeout as errt:
-        print(f"Error de tiempo de espera: {errt}")
-    except requests.exceptions.RequestException as err:
-        print(f"Error general: {err}")
+        response = requests.get(Url, headers=Headers)
 
+        if response.status_code == 200:
+            return True
+    except requests.exceptions as error:
+        print(f"Error: {error}")
+    
     return False
 
 # Get the app token by his client id and secret of the aplication 

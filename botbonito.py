@@ -1,7 +1,6 @@
 from modules import get, file
 from twitchio.ext import commands
 from gtts import gTTS
-import webbrowser
 import pygame
 import pyperclip
 import requests
@@ -43,7 +42,7 @@ pygame.mixer.init()
 # The idClient and ClientSecret are found in the application created on twitch developer        
 BotName = Credentials["BOT_NICK"]
 idClient = Credentials["CLIENT_ID"] 
-ircToken = Credentials["TOKEN"]
+ircToken = f'oauth:{Credentials["TOKEN"]}'
 Prefix = Credentials["BOT_PREFIX"]
 Channel = Credentials["CHANNEL"]
 ClientSecret = Credentials["CLIENT_SECRET"]
@@ -55,14 +54,18 @@ InstagramLink = SocialMedia["Instagram"]
 FacebookLink = SocialMedia["Facebook"]
 TikTokLink = SocialMedia["TikTok"]
 
-# Check if the Oauth Token of bot account It hasn't expired yet.
-ValidToken = get.TokenValidattion(ircToken)
+# Check if the Oauth Token of bot account is valid or hasn't expired yet.
+ValidToken = get.TokenValidattion(Credentials["TOKEN"])
 
 while ValidToken == False:
-    ircToken = input("Tu oauth token no es valido. Ingresa un token nuevo:")
-    ValidToken = get.TokenValidattion(ircToken)
+    NewToken = input("Tu oauth token no es valido. Ingresa un token nuevo:")
     
-print(ValidToken)
+    if get.TokenValidattion(NewToken):
+        Credentials["TOKEN"] = NewToken
+        ircToken = f'oauth:{NewToken}'
+        file.WriteDictionary(f"{ConfigPath}/credentials.txt", Credentials)
+        print("Token validado")
+        ValidToken = True
 
 # Creation of bot with previous configuration 
 bot = commands.Bot(
@@ -86,13 +89,16 @@ async def event_ready():
 
 # send random messages Frequently in the first bot Channel
 async def FrequentMessage():
-    MessagesList = ["¿Ya tomaste awua uwu?",
-                    "Esta bonito tu stream mijito! uwu",
-                    "¿Se estan pasando un buen rato? :3",
-                    "Gracias a los que estan viendo el directo :D",
-                    f"Recuerden entrar a mi discord: {DiscordLink}",
-                    f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
-                    f"¿Ya me seguiste en instagram? {InstagramLink}"]
+    MessagesList = [
+        "¿Ya tomaste awua uwu?",
+        "Esta bonito tu stream mijito! uwu",
+        "¿Se estan pasando un buen rato? :3",
+        "Gracias a los que estan viendo el directo :D",
+        f"Recuerden entrar a mi discord: {DiscordLink}",
+        f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
+        f"¿Ya me seguiste en instagram? {InstagramLink}",
+        "Usa !help para ver la lista de comandos disponibles. :D"
+    ]
 
     Channel = bot.get_channel(bot.initial_channels[0])
 
@@ -103,24 +109,22 @@ async def FrequentMessage():
 
 # Check if the user that sent the command, follows the channel
 def FollowCheck(ctx):
-    Url = "https://api.twitch.tv/helix/channels/followers"
+    Url = 'https://api.twitch.tv/helix/channels/followers'
     AppToken =  get.AppToken(idClient, ClientSecret)
     idBroadcaster = get.BroadcasterId(Channel, idClient, AppToken)
     idUser = get.UserId(ctx.author.name, idClient, AppToken)
 
-    Scope="user:read:follows"
-    UserToken = f"https://id.twitch.tv/oauth2/authorize?client_id={idClient}&redirect_uri={RedirectUri}I&response_type=token&scope={Scope}"
-    webbrowser.open(UserToken)
-
-    url = 'https://api.twitch.tv/helix/channels/followers'
-    params = {'broadcaster_id': {idBroadcaster}}
+    params = {
+        #'id' : {idUser},
+        'broadcaster_id': {idBroadcaster}
+    }
 
     headers = {
         'Authorization': 'Bearer ' + AppToken,
         'Client-Id': idClient
     }
 
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(Url, params=params, headers=headers)
 
     # Imprime el código de estado y la respuesta del servidor
     print(f"Response ({response.status_code}): {response.json()}")
