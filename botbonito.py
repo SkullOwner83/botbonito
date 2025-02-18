@@ -109,11 +109,7 @@ async def send_frequent_messages():
 # Check if the user that sent the command, is the admin    
 def AdminCheck(ctx):
     User = ctx.author.name
-
-    if User == Channel:
-        return True
-    else:
-        return False
+    return True if User == Channel else False
 
 # Check chat messages event
 @bot.event
@@ -127,7 +123,7 @@ async def event_message(ctx):
 @bot.command(name="help")
 async def help(ctx):
     await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
-    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak, !follow")
+    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak, !following")
 
 # Show the stream schedule command
 @bot.command(name="horario")
@@ -166,22 +162,38 @@ async def gay(ctx):
     await ctx.send("Quien? El Owl?")  
 
 @bot.command(name="memide")
-async def memide(ctx):
+async def memide(ctx, *args):
     Size = random.randint(1, 50)
     await ctx.send(f"{ctx.author.name} le mide {Size}cm")
 
-# Check if the user follows the channel and since when
-@bot.command(name="follow")
-async def followsince(ctx):
-    User = "el_colunga"
-    idBroadcaster = api.GetUser(Channel, Credentials["TOKEN"], idClient)['id']
-    idUser = api.GetUser(User, Credentials["TOKEN"], idClient)['id']
-    Date = api.CheckFollow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
+# Check if the user or a specified user follows the channel and since when
+@bot.command(name="following")
+async def follow(ctx, *args):
+    user_name = ctx.author.name
+
+    # Check if there is text next to the comand and get the first word as an argument
+    if len(args) > 0:
+        user_name = args[0].lower()
+
+    broadcaster_data = api.GetUser(Channel, Credentials["TOKEN"], idClient)
+    user_data = api.GetUser(user_name, Credentials["TOKEN"], idClient)
+
+    if broadcaster_data is None:
+        await ctx.send("No se ha encontrado el canal")
+        return
+ 
+    if user_data is None:
+        await ctx.send("No se ha encontrado el usuario")
+        return
     
-    if Date != None:
-        await ctx.send(f'{User} ha seguido el canal desde {Date}')
+    idBroadcaster = broadcaster_data.get("id")
+    idUser = user_data.get("id")
+    following_since = api.CheckFollow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
+    
+    if following_since != None:
+        await ctx.send(f'{user_name} ha seguido a {Channel} desde {following_since}')
     else:
-        await ctx.send(f'{User} no sigue este canal :(')
+        await ctx.send(f'{user_name} no sigue este canal :(')
 
 # Play sounds commands
 @bot.command(name="play")
@@ -241,7 +253,7 @@ async def Speak(ctx, *args):
     global SpkCoolDown
     UserCoolDown = 0
 
-     # Check if ther is text next to the comand and get the first word as an argument
+     # Check if there is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Command = "".join(args).lower()
 
@@ -286,7 +298,7 @@ async def SendDemo(ctx, *args):
     global SendDemosStarted
     global DemosList
 
-    # Check if ther is text next to the comand and get the first word as an argument
+    # Check if there is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Command = args[0].lower()
     
@@ -316,7 +328,7 @@ async def Demo(ctx, *args):
     global SendDemosStarted
     global DemosList
 
-    # Check if ther is text next to the comand and get the first word as an argument
+    # Check if there is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Link = args[0].lower()
 
@@ -339,7 +351,7 @@ async def giveawaystart(ctx, *args):
     global GiveAwayStarted
     global GiveAwayList
 
-    # Check if ther is text next to the comand and get the first word as an argument
+    # Check if there is text next to the comand and get the first word as an argument
     if len(args) > 0:
         Command = args[0].lower()
     
@@ -371,7 +383,7 @@ async def giveawaystart(ctx, *args):
             await ctx.send(f"Utiliza el comando !giveaway finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {SaveFilesPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
             await ctx.send(f"Utiliza el comando !giveaway copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
 
-@bot.command(name="leentro")
+@bot.command(name="enter")
 async def GiveAway(ctx):
     User = ctx.author.name
     global GiveAwayStarted

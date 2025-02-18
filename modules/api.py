@@ -1,5 +1,6 @@
-import requests
 from datetime import datetime
+import requests
+import asyncio
 
 # Check if the token is valid
 def TokenValidattion(Token):
@@ -36,8 +37,12 @@ def GetUser(User, Token, idClient):
         Response = requests.get(Url, headers=Headers, params=Parameters)
 
         if Response.status_code == 200:
-            Data = Response.json()
-            return Data['data'][0]
+            Data = Response.json()["data"]
+
+            if len(Data) > 0:
+                return Data[0]
+            else:
+                return None
     except requests.RequestException as error:
         print(f"Error: {error}")
 
@@ -61,11 +66,10 @@ def CheckFollow(idUser, idBroadcaster, Token, idClient):
         Response = requests.get(Url, headers=Headers, params=Parameters)
 
         if Response.status_code == 200:
-            Data = Response.json()
-            Details = Data["data"]
+            Data = Response.json()["data"]
 
-            if len(Details) > 0:
-                DateObject = datetime.strptime(Details[0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
+            if len(Data) > 0:
+                DateObject = datetime.strptime(Data[0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
                 Date = DateObject.strftime("%d de %B de %Y")
                 return Date
             else:
