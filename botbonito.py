@@ -1,9 +1,9 @@
-from modules import get, file
+from modules import api
+from modules import file
 from twitchio.ext import commands
 from gtts import gTTS
 import pygame
 import pyperclip
-import requests
 import random
 import time
 import os
@@ -54,13 +54,24 @@ InstagramLink = SocialMedia["Instagram"]
 FacebookLink = SocialMedia["Facebook"]
 TikTokLink = SocialMedia["TikTok"]
 
+MessagesList = [
+    "¿Ya tomaste awua uwu?",
+    "Esta bonito tu stream mijito! uwu",
+    "¿Se estan pasando un buen rato? :3",
+    "Gracias a los que estan viendo el directo :D",
+    f"Recuerden entrar a mi discord: {DiscordLink}",
+    f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
+    f"¿Ya me seguiste en instagram? {InstagramLink}",
+    "Usa !help para ver la lista de comandos disponibles. :D"
+]
+
 # Check if the Oauth Token of bot account is valid or hasn't expired yet.
-ValidToken = get.TokenValidattion(Credentials["TOKEN"])
+ValidToken = api.TokenValidattion(Credentials["TOKEN"])
 
 while ValidToken == False:
     NewToken = input("Tu oauth token no es valido. Ingresa un token nuevo:")
     
-    if get.TokenValidattion(NewToken):
+    if api.TokenValidattion(NewToken):
         Credentials["TOKEN"] = NewToken
         ircToken = f'oauth:{NewToken}'
         file.WriteDictionary(f"{ConfigPath}/credentials.txt", Credentials)
@@ -73,7 +84,7 @@ bot = commands.Bot(
     client_id = idClient,
     nick = BotName,
     prefix = Prefix,
-    initial_channels = [Channel]
+    initial_channels = ['skullowner_']
 )
 
 # Print message when the bot is ready
@@ -82,54 +93,19 @@ async def event_ready():
     print("Hi, I'm ready!")
     Channel = bot.get_channel(bot.initial_channels[0])
     await Channel.send("Hola, soy el bot bonito del Skull.")
-
-    while True:
-        await asyncio.sleep(FrequencyMessagesTime)
-        await FrequentMessage()
+    asyncio.create_task(send_frequent_messages())
 
 # send random messages Frequently in the first bot Channel
-async def FrequentMessage():
-    MessagesList = [
-        "¿Ya tomaste awua uwu?",
-        "Esta bonito tu stream mijito! uwu",
-        "¿Se estan pasando un buen rato? :3",
-        "Gracias a los que estan viendo el directo :D",
-        f"Recuerden entrar a mi discord: {DiscordLink}",
-        f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
-        f"¿Ya me seguiste en instagram? {InstagramLink}",
-        "Usa !help para ver la lista de comandos disponibles. :D"
-    ]
-
-    Channel = bot.get_channel(bot.initial_channels[0])
-
-    if Channel:
-        random.seed(int(time.time()))
-        Message = random.choice(MessagesList)
-        await Channel.send(Message)
-
-# Check if the user that sent the command, follows the channel
-def FollowCheck(ctx):
-    Url = 'https://api.twitch.tv/helix/channels/followers'
-    AppToken =  get.AppToken(idClient, ClientSecret)
-    idBroadcaster = get.BroadcasterId(Channel, idClient, AppToken)
-    idUser = get.UserId(ctx.author.name, idClient, AppToken)
-
-    params = {
-        #'id' : {idUser},
-        'broadcaster_id': {idBroadcaster}
-    }
-
-    headers = {
-        'Authorization': 'Bearer ' + AppToken,
-        'Client-Id': idClient
-    }
-
-    response = requests.get(Url, params=params, headers=headers)
-
-    # Imprime el código de estado y la respuesta del servidor
-    print(f"Response ({response.status_code}): {response.json()}")
-    return True #Para que funcionen las funciones en lo que se arregla esta
-    
+async def send_frequent_messages():
+    while True:
+        await asyncio.sleep(FrequencyMessagesTime)
+        Channel = bot.get_channel(bot.initial_channels[0])
+        
+        if Channel:
+            random.seed(int(time.time()))
+            Message = random.choice(MessagesList)
+            await Channel.send(Message)
+ 
 # Check if the user that sent the command, is the admin    
 def AdminCheck(ctx):
     User = ctx.author.name
@@ -151,7 +127,7 @@ async def event_message(ctx):
 @bot.command(name="help")
 async def help(ctx):
     await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
-    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak")
+    await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak, !follow")
 
 # Show the stream schedule command
 @bot.command(name="horario")
@@ -192,7 +168,20 @@ async def gay(ctx):
 @bot.command(name="memide")
 async def memide(ctx):
     Size = random.randint(1, 50)
-    await ctx.send(f"{ctx.author.name} le mide {Size}cm")  
+    await ctx.send(f"{ctx.author.name} le mide {Size}cm")
+
+# Check if the user follows the channel and since when
+@bot.command(name="follow")
+async def followsince(ctx):
+    User = "el_colunga"
+    idBroadcaster = api.GetUser(Channel, Credentials["TOKEN"], idClient)['id']
+    idUser = api.GetUser(User, Credentials["TOKEN"], idClient)['id']
+    Date = api.CheckFollow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
+    
+    if Date != None:
+        await ctx.send(f'{User} ha seguido el canal desde {Date}')
+    else:
+        await ctx.send(f'{User} no sigue este canal :(')
 
 # Play sounds commands
 @bot.command(name="play")
@@ -385,18 +374,13 @@ async def giveawaystart(ctx, *args):
 @bot.command(name="leentro")
 async def GiveAway(ctx):
     User = ctx.author.name
-    isFollow = FollowCheck(ctx)
     global GiveAwayStarted
     global GiveAwayList
 
     if GiveAwayStarted == True:
-        if isFollow == True:
-            if User not in GiveAwayList:
-                GiveAwayList.append(User)
-                await ctx.send(f"{User} se unió a la rifa!")            
-                print(f"Se añadió el nombre de {ctx.author.name} a la lista!")
-        else:
-            await ctx.send(f"{User}, debes seguir al skull para poder participar.")
+        if User not in GiveAwayList:
+            GiveAwayList.append(User)
+            await ctx.send(f"{User} se unió a la rifa!")
     else:
         await ctx.send(f"{User} eh perate. ¿A dónde le quieres entrar?")
 
