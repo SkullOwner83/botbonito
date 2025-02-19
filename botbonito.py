@@ -114,10 +114,11 @@ def AdminCheck(ctx):
 # Check chat messages event
 @bot.event
 async def event_message(ctx):
-    if ctx.author.name.lower() == BotName:
+    if ctx.author is None or ctx.author.name == BotName:
         return
 
     # Check if the message is a command
+    ctx.content = ctx.content.lower() 
     await bot.handle_commands(ctx)
 
 @bot.command(name="help")
