@@ -1,5 +1,6 @@
 from modules import api
 from modules import file
+from modules import token
 from twitchio.ext import commands
 from gtts import gTTS
 import pygame
@@ -84,15 +85,20 @@ bot = commands.Bot(
     client_id = idClient,
     nick = BotName,
     prefix = Prefix,
-    initial_channels = ['skullowner_']
+    initial_channels = [Channel, 'brgus1023']
 )
 
 # Print message when the bot is ready
 @bot.event
 async def event_ready():
     print("Hi, I'm ready!")
-    Channel = bot.get_channel(bot.initial_channels[0])
-    await Channel.send("Hola, soy el bot bonito del Skull.")
+    
+    for channel_name in bot.initial_channels:
+        channel = bot.get_channel(channel_name)
+
+        if channel:
+            await channel.send("Hola, soy el bot bonito del Skull.")
+
     asyncio.create_task(send_frequent_messages())
 
 # send random messages Frequently in the first bot Channel
@@ -186,7 +192,7 @@ async def follow(ctx, *args):
     if user_data is None:
         await ctx.send("No se ha encontrado el usuario")
         return
-    
+
     idBroadcaster = broadcaster_data.get("id")
     idUser = user_data.get("id")
     following_since = api.CheckFollow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
