@@ -48,6 +48,12 @@ Prefix = Credentials["BOT_PREFIX"]
 Channel = Credentials["CHANNEL"]
 ClientSecret = Credentials["CLIENT_SECRET"]
 RedirectUri = Credentials["REDIRECT_URI"]
+scope = [
+    "chat:read",
+    "chat:edit",
+    "user:read:subscriptions",
+    "moderator:read:followers"
+]
 
 DiscordLink = SocialMedia["Discord"]
 YoutubeLink = SocialMedia["Youtube"]
@@ -67,12 +73,13 @@ MessagesList = [
 ]
 
 # Check if the Oauth Token of bot account is valid or hasn't expired yet.
-ValidToken = api.TokenValidattion(Credentials["TOKEN"])
+ValidToken = token.validation(Credentials["TOKEN"])
 
 while ValidToken == False:
-    NewToken = input("Tu oauth token no es valido. Ingresa un token nuevo:")
+    print("Tu token no es valido. Ingresa al siguiente sitio para obtener un nuevo token:")
+    NewToken = token.get_authorization(idClient, ClientSecret, RedirectUri, scope)
     
-    if api.TokenValidattion(NewToken):
+    if token.validation(NewToken):
         Credentials["TOKEN"] = NewToken
         ircToken = f'oauth:{NewToken}'
         file.WriteDictionary(f"{ConfigPath}/credentials.txt", Credentials)
@@ -85,7 +92,7 @@ bot = commands.Bot(
     client_id = idClient,
     nick = BotName,
     prefix = Prefix,
-    initial_channels = [Channel, 'brgus1023']
+    initial_channels = [Channel]
 )
 
 # Print message when the bot is ready
@@ -182,8 +189,8 @@ async def follow(ctx, *args):
     if len(args) > 0:
         user_name = args[0].lower()
 
-    broadcaster_data = api.GetUser(Channel, Credentials["TOKEN"], idClient)
-    user_data = api.GetUser(user_name, Credentials["TOKEN"], idClient)
+    broadcaster_data = api.get_user(Channel, Credentials["TOKEN"], idClient)
+    user_data = api.get_user(user_name, Credentials["TOKEN"], idClient)
 
     if broadcaster_data is None:
         await ctx.send("No se ha encontrado el canal")
@@ -195,7 +202,7 @@ async def follow(ctx, *args):
 
     idBroadcaster = broadcaster_data.get("id")
     idUser = user_data.get("id")
-    following_since = api.CheckFollow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
+    following_since = api.check_follow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
     
     if following_since != None:
         await ctx.send(f'{user_name} ha seguido a {Channel} desde {following_since}')
