@@ -7,8 +7,8 @@ import pygame
 import pyperclip
 from twitchio.ext import commands
 from gtts import gTTS
-from modules import api
 from modules import file
+from modules.api import Api
 from modules.token import Token
 
 # Load config and variable values from files
@@ -185,13 +185,14 @@ async def memide(ctx, *args):
 @bot.command(name="following")
 async def follow(ctx, *args):
     user_name = ctx.author.name
+    api = Api(Credentials["TOKEN"], idClient)
 
     # Check if there is text next to the comand and get the first word as an argument
     if len(args) > 0:
         user_name = args[0].lower()
 
-    broadcaster_data = api.get_user(Channel, Credentials["TOKEN"], idClient)
-    user_data = api.get_user(user_name, Credentials["TOKEN"], idClient)
+    broadcaster_data = api.get_user(Channel)
+    user_data = api.get_user(user_name)
 
     if broadcaster_data is None:
         await ctx.send("No se ha encontrado el canal")
@@ -203,7 +204,7 @@ async def follow(ctx, *args):
 
     idBroadcaster = broadcaster_data.get("id")
     idUser = user_data.get("id")
-    following_since = api.check_follow(idUser, idBroadcaster, Credentials["TOKEN"], idClient)
+    following_since = api.check_follow(idUser, idBroadcaster)
     
     if following_since != None:
         await ctx.send(f'{user_name} ha seguido a {Channel} desde {following_since}')

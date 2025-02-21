@@ -38,7 +38,7 @@ class Token:
     def get_authorization(self):
         url = 'https://id.twitch.tv/oauth2/authorize'
         encoded_scopes = urllib.parse.quote(' '.join(self.scope))
-        auth_url = f"{url}?client_id={self.client_id}&redirect_uri={self.redirect_uri}&response_type=code&scope={encoded_scopes}"
+        auth_url = f'{url}?client_id={self.client_id}&redirect_uri={self.redirect_uri}&response_type=code&scope={encoded_scopes}'
         server = http.server.HTTPServer(('localhost', self.server_port), self.__OAuthHandler)
         server.auth_code = None
 

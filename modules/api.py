@@ -1,63 +1,68 @@
 from datetime import datetime
 import requests
 
-# Get information about a specific user
-def get_user(User, Token, idClient):
-    url = 'https://api.twitch.tv/helix/users'
+class Api():
+    def __init__(self, token, client_id):
+        self.token = token
+        self.client_id = client_id
 
-    parameters = {
-        'login': User
-    }
+    # Get information about a specific user
+    def get_user(self, user):
+        url = 'https://api.twitch.tv/helix/users'
 
-    headers = {
-        "Client-ID": idClient,
-        "Authorization": f"Bearer {Token}"
-    }
+        parameters = {
+            'login': user
+        }
 
-    try:
-        response = requests.get(url, headers=headers, params=parameters)
+        headers = {
+            "Client-ID": self.client_id,
+            "Authorization": f"Bearer {self.token}"
+        }
 
-        if response.status_code == 200:
-            data = response.json()["data"]
+        try:
+            response = requests.get(url, headers=headers, params=parameters)
+            data = response.json()
 
-            if len(data) > 0:
-                return data[0]
+            if response.status_code == 200:
+                if len(data['data']) > 0:
+                    return data['data'][0]
+                else:
+                    print("No se ha encontrado el usuario")
             else:
-                print(response.content)
-                return None
-    except requests.RequestException as error:
-        print(f"Error: {error}")
+                print(f"Error {data['status']}: {data['message']}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
 
-    return None
+        return None
+    
+    # Check if the user follows the channel and return since when
+    def check_follow(self, user_id, broadcaster_id):
+        url = 'https://api.twitch.tv/helix/channels/followers'
 
-# Check if the user follows the channel and return since when
-def check_follow(idUser, idBroadcaster, Token, idClient):
-    url = 'https://api.twitch.tv/helix/channels/followers'
+        parameters = {
+            'broadcaster_id': broadcaster_id,
+            'user_id': user_id
+        }
 
-    parameters = {
-        'broadcaster_id': idBroadcaster,
-        'user_id': idUser
-    }
+        headers = {
+            "Client-ID": self.client_id,
+            "Authorization": f"Bearer {self.token}"
+        }
 
-    headers = {
-        "Client-ID": idClient,
-        "Authorization": f"Bearer {Token}"
-    }
+        try:
+            response = requests.get(url, headers=headers, params=parameters)
+            data = response.json()
 
-    try:
-        response = requests.get(url, headers=headers, params=parameters)
-
-        if response.status_code == 200:
-            data = response.json()["data"]
-
-            if len(data) > 0:
-                date_object = datetime.strptime(data[0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
-                date = date_object.strftime("%d de %B de %Y")
-                return date
+            if response.status_code == 200:
+                if len(data['data']) > 0:
+                    date_object = datetime.strptime(data["data"][0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
+                    date = date_object.strftime("%d de %B de %Y")
+                    return date
+                else:
+                    print("El usuario no sigue al canal especificado") #revisate esto carnal
             else:
-                print(response.content)
-                return None
-    except requests.RequestException as error:
-        print(f"Error: {error}")
+                print(f"Error {data['status']}: {data['message']}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
 
-    return None
+        return None
