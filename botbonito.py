@@ -1,15 +1,15 @@
-from modules import api
-from modules import file
-from modules import token
-from twitchio.ext import commands
-from gtts import gTTS
+import os
+import re
+import time
+import asyncio
+import random
 import pygame
 import pyperclip
-import random
-import time
-import os
-import asyncio
-import re
+from twitchio.ext import commands
+from gtts import gTTS
+from modules import api
+from modules import file
+from modules.token import Token
 
 # Load config and variable values from files
 ProjectPath = os.path.dirname(os.path.abspath(__file__))
@@ -73,11 +73,12 @@ MessagesList = [
 ]
 
 # Check if the Oauth Token of bot account is valid or hasn't expired yet.
-ValidToken = token.validation(Credentials["TOKEN"])
+ValidToken = Token.validation(Credentials["TOKEN"])
 
 while ValidToken == False:
     print("Tu token no es valido. Ingresa al siguiente sitio para obtener un nuevo token:")
-    NewToken = token.get_authorization(idClient, ClientSecret, RedirectUri, scope)
+    token = Token(idClient, ClientSecret, scope, RedirectUri)
+    NewToken = token.get_authorization()
     
     if token.validation(NewToken):
         Credentials["TOKEN"] = NewToken
