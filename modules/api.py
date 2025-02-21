@@ -59,7 +59,7 @@ class Api():
                     date = date_object.strftime("%d de %B de %Y")
                     return date
                 else:
-                    print("El usuario no sigue al canal especificado") #revisate esto carnal
+                    print("El usuario no sigue al canal especificado")
             else:
                 print(f"Error {data['status']}: {data['message']}")
         except requests.RequestException as error:
