@@ -9,6 +9,7 @@ from twitchio.ext import commands
 from modules.api import Api
 from modules.token import Token
 from modules import file
+from modules.file import File
 from gtts import gTTS
 
 pygame.init()
@@ -18,28 +19,10 @@ class Bot(commands.Bot):
     # Load config and variable values from files
     ProjectPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ConfigPath = f"{ProjectPath}/config/"
-    SocialMedia = file.ReadDictionary(f"{ConfigPath}/socialmedia.txt")
     sound_list = file.ReadDictionary(f"{ConfigPath}/soundlist.txt")
 
-    DiscordLink = SocialMedia["discord"]
-    YoutubeLink = SocialMedia["youtube"]
-    InstagramLink = SocialMedia["instagram"]
-    FacebookLink = SocialMedia["facebook"]
-    TikTokLink = SocialMedia["tikTok"]
-
-    frequency_message_list = [
-        "¿Ya tomaste awua uwu?",
-        "Esta bonito tu stream mijito! uwu",
-        "¿Se estan pasando un buen rato? :3",
-        "Gracias a los que estan viendo el directo :D",
-        f"Recuerden entrar a mi discord: {DiscordLink}",
-        f"¿Ya te suscribiste a mi canal de youtube? {YoutubeLink}",
-        f"¿Ya me seguiste en instagram? {InstagramLink}",
-        "Usa !help para ver la lista de comandos disponibles. :D"
-    ]
-
     # Variable configuration
-    frequency_Message_time = 1200
+    frequency_message_time = 1200
     playsound_command = True
     speak_command = True
     snd_user_register = {}
@@ -55,19 +38,33 @@ class Bot(commands.Bot):
     demos_list = {}
 
     # Constructor method that receives the bot config
-    def __init__(self, name, prefix, channels, credentials):
-        super().__init__(
-            irc_token=f'oauth:{credentials["TOKEN"]}',
-            client_id=credentials['CLIENT_ID'],
-            nick=name,
-            prefix=prefix,
-            initial_channels=channels
-        )
+    def __init__(self, config, credentials):
+        self.social_media = File.open(f"{self.ConfigPath}/socialmedia.json")
 
-        self.name = name
-        self.channels = channels
-        self.token = credentials['TOKEN']
-        self.client_id = credentials['CLIENT_ID']
+        self.name = config['name']
+        self.channels = config['channels']
+        self.prefix = config['prefix']
+        self.token = credentials['token']
+        self.client_id = credentials['client_id']
+
+        self.frequency_message_list = [
+            "¿Ya tomaste awua uwu?",
+            "Esta bonito tu stream mijito! uwu",
+            "¿Se estan pasando un buen rato? :3",
+            "Gracias a los que estan viendo el directo :D",
+            f"Recuerden entrar a mi discord: {self.social_media['discord']}",
+            f"¿Ya te suscribiste a mi canal de youtube? {self.social_media['youtube']}",
+            f"¿Ya me seguiste en instagram? {self.social_media['instagram']}",
+            "Usa !help para ver la lista de comandos disponibles. :D"
+        ]
+
+        super().__init__(
+            irc_token=f'oauth:{self.token}',
+            client_id=self.client_id,
+            nick=self.name,
+            prefix=self.prefix,
+            initial_channels=self.channels
+        )
 
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
@@ -83,7 +80,7 @@ class Bot(commands.Bot):
     # send random messages Frequently in the first bot Channel
     async def send_frequent_messages(self):
         while True:
-            await asyncio.sleep(self.frequency_Message_time)
+            await asyncio.sleep(self.frequency_message_time)
             
             for channel_name in self.initial_channels:
                 channel = self.get_channel(channel_name)
@@ -95,19 +92,19 @@ class Bot(commands.Bot):
 
     # Check chat messages event
     async def event_message(self, ctx):
+        ctx.content = ctx.content.lower()
+
         if ctx.author is None or ctx.author.name == self.name:
             return
         
-        # Show social media commads
-        if ctx.content[0] == "!":
-            social_media = ctx.content[1:]
+        if ctx.content[0] == self.prefix:
+            command = ctx.content[1:]
             
-            if social_media in self.SocialMedia:
-                await ctx.channel.send(f"{self.SocialMedia[social_media]}")
-            return
+            if command in self.social_media:
+                await ctx.channel.send(f"{self.social_media[command]}")
+                return
 
         # Check if the message is a command
-        ctx.content = ctx.content.lower() 
         await self.handle_commands(ctx)
 
     # Check if the user that sent the command, is the admin    
@@ -279,7 +276,7 @@ class Bot(commands.Bot):
                     await ctx.send("La lista para poder enviar tu demo, ha finalizado! Ahora se escogera un demo de manera aleatoria. Suerte a todos!")
                     await asyncio.sleep(3)
                     user_winner = random.choice(list(self.demos_list.keys()))
-                    await ctx.send(f"El usuario elegido fue @{UserWinner}. Se ha copiado su link en el portapapeles del streamer.")
+                    await ctx.send(f"El usuario elegido fue @{user_winner}. Se ha copiado su link en el portapapeles del streamer.")
                     print(f"Se ha copiado el link del demo al portapapeles.")
                     pyperclip.copy(self.demos_list[user_winner])            
 

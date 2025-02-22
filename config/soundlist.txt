@@ -1,9 +1,12 @@
 holi=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Holi.wav
-comoestas=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ayy como estas.wav
-ahuevo=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/A huevo jaja.wav
-comochilla=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ah como chilla.wav
+comoestas=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Como estas.wav
+ahuevo=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/A huevo.wav
+comochilla=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/comochilla.wav
 callate=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Callate.wav
 bonito=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Esta Bonito.wav
 risa=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Risa de alien.wav
 nodigaseso=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/No digas eso.wav
-vamonos=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ya vamonos sofia.wav
+comeback=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/I always come back.wav
+yavalio=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Ya valio madres.wav
+hijade=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Hija de puta.wav
+mecorro=D:/Desktop/Proyectos/Obs Studio/Herramientas/Sounds/Me corro.wav
