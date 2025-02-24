@@ -14,9 +14,6 @@ credentials = File.open(credentials_path)
 botconfig = File.open(botconfig_path)
 
 
-SoundList = file.ReadDictionary(f"{config_path}/soundlist.txt")
-
-
 token = credentials['token']
 client_id = credentials['client_id']
 client_secret = credentials['client_secret']

@@ -11,6 +11,8 @@ from modules.token import Token
 from modules import file
 from modules.file import File
 from gtts import gTTS
+import speech_recognition as sr
+import threading
 
 pygame.init()
 pygame.mixer.init()
@@ -19,7 +21,7 @@ class Bot(commands.Bot):
     # Load config and variable values from files
     ProjectPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     ConfigPath = f"{ProjectPath}/config/"
-    sound_list = file.ReadDictionary(f"{ConfigPath}/soundlist.txt")
+    sound_list = File.open(f"{ConfigPath}/soundlist.json")
 
     # Variable configuration
     frequency_message_time = 1200
@@ -40,10 +42,13 @@ class Bot(commands.Bot):
     # Constructor method that receives the bot config
     def __init__(self, config, credentials):
         self.social_media = File.open(f"{self.ConfigPath}/socialmedia.json")
+        self.recognition_thread = threading.Thread(target=self.capture_voice_commands)
+        self.r = sr.Recognizer()
 
         self.name = config['name']
         self.channels = config['channels']
         self.prefix = config['prefix']
+        self.wake_word = config['wake_word']
         self.token = credentials['token']
         self.client_id = credentials['client_id']
 
@@ -76,6 +81,7 @@ class Bot(commands.Bot):
             if channel:
                 await channel.send("Hola, soy el bot bonito del Skull.")
                 asyncio.create_task(self.send_frequent_messages())
+                self.recognition_thread.start()
 
     # send random messages Frequently in the first bot Channel
     async def send_frequent_messages(self):
@@ -89,6 +95,7 @@ class Bot(commands.Bot):
                     random.seed(int(time.time()))
                     Message = random.choice(self.frequency_message_list)
                     await channel.send(Message)
+
 
     # Check chat messages event
     async def event_message(self, ctx):
@@ -106,6 +113,21 @@ class Bot(commands.Bot):
 
         # Check if the message is a command
         await self.handle_commands(ctx)
+
+    def capture_voice_commands(self):
+        while True:
+            with sr.Microphone() as source:
+                self.r.adjust_for_ambient_noise(source)
+                audio = self.r.listen(source)
+            
+            try:
+                command = self.r.recognize_google(audio, language="es-ES")
+                command = command.lower()
+                print(command)
+            except sr.UnknownValueError:
+                print("No se entendió el audio.")
+            except sr.RequestError as e:
+                print(f"Error con el reconocimiento de voz: {e}")
 
     # Check if the user that sent the command, is the admin    
     def admin_check(self, ctx):
@@ -347,3 +369,14 @@ class Bot(commands.Bot):
                 await ctx.send(f"{user} se unió a la rifa!")
         else:
             await ctx.send(f"{user} eh perate. ¿A dónde le quieres entrar?")
+
+
+
+
+    # obtain audio from the microphone
+    r = sr.Recognizer()
+
+    @commands.command(name="voz")
+    async def voz(self, ctx):
+        pass
+
