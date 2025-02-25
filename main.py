@@ -4,6 +4,7 @@ from modules import file
 from modules.token import Token
 from modules.file import File
 from bot.bot import Bot
+import config
 
 # Load config and variable values from files
 project_path = os.path.dirname(os.path.abspath(__file__))
