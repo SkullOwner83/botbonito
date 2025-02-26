@@ -9,19 +9,14 @@ from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
+from my_app import MyApp
 
 class Bot(commands.Bot):
-    # Load config and variable values from files
-    ProjectPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    ConfigPath = f"{ProjectPath}/config/"
-
     # Variable configuration
     playsound_command = True
     speak_command = True
 
-    # Constructor method that receives the bot config
     def __init__(self, config, credentials):
-        self.social_media = File.open(f"{self.ConfigPath}/socialmedia.json")
         self.voice_recognition_cog = VoiceRecognition(self, config)
         self.sound_manager_cog = SoundManager(self)
         self.command_manager_cog = CommandManager(self)
@@ -37,8 +32,16 @@ class Bot(commands.Bot):
         self.snd_cooldown = config['snd_cooldown']
         self.spk_cooldown = config['spk_cooldown']
         self.speak_max_lenght = config['speak_max_lenght']
-        self.frequency_message_list = config['frecuency_message_list']
+        self.__frequency_messages = config['frecuency_messages']
 
+        # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
+        self.social_media = File.open(f"{MyApp.config_path}/socialmedia.json")
+        self.social_media = {key: url.replace('@', '%40') for key, url in self.social_media.items()}
+        self.frequency_messages = [
+            message.format(**self.social_media) for message in self.__frequency_messages
+        ]
+
+        # Initialize the bot with the received config
         super().__init__(
             token=f'oauth:{self.token}',
             prefix=self.prefix,
@@ -52,27 +55,9 @@ class Bot(commands.Bot):
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
         print("Hi, I'm ready!")
-        
-        for channel_name in self.channels:
-            channel = self.get_channel(channel_name)
-
-            if channel:
-                await channel.send("Hola, soy el bot bonito del Skull.")
-                asyncio.create_task(self.send_frequent_messages())
-                self.recognition_thread.start()
-
-    # send random messages Frequently in the first bot Channel
-    async def send_frequent_messages(self):
-        while True:
-            await asyncio.sleep(self.frequency_message_time)
-            
-            for channel_name in self.channels:
-                channel = self.get_channel(channel_name)
-
-                if channel:
-                    random.seed(int(time.time()))
-                    Message = random.choice(self.frequency_message_list)
-                    await channel.send(Message)
+        await self.send_message("Hola, soy el bot bonito del Skull.")
+        asyncio.create_task(self.send_frequent_messages())
+        self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, ctx):
@@ -91,7 +76,22 @@ class Bot(commands.Bot):
         # Check if the message is a command
         await self.handle_commands(ctx)
 
-
     # Check if the user that sent the command, is the admin    
     def admin_check(self, ctx):
         return True if ctx.author.name == ctx.channel.name else False
+    
+    # send random messages Frequently in the first bot Channel
+    async def send_frequent_messages(self):
+        while True:
+            await asyncio.sleep(self.frequency_message_time)
+            random.seed(int(time.time()))
+            message = random.choice(self.frequency_messages)
+            await self.send_message(message)
+    
+    # Find the current channel when doesn't have the context and send a message from the bot
+    async def send_message(self, message):
+        for channel_name in self.channels:
+            channel = self.get_channel(channel_name)
+
+            if channel:
+                await channel.send(message)

@@ -31,7 +31,7 @@ class DynamicsCommands(commands.Cog):
             # Finish the give away, save the list in a text file and copy it tol the clipboard
             if command == "finish":
                 if self.give_away_started == True:
-                    await ctx.send("La lista para entrar al sorte, ha finalizado! Suete a todos.")
+                    await ctx.send("La lista para entrar al sorte, ha finalizado! Suerte a todos.")
 
                     with open(f"{self.ProjectPath}/Lista.txt", "w") as file:
                         for element in self.give_away_list:

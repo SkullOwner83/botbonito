@@ -3,12 +3,12 @@ import pygame
 from twitchio.ext import commands
 from gtts import gTTS
 from modules.file import File
-from config import config_path
+from myapp import MyApp
 
 class SoundManager(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.sound_list = File.open(f"{config_path}/soundlist.json")
+        self.sound_list = File.open(f"{MyApp.config_path}/soundlist.json")
         self.snd_user_register = {}
         self.spk_user_register = {}
         pygame.init()
@@ -38,10 +38,8 @@ class SoundManager(commands.Cog):
         
         if self.bot.playsound_command == True:
             # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
-            user_cooldown = self.snd_user_register.get(ctx.author.name, 0)
             current_time = time.time()
-
-            # Substract the cooldown time minus the time when the user used a sound minus the current time to get the rest time
+            user_cooldown = self.snd_user_register.get(ctx.author.name, 0)
             rest_time = self.bot.snd_cooldown - (current_time - user_cooldown)
 
             # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
@@ -68,10 +66,8 @@ class SoundManager(commands.Cog):
             command = "".join(args).lower()
 
         # Check if the user has used a speaker and is still on cooldown. Also, take the current time to set the next cooldown
-        user_cooldown = self.spk_user_register.get(ctx.author.name, 0)
         current_time = time.time()
-
-        # Substract the cooldown time minus the time when the user used a speaker minus the current time to get the rest time
+        user_cooldown = self.spk_user_register.get(ctx.author.name, 0)
         rest_time = self.bot.spk_cooldown - (current_time - user_cooldown)
 
         # Activate or desactivate the speak command

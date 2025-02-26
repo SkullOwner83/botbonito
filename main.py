@@ -1,19 +1,12 @@
 import os
-from twitchio.ext import commands
-from modules import file
 from modules.token import Token
 from modules.file import File
 from bot.bot import Bot
-import config
+from myapp import MyApp
 
 # Load config and variable values from files
-project_path = os.path.dirname(os.path.abspath(__file__))
-config_path = os.path.join(project_path, "config")
-credentials_path = os.path.join(config_path, "credentials.json")
-botconfig_path = os.path.join(config_path, "botconfig.json")
-credentials = File.open(credentials_path)
-botconfig = File.open(botconfig_path)
-
+credentials = File.open(MyApp.credentials_path)
+botconfig = File.open(MyApp.botconfig_path)
 
 token = credentials['token']
 client_id = credentials['client_id']
@@ -31,7 +24,7 @@ while ValidToken == False:
     
     if token.validation(NewToken):
         credentials['token'] = NewToken
-        File.save(credentials_path, credentials)
+        File.save(MyApp.credentials_path, credentials)
         print("Token validado")
         ValidToken = True
 
