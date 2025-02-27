@@ -1,6 +1,7 @@
 import random
 from twitchio.ext import commands
 from modules.api import Api
+from myapp import MyApp
 
 class CommandManager(commands.Cog):
     def __init__(self, bot):
@@ -15,6 +16,16 @@ class CommandManager(commands.Cog):
     async def schedule(self, ctx):
         await ctx.send(f"Hola @{ctx.author.name}! El horario es: Martes y Jueves a partir de las 8:00pm (Zona Horaria GMT-6). Domingo si hay oportunidad, a partir de la misma hora")
     
+    @commands.command(name="color",)
+    async def change_color(self, ctx, *args):
+        user_name = ctx.author.name
+        api = Api(self.bot.token, self.bot.client_id)
+        user_data = api.get_user(user_name)
+        
+        if len(args) > 0:
+            command = args[0]
+            await self.bot.update_chatter_color(self.bot.token, user_data['id'], MyApp.colors[command])
+
     # Another random commands
     @commands.command(name="onlyfans")
     async def onlyfans(ctx):

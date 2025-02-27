@@ -37,6 +37,19 @@ class VoiceRecognition(commands.Cog):
                     asyncio.run_coroutine_threadsafe(self.bot.send_message(social_media), loop)
 
                 if command == "horario":
-                    cmd = self.bot.get_command("horario")
                     loop = self.bot.loop
-                    asyncio.run_coroutine_threadsafe(self.send_message(cmd), loop)
+                    asyncio.run_coroutine_threadsafe(self.execute_commands("horario"), loop)
+
+
+    async def execute_commands(self, command):
+        channel = self.bot.connected_channels[0]
+
+        fake_message = Message(
+            content=f"!{command}",
+            author=channel,
+            channel=channel,
+            tags={}, 
+            bot=self
+        )
+        
+        await self.bot.handle_commands(fake_message)

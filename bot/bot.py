@@ -9,7 +9,11 @@ from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
-from my_app import MyApp
+from myapp import MyApp
+
+
+from twitchio import Message
+
 
 class Bot(commands.Bot):
     # Variable configuration
@@ -25,6 +29,7 @@ class Bot(commands.Bot):
 
         self.token = credentials['token']
         self.client_id = credentials['client_id']
+        self.client_secret = credentials['client_secret']
         self.name = config['name']
         self.channels = config['channels']
         self.prefix = config['prefix']
@@ -44,6 +49,7 @@ class Bot(commands.Bot):
         # Initialize the bot with the received config
         super().__init__(
             token=f'oauth:{self.token}',
+            client_secret=self.client_secret,
             prefix=self.prefix,
             initial_channels=self.channels
         )
