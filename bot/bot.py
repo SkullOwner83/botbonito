@@ -12,8 +12,6 @@ from bot.dynamics_commands import DynamicsCommands
 from myapp import MyApp
 
 
-from twitchio import Message
-
 
 class Bot(commands.Bot):
     # Variable configuration
