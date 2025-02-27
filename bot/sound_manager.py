@@ -85,7 +85,7 @@ class SoundManager(commands.Cog):
         if self.bot.speak_command == True:
             if len(command) <= self.bot.speak_max_lenght:
                 # Check if the user cooldown has already passed to speak the text
-                if rest_time <= 0 or self.admin_check(ctx):
+                if rest_time <= 0 or self.bot.admin_check(ctx):
                     Speaker = gTTS(text=command, lang="es", slow=False)
                     Speaker.save("LastSpeech.mp3")
                     Sound = pygame.mixer.Sound("LastSpeech.mp3")

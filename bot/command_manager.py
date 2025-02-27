@@ -33,7 +33,6 @@ class CommandManager(commands.Cog):
 
     @commands.command(name="gay")
     async def gay(self, ctx):
-        print(self.GiveAwayStarted)
         await ctx.send("Quien? El Owl?")  
 
     @commands.command(name="memide")
@@ -46,7 +45,7 @@ class CommandManager(commands.Cog):
     async def follow(self, ctx, *args):
         user_name = ctx.author.name
         channel_name = ctx.channel.name
-        api = Api(self.token, self.client_id)
+        api = Api(self.bot.token, self.bot.client_id)
 
         # Check if there is text next to the comand and get the first word as an argument
         if len(args) > 0:

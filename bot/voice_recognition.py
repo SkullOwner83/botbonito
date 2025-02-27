@@ -1,8 +1,7 @@
-from twitchio.ext import commands
-import speech_recognition as sr
-
-from twitchio import Message, Chatter, Channel
 import asyncio
+from twitchio.ext import commands
+from twitchio import Message
+import speech_recognition as sr
 
 class VoiceRecognition(commands.Cog):
     def __init__(self, bot, config):
@@ -10,6 +9,7 @@ class VoiceRecognition(commands.Cog):
         self.r = sr.Recognizer()
         self.wake_word = config['wake_word']
 
+    # Create a loop to listen for audio input and recognize the voice
     def capture_voice_commands(self):
         while True:
             with sr.Microphone() as source:
@@ -28,26 +28,18 @@ class VoiceRecognition(commands.Cog):
             except sr.RequestError as e:
                 print(f"Error con el reconocimiento de voz: {e}")
 
+            # Check if the recognized command is the wake word and excecute the command in the main loop
             if command and command.startswith(self.wake_word):
                 command = command.replace(self.wake_word, "").strip()
+                loop = self.bot.loop
+                asyncio.run_coroutine_threadsafe(self.execute_commands(command), loop)
 
-                if command in self.bot.social_media:
-                    loop = self.bot.loop
-                    social_media = self.bot.social_media[command]
-                    asyncio.run_coroutine_threadsafe(self.bot.send_message(social_media), loop)
-
-                if command == "horario":
-                    loop = self.bot.loop
-                    asyncio.run_coroutine_threadsafe(self.execute_commands("horario"), loop)
-
-
+    # Create a fake message to execute the command
     async def execute_commands(self, command):
-        channel = self.bot.connected_channels[0]
-
         fake_message = Message(
             content=f"!{command}",
-            author=channel,
-            channel=channel,
+            author=self.bot.connected_channels[0],
+            channel=self.bot.connected_channels[0],
             tags={}, 
             bot=self
         )
