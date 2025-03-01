@@ -16,27 +16,16 @@ class SoundManager(commands.Cog):
 
     # Play sounds commands
     @commands.command(name="play")
-    async def play_sound(self, ctx, *args):
+    async def play_sound(self, ctx, command):
         SoundListCommands = self.sound_list.keys()
         user_cooldown = 0
 
-        # Check if ther is text next to the comand and get the first word as an argument
-        if len(args) > 0:
-            command = args[0].lower()
-
         # Activate or desactivate the play sound command
-        if self.bot.admin_check(ctx):
-            if command == "enable":
-                self.playsound_command = True
-                await ctx.send(f"Se ha activado el comando play sound.")
-                return
-            
-            if command == "disable":
-                self.playsound_command = False
-                await ctx.send(f"Se ha desactivado el comando play sound.")
-                return
-        
-        if self.bot.playsound_command == True:
+        if command in ["enable", "disable"]:
+            await self.bot.toggle_command(ctx, "playsound", command)
+            return
+
+        if self.bot.commands_config["playsound"]["enable"] == True:
             # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
             current_time = time.time()
             user_cooldown = self.snd_user_register.get(ctx.author.name, 0)
@@ -58,12 +47,9 @@ class SoundManager(commands.Cog):
 
     # Speak text commands
     @commands.command(name="speak")
-    async def speak(self, ctx, *args):
+    async def speak(self, ctx, command):
+        command = command.lower()
         user_cooldown = 0
-
-        # Check if there is text next to the comand and get the first word as an argument
-        if len(args) > 0:
-            command = "".join(args).lower()
 
         # Check if the user has used a speaker and is still on cooldown. Also, take the current time to set the next cooldown
         current_time = time.time()
@@ -71,22 +57,16 @@ class SoundManager(commands.Cog):
         rest_time = self.bot.spk_cooldown - (current_time - user_cooldown)
 
         # Activate or desactivate the speak command
-        if self.bot.admin_check(ctx):
-            if command == "enable":
-                self.speak_command = True
-                await ctx.send(f"Se ha activado el comando speak.")
-                return
-            
-            if command == "disable":
-                self.speak_command = False
-                await ctx.send(f"Se ha desactivado el comando speak.")
-                return
+        if command in ["enable", "disable"]:
+            await self.bot.toggle_command(ctx, "speak", command)
+            return
 
-        if self.bot.speak_command == True:
+        if self.bot.commands_config["speak"]["enable"] == True:
             if len(command) <= self.bot.speak_max_lenght:
                 # Check if the user cooldown has already passed to speak the text
                 if rest_time <= 0 or self.bot.admin_check(ctx):
-                    Speaker = gTTS(text=command, lang="es", slow=False)
+                    message = "".join(ctx.message.content.split()[1:])
+                    Speaker = gTTS(text=message, lang="es", slow=False)
                     Speaker.save("LastSpeech.mp3")
                     Sound = pygame.mixer.Sound("LastSpeech.mp3")
                     Sound.play()

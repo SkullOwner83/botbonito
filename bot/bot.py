@@ -1,4 +1,3 @@
-import os
 import time
 import random
 import asyncio
@@ -11,13 +10,7 @@ from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
 from myapp import MyApp
 
-
-
 class Bot(commands.Bot):
-    # Variable configuration
-    playsound_command = True
-    speak_command = True
-
     def __init__(self, config, credentials):
         self.voice_recognition_cog = VoiceRecognition(self, config)
         self.sound_manager_cog = SoundManager(self)
@@ -36,6 +29,11 @@ class Bot(commands.Bot):
         self.spk_cooldown = config['spk_cooldown']
         self.speak_max_lenght = config['speak_max_lenght']
         self.__frequency_messages = config['frecuency_messages']
+
+        self.commands_config = File.open(f"{MyApp.config_path}/commands.json")
+
+        self.playsound_command = True
+        self.speak_command = True
 
         # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
         self.social_media = File.open(f"{MyApp.config_path}/socialmedia.json")
@@ -99,3 +97,25 @@ class Bot(commands.Bot):
 
             if channel:
                 await channel.send(message)
+
+    # Activate or desactivate a command
+    async def toggle_command(self, ctx, command, value):
+        target_command = self.commands_config[command]
+
+        if self.admin_check(ctx):
+            if value == "enable":
+                if target_command["enable"] == False:
+                    target_command["enable"] = True
+                    await ctx.send(f"Se ha activado el comando {command}.")
+                else:
+                    await ctx.send(f"El comando {command} ya esta activado.") 
+                
+                return
+            
+            if value == "disable":
+                if target_command["enable"] == True:
+                    target_command["enable"] = False
+                    await ctx.send(f"Se ha desactivado el comando {command}.")
+                else:
+                    await ctx.send(f"El comando {command} ya esta desactivado.")
+                return

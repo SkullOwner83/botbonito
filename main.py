@@ -1,4 +1,5 @@
-import os
+import sys
+sys.path.append(r'D:\Desktop\Proyectos\Visual Studio Code\botbonito')
 from modules.token import Token
 from modules.file import File
 from bot.bot import Bot
