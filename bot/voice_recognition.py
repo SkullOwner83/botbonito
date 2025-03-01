@@ -1,3 +1,4 @@
+import os
 import asyncio
 from twitchio.ext import commands
 from twitchio import Message
@@ -10,7 +11,7 @@ class VoiceRecognition(commands.Cog):
         self.bot = bot
         self.r = sr.Recognizer()
         self.wake_word = config['wake_word']
-        self.user_alias = File.open(f"{MyApp.config_path}/useralias.json")
+        self.user_alias = File.open(os.path.join(MyApp.config_path, "useralias.json"))
 
     # Create a loop to listen for audio input and recognize the voice
     def capture_voice_commands(self):

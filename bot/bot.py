@@ -1,3 +1,4 @@
+import os
 import time
 import random
 import asyncio
@@ -29,14 +30,10 @@ class Bot(commands.Bot):
         self.spk_cooldown = config['spk_cooldown']
         self.speak_max_lenght = config['speak_max_lenght']
         self.__frequency_messages = config['frecuency_messages']
-
-        self.commands_config = File.open(f"{MyApp.config_path}/commands.json")
-
-        self.playsound_command = True
-        self.speak_command = True
+        self.commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
 
         # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
-        self.social_media = File.open(f"{MyApp.config_path}/socialmedia.json")
+        self.social_media = File.open(os.path.join(MyApp.config_path, "socialmedia.json"))
         self.social_media = {key: url.replace('@', '%40') for key, url in self.social_media.items()}
         self.frequency_messages = [
             message.format(**self.social_media) for message in self.__frequency_messages
@@ -79,8 +76,14 @@ class Bot(commands.Bot):
         await self.handle_commands(ctx)
 
     # Check if the user that sent the command, is the admin    
-    def admin_check(self, ctx):
-        return True if ctx.author.name == ctx.channel.name else False
+    def level_check(self, ctx, roles):
+        user = ctx.author
+        user_badges = list(user.badges.keys())
+
+        if any(badge in user_badges for badge in roles):
+            return True
+    
+        return False
     
     # send random messages Frequently in the first bot Channel
     async def send_frequent_messages(self):
@@ -102,7 +105,7 @@ class Bot(commands.Bot):
     async def toggle_command(self, ctx, command, value):
         target_command = self.commands_config[command]
 
-        if self.admin_check(ctx):
+        if self.level_check(ctx, ['broadcaster']):
             if value == "enable":
                 if target_command["enable"] == False:
                     target_command["enable"] = True
@@ -119,3 +122,5 @@ class Bot(commands.Bot):
                 else:
                     await ctx.send(f"El comando {command} ya esta desactivado.")
                 return
+        else:
+            await ctx.send("No tienes permisos para realizar esta acción.")

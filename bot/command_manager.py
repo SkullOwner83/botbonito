@@ -7,6 +7,13 @@ class CommandManager(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.command(name="test")
+    async def test(self, ctx):
+        user = ctx.author
+        user_badges = list(user.badges.keys())
+        print(user_badges)
+        await ctx.send(user_badges)
+
     @commands.command(name="help", aliases=("ayuda"))
     async def help(self, ctx):
         await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
@@ -31,7 +38,7 @@ class CommandManager(commands.Cog):
         await ctx.send(f"{ctx.author.name} le mide {size}cm")
 
      # Check if the user or a specified user follows the channel and since when
-    @commands.command()
+    @commands.command(name="following")
     async def follow(self, ctx, *args):
         user_name = ctx.author.name
         channel_name = ctx.channel.name

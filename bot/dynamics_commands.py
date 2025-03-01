@@ -20,7 +20,7 @@ class DynamicsCommands(commands.Cog):
         if len(args) > 0:
             command = args[0].lower()
         
-        if self.bot.admin_check(ctx):
+        if self.level_check(ctx, ['broadcaster']):
             # Start the participant collection 
             if command == "start":
                 if self.give_away_started == False:
@@ -66,7 +66,7 @@ class DynamicsCommands(commands.Cog):
         if len(args) > 0:
             command = args[0].lower()
         
-        if self.bot.admin_check(ctx):
+        if self.level_check(ctx, ['broadcaster']):
             # Start the demos collection 
             if command == "start":
                 if self.send_demo_started == False:
