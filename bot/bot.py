@@ -51,6 +51,18 @@ class Bot(commands.Bot):
         self.add_cog(self.command_manager_cog)
         self.add_cog(self.dynamics_commands_cog)
 
+        self.dynamic_commands = {
+            "help": self.command_manager_cog.help,
+            "schedule": self.command_manager_cog.schedule,
+            "following": self.command_manager_cog.follow,
+            "playsound": self.sound_manager_cog.play_sound,
+            "speak": self.sound_manager_cog.speak,
+            "giveaway": self.dynamics_commands_cog.giveaway_start,
+            "entry": self.dynamics_commands_cog.giveaway_entry,
+            "sendemo": self.dynamics_commands_cog.send_demo,
+            "demo": self.dynamics_commands_cog.demo
+        }
+
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
         print("Hi, I'm ready!")
@@ -59,21 +71,37 @@ class Bot(commands.Bot):
         self.recognition_thread.start()
 
     # Check chat messages event
-    async def event_message(self, ctx):
-        ctx.content = ctx.content.lower()
+    async def event_message(self, message):
+        message.content = message.content.lower()
 
-        if ctx.author is None or ctx.author.name == self.name:
+        if message.author is None or message.author.name == self.name:
             return
         
-        if ctx.content[0] == self.prefix:
-            command = ctx.content[1:]
+        if message.content[0] == self.prefix:
+            command = message.content[1:]
             
             if command in self.social_media:
-                await ctx.channel.send(f"{self.social_media[command]}")
+                await message.channel.send(f"{self.social_media[command]}")
                 return
 
         # Check if the message is a command
-        await self.handle_commands(ctx)
+        await self.on_handle_commands(message)
+
+    async def on_handle_commands(self, message):
+        content = message.content.lstrip("!")
+        parts = content.split(" ")
+        command_input = parts[0]
+        args = parts[1:]
+
+        for key, command_data in self.commands_config.items():
+            command_name = command_data["name"]
+            aliases = command_data.get("alias", [])
+            enabled = command_data.get("enable", True)
+
+            if enabled and command_input in [command_name] + aliases:
+                if key in self.dynamic_commands:
+                    ctx = await self.get_context(message)
+                    await self.dynamic_commands[key](ctx, *args)
 
     # Check if the user that sent the command, is the admin    
     def level_check(self, ctx, roles):

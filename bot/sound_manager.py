@@ -16,7 +16,6 @@ class SoundManager(commands.Cog):
         pygame.mixer.init()
 
     # Play sounds commands
-    @commands.command(name="play")
     async def play_sound(self, ctx, command):
         command = command.lower()
         SoundListCommands = self.sound_list.keys()
@@ -35,7 +34,7 @@ class SoundManager(commands.Cog):
             rest_time = self.bot.snd_cooldown - (current_time - user_cooldown)
 
             # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
-            if rest_time <= 0 or self.bot.admin_check(ctx):
+            if rest_time <= 0 or self.bot.level_check(ctx, ['broadcaster']):
                 if command in self.sound_list:
                     sound = pygame.mixer.Sound(self.sound_list[command])
                     sound.play()
@@ -49,7 +48,6 @@ class SoundManager(commands.Cog):
             await ctx.send(f"@{user} Lo siento, el comando play sound esta desactivado :(")
 
     # Speak text commands
-    @commands.command(name="speak")
     async def speak(self, ctx, command):
         command = command.lower()
         user = ctx.author.name

@@ -14,13 +14,12 @@ class DynamicsCommands(commands.Cog):
         self.demos_list = {}
 
     # Give away commands
-    @commands.command(name="giveaway")
-    async def giveawaystart(self, ctx, *args):
+    async def giveaway_start(self, ctx, *args):
         # Check if there is text next to the comand and get the first word as an argument
         if len(args) > 0:
             command = args[0].lower()
         
-        if self.level_check(ctx, ['broadcaster']):
+        if self.bot.level_check(ctx, ['broadcaster']):
             # Start the participant collection 
             if command == "start":
                 if self.give_away_started == False:
@@ -48,8 +47,7 @@ class DynamicsCommands(commands.Cog):
             await ctx.send(f"Utiliza el comando !giveaway finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {self.ProjectPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
             await ctx.send(f"Utiliza el comando !giveaway copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
 
-    @commands.command(name="enter")
-    async def GiveAway(self, ctx):
+    async def giveaway_entry(self, ctx):
         user = ctx.author.name
 
         if self.give_away_started == True:
@@ -60,13 +58,12 @@ class DynamicsCommands(commands.Cog):
             await ctx.send(f"{user} eh perate. ¿A dónde le quieres entrar?")
 
     # Send demos commands
-    @commands.command(name="senddemo")    
     async def send_demo(self, ctx, *args):
         # Check if there is text next to the comand and get the first word as an argument
         if len(args) > 0:
             command = args[0].lower()
         
-        if self.level_check(ctx, ['broadcaster']):
+        if self.bot.level_check(ctx, ['broadcaster']):
             # Start the demos collection 
             if command == "start":
                 if self.send_demo_started == False:
@@ -85,8 +82,7 @@ class DynamicsCommands(commands.Cog):
                     print(f"Se ha copiado el link del demo al portapapeles.")
                     pyperclip.copy(self.demos_list[user_winner])            
 
-    @commands.command(name="demo")
-    async def Demo(self, ctx, *args):
+    async def demo(self, ctx, *args):
         youtube_patter = re.compile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+$")
         soundcloud_patter = re.compile(r'https?://soundcloud\.com/[\w-]+/[\w-]+')
 
