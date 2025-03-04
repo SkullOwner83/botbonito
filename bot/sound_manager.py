@@ -16,7 +16,7 @@ class SoundManager(commands.Cog):
         pygame.mixer.init()
 
     # Play sounds commands
-    @commands.command(name="play")
+    @MyApp.register_command("playsound")
     async def play_sound(self, ctx, command):
         command = command.lower()
         SoundListCommands = self.sound_list.keys()
@@ -49,7 +49,7 @@ class SoundManager(commands.Cog):
             await ctx.send(f"@{user} Lo siento, el comando play sound esta desactivado :(")
 
     # Speak text commands
-    @commands.command(name="speak")
+    @MyApp.register_command("speak")
     async def speak(self, ctx, command):
         command = command.lower()
         user = ctx.author.name

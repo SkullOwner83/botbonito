@@ -4,6 +4,7 @@ import random
 import asyncio
 import threading
 from twitchio.ext import commands
+from twitchio.ext.commands import Command
 from modules.file import File
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
@@ -50,6 +51,26 @@ class Bot(commands.Bot):
         self.add_cog(self.sound_manager_cog)
         self.add_cog(self.command_manager_cog)
         self.add_cog(self.dynamics_commands_cog)
+
+        self.command_registry = {
+            "help": self.command_manager_cog.help,
+            "schedule": self.command_manager_cog.schedule,
+            "following": self.command_manager_cog.following,
+            "playsound": self.sound_manager_cog.play_sound,
+            "speak": self.sound_manager_cog.speak
+        }
+
+        for command_name, config in self.commands_config.items():
+            name = config['name']
+            callable_function = self.command_registry[command_name]
+            new_command = commands.Command(name=name, func=callable_function)
+            self.add_command(new_command)
+
+    @MyApp.register_command("test")
+    async def test(self, ctx):
+        print("esto es una prueba")
+        await ctx.send("esto es una prueba")
+
 
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
