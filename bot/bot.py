@@ -57,20 +57,22 @@ class Bot(commands.Bot):
             "schedule": self.command_manager_cog.schedule,
             "following": self.command_manager_cog.following,
             "playsound": self.sound_manager_cog.play_sound,
-            "speak": self.sound_manager_cog.speak
+            "speak": self.sound_manager_cog.speak,
+            "giveaway": self.dynamics_commands_cog.giveaway_start,
+            "giveaway_entry": self.dynamics_commands_cog.giveaway_entry,
+            "demo": self.dynamics_commands_cog.send_demo,
+            "onlyfans": self.command_manager_cog.onlyfans,
+            "gay": self.command_manager_cog.gay,
+            "memide": self.command_manager_cog.memide,
         }
 
         for command_name, config in self.commands_config.items():
-            name = config['name']
-            callable_function = self.command_registry[command_name]
-            new_command = commands.Command(name=name, func=callable_function)
-            self.add_command(new_command)
-
-    @MyApp.register_command("test")
-    async def test(self, ctx):
-        print("esto es una prueba")
-        await ctx.send("esto es una prueba")
-
+            if command_name in self.command_registry:
+                name = config['name']
+                callable_function = self.command_registry[command_name]
+                alias = config['alias']
+                new_command = commands.Command(name=name, func=callable_function, aliases=alias)
+                self.add_command(new_command)
 
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
@@ -97,11 +99,11 @@ class Bot(commands.Bot):
         await self.handle_commands(ctx)
 
     # Check if the user that sent the command, is the admin    
-    def level_check(self, ctx, roles):
+    def level_check(self, ctx, rol):
         user = ctx.author
         user_badges = list(user.badges.keys())
 
-        if any(badge in user_badges for badge in roles):
+        if rol in user_badges:
             return True
     
         return False
@@ -126,22 +128,24 @@ class Bot(commands.Bot):
     async def toggle_command(self, ctx, command, value):
         target_command = self.commands_config[command]
 
-        if self.level_check(ctx, ['broadcaster']):
-            if value == "enable":
+        if self.level_check(ctx, 'broadcaster'):
+            if value in ["enable", "on"]:
                 if target_command["enable"] == False:
                     target_command["enable"] = True
                     await ctx.send(f"Se ha activado el comando {command}.")
                 else:
                     await ctx.send(f"El comando {command} ya esta activado.") 
                 
-                return
+                return True
             
-            if value == "disable":
+            if value in ["disable", "off"]:
                 if target_command["enable"] == True:
                     target_command["enable"] = False
                     await ctx.send(f"Se ha desactivado el comando {command}.")
                 else:
                     await ctx.send(f"El comando {command} ya esta desactivado.")
-                return
+                return True
         else:
             await ctx.send("No tienes permisos para realizar esta acción.")
+        
+        return False
