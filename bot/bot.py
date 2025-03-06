@@ -13,6 +13,8 @@ from bot.dynamics_commands import DynamicsCommands
 from myapp import MyApp
 
 class Bot(commands.Bot):
+    command_registry = {}
+
     def __init__(self, config, credentials):
         self.voice_recognition_cog = VoiceRecognition(self, config)
         self.sound_manager_cog = SoundManager(self)
@@ -52,34 +54,53 @@ class Bot(commands.Bot):
         self.add_cog(self.command_manager_cog)
         self.add_cog(self.dynamics_commands_cog)
 
-        self.command_registry = {
-            "help": self.command_manager_cog.help,
-            "schedule": self.command_manager_cog.schedule,
-            "following": self.command_manager_cog.following,
-            "playsound": self.sound_manager_cog.play_sound,
-            "speak": self.sound_manager_cog.speak,
-            "giveaway": self.dynamics_commands_cog.giveaway_start,
-            "giveaway_entry": self.dynamics_commands_cog.giveaway_entry,
-            "demo": self.dynamics_commands_cog.send_demo,
-            "onlyfans": self.command_manager_cog.onlyfans,
-            "gay": self.command_manager_cog.gay,
-            "memide": self.command_manager_cog.memide,
-        }
+        # self.command_registry = {
+        #     "help": self.command_manager_cog.help,
+        #     "schedule": self.command_manager_cog.schedule,
+        #     "following": self.command_manager_cog.following,
+        #     "playsound": self.sound_manager_cog.play_sound,
+        #     "speak": self.sound_manager_cog.speak,
+        #     "giveaway": self.dynamics_commands_cog.giveaway_start,
+        #     "giveaway_entry": self.dynamics_commands_cog.giveaway_entry,
+        #     "demo": self.dynamics_commands_cog.send_demo,
+        #     "onlyfans": self.command_manager_cog.onlyfans,
+        #     "gay": self.command_manager_cog.gay,
+        #     "memide": self.command_manager_cog.memide,
+        # }
 
+        print(MyApp.command_registry)
+        print(self.help)
+        self.create_commands()
+
+    def create_commands(self):
         for command_name, config in self.commands_config.items():
-            if command_name in self.command_registry:
+            if command_name in MyApp.command_registry:
                 name = config['name']
-                callable_function = self.command_registry[command_name]
-                alias = config['alias']
-                new_command = commands.Command(name=name, func=callable_function, aliases=alias)
-                self.add_command(new_command)
+                function_name = MyApp.command_registry[command_name]  # Obtener el nombre de la función
+
+                # Obtener el método vinculado a la instancia del bot
+                callable_function = getattr(self, function_name, None)
+
+                if callable_function:
+                    alias = config['alias']
+                    new_command = commands.Command(name=name, func=callable_function, aliases=alias)
+                    self.add_command(new_command)
+
+    @MyApp.register_command("help")
+    async def help(self, ctx):
+        await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles para todos:")
+        await ctx.send("!horario, !discord, !youtube, !instagram, !onlyfans, !gay, !memide, !leentro, !play, !speak, !following")
+
+    @MyApp.register_command("schedule")
+    async def schedule(self, ctx):
+        await ctx.send(f"Hola @{ctx.author.name}! El horario es: Martes y Jueves a partir de las 8:00pm (Zona Horaria GMT-6). Domingo si hay oportunidad, a partir de la misma hora")
 
     # Print a message when the bot is ready and send initial greeting in the specified channels
     async def event_ready(self):
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
-        self.recognition_thread.start()
+        #self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, ctx):
@@ -88,6 +109,7 @@ class Bot(commands.Bot):
         if ctx.author is None or ctx.author.name == self.name:
             return
         
+        # Check if the message request a social media to repsonse with their link
         if ctx.content[0] == self.prefix:
             command = ctx.content[1:]
             
