@@ -3,6 +3,7 @@ import random
 import asyncio
 import pyperclip
 from twitchio.ext import commands
+from myapp import MyApp
 
 class DynamicsCommands(commands.Cog):
     def __init__(self, bot):
@@ -12,8 +13,10 @@ class DynamicsCommands(commands.Cog):
         self.give_away_list = []
         self.user_demo_list = []
         self.demos_list = {}
+        MyApp.bind_commands(self)
 
     # Give away commands
+    @MyApp.register_command("giveaway")
     async def giveaway_start(self, ctx, command):
         command = command.lower()
 
@@ -46,6 +49,7 @@ class DynamicsCommands(commands.Cog):
                     print(f"Se ha copiado la lista de participantes al portapapeles.")
                     self.give_away_started = False
 
+    @MyApp.register_command("entry")
     async def giveaway_entry(self, ctx):
         user = ctx.author.name
 
@@ -57,6 +61,7 @@ class DynamicsCommands(commands.Cog):
             await ctx.send(f"{user} eh perate. ¿A dónde le quieres entrar?")
 
     # Send demos commands
+    @MyApp.register_command("demo")
     async def send_demo(self, ctx, command):
         command = command.lower()
         user = ctx.author.name
