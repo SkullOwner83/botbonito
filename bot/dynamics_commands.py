@@ -19,6 +19,7 @@ class DynamicsCommands(commands.Cog):
     @MyApp.register_command("giveaway")
     async def giveaway_start(self, ctx, command):
         command = command.lower()
+        user_level = self.bot.default_commands.get('giveaway')['user_level']
 
         if command == "help":
             await ctx.send("Utiliza el comando !giveaway start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
@@ -26,7 +27,7 @@ class DynamicsCommands(commands.Cog):
             await ctx.send(f"Utiliza el comando !giveaway copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
             return
         
-        if self.bot.level_check(ctx, 'broadcaster'):
+        if self.bot.level_check(ctx, user_level):
             # Start the participant collection 
             if command == "start":
                 if self.give_away_started == False:
@@ -65,10 +66,11 @@ class DynamicsCommands(commands.Cog):
     async def send_demo(self, ctx, command):
         command = command.lower()
         user = ctx.author.name
+        user_level = self.bot.default_commands.get('giveaway')['user_level']
         youtube_patter = re.compile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+$")
         soundcloud_patter = re.compile(r'https?://soundcloud\.com/[\w-]+/[\w-]+')
         
-        if self.bot.level_check(ctx, 'broadcaster'):
+        if self.bot.level_check(ctx, user_level):
             # Start the demos collection 
             if command == "start":
                 if self.send_demo_started == False:

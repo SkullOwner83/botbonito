@@ -21,13 +21,14 @@ class SoundManager(commands.Cog):
     async def play_sound(self, ctx, command):
         command = command.lower()
         SoundListCommands = self.sound_list.keys()
+        level_required = self.bot.default_commands.get('playsound')['user_level']
         user = ctx.author.name
         user_cooldown = 0
 
         # Activate or desactivate the play sound command
         if await self.bot.toggle_command(ctx, "playsound", command): return
 
-        if self.bot.commands_config["playsound"]["enable"] == True:
+        if self.bot.default_commands["playsound"]["enable"] == True:
             # Check if the user has used a sound and is still on cooldown. Also, take the current time to set the next cooldown
             current_time = time.time()
             user_cooldown = self.snd_user_register.get(user, 0)
@@ -38,7 +39,7 @@ class SoundManager(commands.Cog):
                 return
 
             # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
-            if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
+            if rest_time <= 0 or self.bot.level_check(ctx, level_required):
                 if command in self.sound_list:
                     sound = pygame.mixer.Sound(self.sound_list[command])
                     sound.play()
@@ -67,7 +68,7 @@ class SoundManager(commands.Cog):
             await ctx.send(f"Escribe el comando !speak, seguido de un mensaje no mayor a 200 caracteres, para que pueda ser leido.")
             return
 
-        if self.bot.commands_config["speak"]["enable"] == True:
+        if self.bot.default_commands["speak"]["enable"] == True:
             if len(command) <= self.bot.speak_max_lenght:
                 # Check if the user cooldown has already passed to speak the text
                 if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):

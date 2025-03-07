@@ -19,11 +19,7 @@ class CommandManager(commands.Cog):
     
     @MyApp.register_command("onlyfans")
     async def onlyfans(self, ctx):
-        await ctx.send(f"{ctx.author.name} se ha suscrito al onlyfans del Skull!")    
-
-    @MyApp.register_command("gay")
-    async def gay(self, ctx):
-        await ctx.send("Quien? El Owl?")  
+        await ctx.send(f"{ctx.author.name} se ha suscrito al onlyfans del Skull!")
 
     @MyApp.register_command("memide")
     async def memide(self, ctx):
