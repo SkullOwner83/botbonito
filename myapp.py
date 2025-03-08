@@ -19,5 +19,5 @@ class MyApp:
         """Recorre el registro de comandos y los vincula a la instancia correspondiente."""
         for command_name, unbound_func in MyApp.command_registry.items():
             if hasattr(instance, unbound_func.__name__):
-                bound_func = getattr(instance, unbound_func.__name__)  # Obtiene el método ya vinculado
+                bound_func = getattr(instance, unbound_func.__name__)
                 MyApp.command_registry[command_name] = bound_func

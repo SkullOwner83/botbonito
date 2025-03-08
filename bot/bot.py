@@ -3,7 +3,6 @@ import time
 import random
 import asyncio
 import threading
-from functools import partial
 from twitchio.ext import commands
 from twitchio.ext.commands import Command
 from modules.file import File
@@ -39,10 +38,11 @@ class Bot(commands.Bot):
         self.__commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
         self.default_commands = self.__commands_config.get("default_commands", {})
         self.custom_commands = self.__commands_config.get("custom_commands", {})
+        self.custom_alias = {alias: key for key, value in self.custom_commands.items() for alias in value.get("alias", [])}
 
         # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
         self.social_media = File.open(os.path.join(MyApp.config_path, "socialmedia.json"))
-        self.social_media = {key: url.replace('@', '%40') for key, url in self.social_media.items()}
+        self.social_media = { key: url.replace('@', '%40') for key, url in self.social_media.items( )}
         self.frequency_messages = [
             message.format(**self.social_media) for message in self.__frequency_messages
         ]
@@ -76,36 +76,38 @@ class Bot(commands.Bot):
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
-        self.recognition_thread.start()
+        #self.recognition_thread.start()
 
     # Check chat messages event
-    async def event_message(self, ctx):
-        ctx.content = ctx.content.lower()
+    async def event_message(self, message):
+        message.content = message.content.lower()
 
-        if ctx.author is None or ctx.author.name == self.name:
+        if message.author is None or message.author.name == self.name:
             return
         
         # Check if the message request a social media to repsonse with their link
-        if ctx.content[0] == self.prefix:
-            command = ctx.content[1:]
+        if message.content.startswith(self.prefix):  
+            parts = message.content[1:].split(" ", 1)
+            command = parts[0]
             
             if command in self.social_media:
-                await ctx.channel.send(f"{self.social_media[command]}")
+                await message.channel.send(f"{self.social_media[command]}")
                 return
             
-            if command in self.custom_commands:
-                await ctx.channel.send(self.custom_commands[command].get("response"))
+            if command in self.custom_commands or command in self.custom_alias:
+                context = await self.get_context(message)
+                await self.command_manager_cog.custom_command(context)
                 return
 
         # Check if the message is a command
-        await self.handle_commands(ctx)
+        await self.handle_commands(message)
 
     # Check if the user that sent the command, is the admin    
     def level_check(self, ctx, rol):
         user = ctx.author
         user_badges = list(user.badges.keys())
 
-        if rol in user_badges:
+        if rol in user_badges or rol == 'everyone':
             return True
     
         return False
@@ -128,7 +130,12 @@ class Bot(commands.Bot):
 
     # Activate or desactivate a command
     async def toggle_command(self, ctx, command, value):
-        target_command = self.default_commands[command]
+        target_command = None
+        
+        if self.default_commands.get(command):
+            target_command = self.default_commands[command]
+        elif self.custom_commands.get(command):
+            target_command = self.custom_commands[command]
 
         if self.level_check(ctx, 'broadcaster'):
             if value in ["enable", "on"]:
