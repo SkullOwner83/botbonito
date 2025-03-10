@@ -95,7 +95,7 @@ class Bot(commands.Bot):
                 return
             
             if command in self.custom_commands or command in self.custom_alias:
-                context = await self.get_context(message)
+                context = commands.Context(bot=self, message=message, prefix=self.prefix, command=None)
                 await self.command_manager_cog.custom_command(context)
                 return
 
