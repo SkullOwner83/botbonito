@@ -4,7 +4,6 @@ import random
 import asyncio
 import threading
 from twitchio.ext import commands
-from twitchio.ext.commands import Command
 from modules.file import File
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
@@ -24,6 +23,7 @@ class Bot(commands.Bot):
         self.recognition_thread = threading.Thread(target=self.voice_recognition_cog.capture_voice_commands)
 
         # load variables from the config files
+        self.config = config
         self.token = credentials['token']
         self.client_id = credentials['client_id']
         self.client_secret = credentials['client_secret']
@@ -76,14 +76,14 @@ class Bot(commands.Bot):
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
-        #self.recognition_thread.start()
+        self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, message):
-        message.content = message.content.lower()
-
-        if message.author is None or message.author.name == self.name:
+        if message.echo:
             return
+        
+        message.content = message.content.lower()
         
         # Check if the message request a social media to repsonse with their link
         if message.content.startswith(self.prefix):  
@@ -138,7 +138,7 @@ class Bot(commands.Bot):
             target_command = self.custom_commands[command]
 
         if self.level_check(ctx, 'broadcaster'):
-            if value in ["enable", "on"]:
+            if value == self.config.get('enable_word', 'enable'):
                 if target_command["enable"] == False:
                     target_command["enable"] = True
                     await ctx.send(f"Se ha activado el comando {command}.")
@@ -147,9 +147,9 @@ class Bot(commands.Bot):
                 
                 return True
             
-            if value in ["disable", "off"]:
-                if target_command["enable"] == True:
-                    target_command["enable"] = False
+            if value == self.config.get('disable_word', 'disable'):
+                if target_command['enable'] == True:
+                    target_command['enable'] = False
                     await ctx.send(f"Se ha desactivado el comando {command}.")
                 else:
                     await ctx.send(f"El comando {command} ya esta desactivado.")

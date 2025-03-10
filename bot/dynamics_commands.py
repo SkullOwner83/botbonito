@@ -28,7 +28,7 @@ class DynamicsCommands(commands.Cog):
         if await self.bot.toggle_command(ctx, "giveaway", parameter): return
 
         if enable_command:
-            if parameter == "help":
+            if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Utiliza el comando !{command_config['name']} start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
                 await ctx.send(f"Utiliza el comando !{command_config['name']} finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {self.ProjectPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
                 await ctx.send(f"Utiliza el comando !{command_config['name']} copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")

@@ -99,7 +99,8 @@ class CommandManager(commands.Cog):
         elif command in self.bot.custom_commands:
             target_command = self.bot.custom_commands.get(command)
 
-        response = target_command.get("response")
+        response = target_command.get('response')
+        response_type = target_command.get('response_type', 'say')
         required_level = command_config['user_level']
         enable_command = command_config['enable']
 
@@ -108,6 +109,15 @@ class CommandManager(commands.Cog):
 
         if enable_command:
             if self.bot.level_check(ctx, required_level):
-                await ctx.channel.send(response)
+                match response_type:
+                    case 'say': await ctx.send(response)
+                    case 'repy': await ctx.reply(response)
+                    case 'mention': 
+                        if '@' in response:
+                            response = response.replace('@', f' @{user} ')
+                        else:
+                            response = f'@{user} {response}'
+
+                        await ctx.send(response)
             else:
                 await ctx.send(f"@{user}, no tienes el permiso para realizar la acción.")

@@ -30,7 +30,7 @@ class SoundManager(commands.Cog):
         if await self.bot.toggle_command(ctx, "playsound", parameter): return
 
         if enable_command:
-            if parameter == "help":
+            if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Para reproducir un sonido, escribe el comando !{command_config['name']}, seguido del nombre de uno de los siguientes sonidos (!{command_config['name']} holi):")
                 await ctx.send(f"!{', !'.join(sound_commands)}")
                 return
@@ -64,7 +64,7 @@ class SoundManager(commands.Cog):
         if await self.bot.toggle_command(ctx, "speak", parameter): return
 
         if enable_command:
-            if parameter == "help":
+            if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Escribe el comando !{command_config['name']}, seguido de un mensaje no mayor a 200 caracteres, para que pueda ser leido.")
                 return
             
