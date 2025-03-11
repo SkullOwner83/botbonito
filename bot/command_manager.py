@@ -72,9 +72,9 @@ class CommandManager(commands.Cog):
                     await ctx.send("No se ha encontrado el usuario")
                     return
 
-                idBroadcaster = broadcaster_data['id']
-                idUser = user_data['id']
-                following_since = api.check_follow(idUser, idBroadcaster)
+                broadcaster_id = broadcaster_data['id']
+                user_id = user_data['id']
+                following_since = api.check_follow(user_id, broadcaster_id)
                 
                 if following_since != None:
                     await ctx.send(f'{user} ha seguido a {channel_name} desde {following_since}')

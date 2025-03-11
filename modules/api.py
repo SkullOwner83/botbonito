@@ -66,3 +66,29 @@ class Api():
             print(f"Error: {error}")
 
         return None
+    
+    def delete_message(self, broadcaster_id, moderator_id, message_id):
+        url = 'https://api.twitch.tv/helix/moderation/chat'
+
+        params = {
+            'broadcaster_id': broadcaster_id,
+            'moderator_id': moderator_id,
+            'message_id': message_id
+        }
+
+        headers = {
+            'Client-ID': self.client_id,
+            'Authorization': f'Bearer {self.token}'
+        }
+
+        try:
+            response = requests.delete(url, headers=headers, params=params)
+
+            if response.status_code == 204:
+                return True
+            else:
+                print(f"Error {response.status_code}: {response.content}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+        
+        return False

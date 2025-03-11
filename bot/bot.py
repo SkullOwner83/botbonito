@@ -5,10 +5,12 @@ import asyncio
 import threading
 from twitchio.ext import commands
 from modules.file import File
+from modules.api import Api
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
+from bot.moderation import Moderation
 from myapp import MyApp
 
 class Bot(commands.Bot):
@@ -20,6 +22,7 @@ class Bot(commands.Bot):
         self.dynamics_commands_cog = DynamicsCommands(self)
         self.sound_manager_cog = SoundManager(self)
         self.voice_recognition_cog = VoiceRecognition(self, config)
+        self.moderation_cog = Moderation(self)
         self.recognition_thread = threading.Thread(target=self.voice_recognition_cog.capture_voice_commands)
 
         # load variables from the config files
@@ -76,7 +79,7 @@ class Bot(commands.Bot):
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
-        self.recognition_thread.start()
+        #self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, message):
@@ -84,8 +87,9 @@ class Bot(commands.Bot):
             return
         
         message.content = message.content.lower()
+        await self.moderation_cog.message_filter(message)
         
-        # Check if the message request a social media to repsonse with their link
+        # Check if the message is a custom command or a social media link request, before sending the message, handle it as a command
         if message.content.startswith(self.prefix):  
             parts = message.content[1:].split(" ", 1)
             command = parts[0]
@@ -101,16 +105,6 @@ class Bot(commands.Bot):
 
         # Check if the message is a command
         await self.handle_commands(message)
-
-    # Check if the user that sent the command, is the admin    
-    def level_check(self, ctx, rol):
-        user = ctx.author
-        user_badges = list(user.badges.keys())
-
-        if rol in user_badges or rol == 'everyone':
-            return True
-    
-        return False
     
     # send random messages Frequently in the first bot Channel
     async def send_frequent_messages(self):
@@ -127,6 +121,16 @@ class Bot(commands.Bot):
 
             if channel:
                 await channel.send(message)
+
+    # Check if the user that sent the command, is the admin    
+    def level_check(self, ctx, rol):
+        user = ctx.author
+        user_badges = list(user.badges.keys())
+
+        if rol in user_badges or rol == 'everyone':
+            return True
+    
+        return False
 
     # Activate or desactivate a command
     async def toggle_command(self, ctx, command, value):
