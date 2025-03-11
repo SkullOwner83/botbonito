@@ -1,5 +1,37 @@
 {
-    "filters": {
-        "words": ["tonto"]
+    "moderation": {
+        "link": true
+    },
+
+    "banned_words": {
+        "racism": {
+            "group_name": "Racismo",
+            "enable": true,
+            "penalty": "time_out",
+            "exclude": "no_one",
+            "reason": "Uso de lenguaje que incita discrimación hacia un personas.",
+            "words": ["negro", "nigga"],
+            "duration": 300
+        },
+
+        "violence": {
+            "group_name": "Violencia",
+            "enable": true,
+            "penalty": "time_out",
+            "exclude": "no_one",
+            "reason": "Uso de lenguaje que incita odio o violencia.",
+            "words": ["violar", "matar", "suicidio"],
+            "duration": 300
+        },
+
+        "profanity": {
+            "group_name": "Malas palabras",
+            "enable": true,
+            "penalty": "delete_message",
+            "exclude": "no_one",
+            "reason": "Uso de lenguaje vulgar o inapropiado que puede ser ofensivo para otros.",
+            "words": ["estupido", "pendejo", "imbecil"],
+            "duration": 150
+        }
     }
 }

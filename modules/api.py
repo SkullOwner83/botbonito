@@ -92,3 +92,34 @@ class Api():
             print(f"Error: {error}")
         
         return False
+    
+    def set_timeout(self, broadcaster_id, moderator_id, *, user_id, duration=300):
+        url = 'https://api.twitch.tv/helix/moderation/bans'
+
+        params = {
+            'broadcaster_id': broadcaster_id,
+            'moderator_id': moderator_id
+        }
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Client-ID': self.client_id,
+            'Content-Type': 'application/json'
+        }
+
+        data = {
+            'data': { 
+                'user_id': user_id,
+                'duration': duration
+            }
+        }
+
+        try:
+            response = requests.post(url, headers=headers, params=params, json=data)
+
+            if response.status_code == 200:
+                return True
+            else:
+                print(f"Error {response.status_code}: {response.content}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
