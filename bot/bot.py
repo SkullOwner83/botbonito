@@ -87,7 +87,8 @@ class Bot(commands.Bot):
             return
         
         message.content = message.content.lower()
-        await self.moderation_cog.message_filter(message)
+        context = commands.Context(bot=self, message=message, prefix=self.prefix, command=None)
+        await self.moderation_cog.message_filter(context)
         
         # Check if the message is a custom command or a social media link request, before sending the message, handle it as a command
         if message.content.startswith(self.prefix):  
@@ -99,7 +100,6 @@ class Bot(commands.Bot):
                 return
             
             if command in self.custom_commands or command in self.custom_alias:
-                context = commands.Context(bot=self, message=message, prefix=self.prefix, command=None)
                 await self.command_manager_cog.custom_command(context)
                 return
 
@@ -127,7 +127,16 @@ class Bot(commands.Bot):
         user = ctx.author
         user_badges = list(user.badges.keys())
 
-        if rol in user_badges or rol == 'everyone':
+        if rol == "follower":
+            api = Api(self.token, self.client_id)
+            user_id = (api.get_user(user.name) or {}).get('id')
+            broadcaster_id = (api.get_user(ctx.channel.name) or {}).get('id')
+
+            if user_id and broadcaster_id:
+                if api.check_follow(user_id, broadcaster_id): 
+                    return True
+
+        if rol in user_badges or rol == "everybody":
             return True
     
         return False

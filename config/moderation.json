@@ -1,13 +1,29 @@
 {
     "moderation": {
-        "link": true
+        "link": {
+            "enable": true,
+            "penalty": "delete_message",
+            "exclude": "no_one",
+            "reason": "",
+            "words": [""],
+            "duration": 0
+        }
     },
 
     "banned_words": {
+        "spam": {
+            "group_name": "Spam",
+            "enable": true,
+            "penalty": "ban_user",
+            "exclude": "no_one",
+            "reason": "Promoción de servicios fraudulentos o spam.",
+            "words": ["streambo", "(remove the space)", "cheap viewers"],
+            "duration": 0
+        },
+
         "racism": {
             "group_name": "Racismo",
             "enable": true,
-            "penalty": "time_out",
             "exclude": "no_one",
             "reason": "Uso de lenguaje que incita discrimación hacia un personas.",
             "words": ["negro", "nigga"],
@@ -17,10 +33,10 @@
         "violence": {
             "group_name": "Violencia",
             "enable": true,
-            "penalty": "time_out",
+            "penalty": "timeout",
             "exclude": "no_one",
             "reason": "Uso de lenguaje que incita odio o violencia.",
-            "words": ["violar", "matar", "suicidio"],
+            "words": ["violar", "matar", "suicidio", "suicidar"],
             "duration": 300
         },
 
