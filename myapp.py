@@ -1,4 +1,5 @@
 import os
+import re
 
 class MyApp:
     project_path = os.path.dirname(os.path.abspath(__file__))
@@ -6,6 +7,13 @@ class MyApp:
     credentials_path = os.path.join(config_path, "credentials.json")
     botconfig_path = os.path.join(config_path, "botconfig.json")
     command_registry = {}
+
+    link_pattern = re.compile(
+        r'^(https?://)?'
+        r'([\w.-]+)\.'
+        r'([a-zA-Z]{2,})'
+        r'(/[\w./?=&-]*)?$'
+    )
 
     @staticmethod
     def register_command(name):

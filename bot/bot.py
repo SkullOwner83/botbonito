@@ -85,16 +85,16 @@ class Bot(commands.Bot):
     async def event_message(self, message):
         if message.echo:
             return
-        
+
         message.content = message.content.lower()
         context = commands.Context(bot=self, message=message, prefix=self.prefix, command=None)
         await self.moderation_cog.message_filter(context)
         
         # Check if the message is a custom command or a social media link request, before sending the message, handle it as a command
         if message.content.startswith(self.prefix):  
-            parts = message.content[1:].split(" ", 1)
+            parts = message.content[1:].split()
             command = parts[0]
-            
+
             if command in self.social_media:
                 await message.channel.send(f"{self.social_media[command]}")
                 return
@@ -122,12 +122,12 @@ class Bot(commands.Bot):
             if channel:
                 await channel.send(message)
 
-    # Check if the user that sent the command, is the admin    
-    def level_check(self, ctx, rol):
+    # Check if the user has a specific role in the channel
+    def level_check(self, ctx, role):
         user = ctx.author
         user_badges = list(user.badges.keys())
 
-        if rol == "follower":
+        if role == "follower":
             api = Api(self.token, self.client_id)
             user_id = (api.get_user(user.name) or {}).get('id')
             broadcaster_id = (api.get_user(ctx.channel.name) or {}).get('id')
@@ -136,7 +136,7 @@ class Bot(commands.Bot):
                 if api.check_follow(user_id, broadcaster_id): 
                     return True
 
-        if rol in user_badges or rol == "everybody":
+        if role in user_badges or role == "everyone":
             return True
     
         return False
@@ -144,30 +144,33 @@ class Bot(commands.Bot):
     # Activate or desactivate a command
     async def toggle_command(self, ctx, command, value):
         target_command = None
+        enable_word = self.config.get('enable_word', 'enable')
+        disable_word = self.config.get('disable_word', 'disable')
         
-        if self.default_commands.get(command):
-            target_command = self.default_commands[command]
-        elif self.custom_commands.get(command):
-            target_command = self.custom_commands[command]
+        if value == enable_word or value == disable_word:
+            if self.default_commands.get(command):
+                target_command = self.default_commands[command]
+            elif self.custom_commands.get(command):
+                target_command = self.custom_commands[command]
 
-        if self.level_check(ctx, 'broadcaster'):
-            if value == self.config.get('enable_word', 'enable'):
-                if target_command["enable"] == False:
-                    target_command["enable"] = True
-                    await ctx.send(f"Se ha activado el comando {command}.")
-                else:
-                    await ctx.send(f"El comando {command} ya esta activado.") 
+            if self.level_check(ctx, 'broadcaster'):
+                if value == enable_word:
+                    if target_command["enable"] == False:
+                        target_command["enable"] = True
+                        await ctx.send(f"Se ha activado el comando {command}.")
+                    else:
+                        await ctx.send(f"El comando {command} ya esta activado.") 
+                    
+                    return True
                 
-                return True
+                if value == disable_word:
+                    if target_command['enable'] == True:
+                        target_command['enable'] = False
+                        await ctx.send(f"Se ha desactivado el comando {command}.")
+                    else:
+                        await ctx.send(f"El comando {command} ya esta desactivado.")
+                    return True
+            else:
+                await ctx.send("No tienes permisos para realizar esta acción.")
             
-            if value == self.config.get('disable_word', 'disable'):
-                if target_command['enable'] == True:
-                    target_command['enable'] = False
-                    await ctx.send(f"Se ha desactivado el comando {command}.")
-                else:
-                    await ctx.send(f"El comando {command} ya esta desactivado.")
-                return True
-        else:
-            await ctx.send("No tienes permisos para realizar esta acción.")
-        
-        return False
+            return False

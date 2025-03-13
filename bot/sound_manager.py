@@ -76,7 +76,7 @@ class SoundManager(commands.Cog):
                 if len(parameter) <= self.bot.speak_max_lenght:
                     # Check if the user cooldown has already passed to speak the text
                     if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
-                        message = "".join(ctx.message.content.split()[1:])
+                        message = str.join(" ", ctx.message.content.split()[1:])
                         Speaker = gTTS(text=message, lang="es", slow=False)
                         Speaker.save("last_speech.mp3")
                         Sound = pygame.mixer.Sound("last_speech.mp3")

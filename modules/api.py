@@ -93,7 +93,13 @@ class Api():
         
         return False
     
-    def ban_user(self, broadcaster_id, moderator_id, *, user_id, duration=0, timeout=False):
+    def set_ban(self, broadcaster_id, moderator_id, user_id, reason=None):
+        self._penalty_request(broadcaster_id, moderator_id, user_id, reason=reason)
+
+    def set_timeout(self, broadcaster_id, moderator_id, user_id, duration=300, reason=None):
+        self._penalty_request(broadcaster_id, moderator_id, user_id, duration=duration, reason=reason)
+    
+    def _penalty_request(self, broadcaster_id, moderator_id, user_id, *, duration=0, reason=None):
         url = 'https://api.twitch.tv/helix/moderation/bans'
 
         params = {
@@ -109,12 +115,13 @@ class Api():
 
         data = {
             'data': { 
-                'user_id': user_id
+                'user_id': user_id,
+                'reason': reason
             }
         }
 
-        if timeout:
-            data.get('data')['duration'] = duration if duration > 0 else 300
+        if duration is not None:
+            data['data']['duration'] = duration
 
         try:
             response = requests.post(url, headers=headers, params=params, json=data)

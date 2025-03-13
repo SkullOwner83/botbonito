@@ -85,7 +85,7 @@ class CommandManager(commands.Cog):
     
     async def custom_command(self, ctx):
         user = ctx.author.name
-        message_parts = ctx.message.content[1:].split(" ", 1)
+        message_parts = ctx.message.content[1:].split()
         command = message_parts[0]
         parameter = message_parts[1] if len(message_parts) > 1 else ""
         command_config = self.bot.custom_commands.get(command)
