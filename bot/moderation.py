@@ -7,9 +7,10 @@ from myapp import MyApp
 class Moderation():
     def __init__(self, bot):
         self.bot = bot
-        self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))
+        self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
         self.banned_words = self.moderation_config.get('banned_words')
         self.protection = self.moderation_config.get('protection')
+        self.user_strikes = {}
 
     async def message_filter(self, ctx):
         message = ctx.message
@@ -39,10 +40,20 @@ class Moderation():
                 penalty = group.get('penalty', 'delete_message')
                 reason = group.get('reason', '')
                 duration = group.get('duration', 0)
-                
+                strikes = group.get('strikes', 0)
+
                 # Check if the message matches the banned words and apply the penalty
                 if any(word in message.content for word in target_words):
-                    match(penalty):
+                    if penalty != 'ban_user' and strikes > 0:
+                        if user in self.user_strikes:
+                            self.user_strikes[user] += 1
+                        else:
+                            self.user_strikes[user] = 1
+
+                        if self.user_strikes[user] >= strikes:
+                            penalty = 'ban_user'
+
+                    match(penalty): 
                         case 'delete_message': 
                             api.delete_message(broadcaster_id, moderator_id, message_id)
                             if reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {reason}")
