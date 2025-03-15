@@ -79,7 +79,7 @@ class Bot(commands.Bot):
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
-        self.recognition_thread.start()
+        #self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, message):

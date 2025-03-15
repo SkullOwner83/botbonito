@@ -3,10 +3,21 @@
         "links": {
             "enable": true,
             "penalty": "delete_message",
+            "reason": "Por seguridad, no esta permitido enviar links.",
             "exclude": "no_one",
-            "reason": "",
             "words": [""],
-            "duration": 0
+            "duration": 0,
+            "strikes": 3
+        },
+
+        "repeated_messages": {
+            "enable": true,
+            "penalty": "timeout",
+            "reason": "Spam: Envío repetitivo de mensajes idénticos.",
+            "exclude": "no_one",
+            "words": [""],
+            "duration": 0,
+            "strikes": 3
         }
     },
 
