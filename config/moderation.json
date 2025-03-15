@@ -4,10 +4,10 @@
             "enable": true,
             "penalty": "delete_message",
             "reason": "Por seguridad, no esta permitido enviar links.",
-            "exclude": "no_one",
+            "exclude": "moderator",
             "words": [""],
             "duration": 0,
-            "strikes": 3
+            "strikes": 0
         },
 
         "repeated_messages": {
@@ -61,7 +61,7 @@
             "penalty": "delete_message",
             "exclude": "no_one",
             "reason": "Uso de lenguaje vulgar o inapropiado que puede ser ofensivo para otros.",
-            "words": ["estupido", "pendejo", "imbecil"],
+            "words": ["estupido", "pendejo", "imbecil", "idiota"],
             "duration": 150,
             "strikes": 3
         }

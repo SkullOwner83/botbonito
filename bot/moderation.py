@@ -7,6 +7,7 @@ from myapp import MyApp
 class Moderation():
     def __init__(self, bot):
         self.bot = bot
+        MyApp.bind_commands(self)
         self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
         self.banned_words = self.moderation_config.get('banned_words')
         self.protection = self.moderation_config.get('protection')
@@ -21,7 +22,7 @@ class Moderation():
         message = ctx.message
         user = message.author.name
         api = Api(self.bot.token, self.bot.client_id)
-        penalty = ''
+        penalty = 'none'
         reason = ''
         exclude = 'no_one'
         duration = 0
@@ -46,10 +47,10 @@ class Moderation():
             self.user_messages[user] = message.content
 
             if self.user_strikes['repeated_messages'].get(user, 0) >= strikes:
-                penalty = self.protection['repeated_messages'].get('penalty')
-                reason = self.protection['repeated_messages'].get("reason", '')
+                penalty = self.protection['repeated_messages'].get('penalty', 'delete_message')
+                reason = self.protection['repeated_messages'].get("reason", reason)
                 exclude = self.protection['repeated_messages'].get('exclude', exclude)
-                duration = self.protection['repeated_messages'].get('duration', 0)
+                duration = self.protection['repeated_messages'].get('duration', duration)
 
         # Check if the links protection is enable to delete the message if it contains a link
         if self.protection.get('links', {}).get('enable'):
@@ -58,10 +59,10 @@ class Moderation():
             for word in message.content.split():
                 if re.search(MyApp.link_pattern, word):
                     self.user_strikes['links'][user] = self.user_strikes['links'].get(user, 0) + 1
-                    penalty = self.protection['links'].get('penalty')
-                    reason = self.protection['links'].get('reason')
+                    penalty = self.protection['links'].get('penalty', 'delete_message')
+                    reason = self.protection['links'].get('reason', reason)
                     exclude = self.protection['links'].get('exclude', exclude)
-                    duration = self.protection['links'].get('duration', 0)
+                    duration = self.protection['links'].get('duration', duration)
 
         # Check if the group is enable and is not a excluded user for each group
         for group in self.banned_words.values():
@@ -73,9 +74,9 @@ class Moderation():
                 if any(word in message.content for word in target_words):
                     self.user_strikes['banned_words'][user] = self.user_strikes['banned_words'].get(user, 0) + 1
                     penalty = group.get('penalty', 'delete_message')
-                    reason = group.get('reason', '')
+                    reason = group.get('reason', reason)
                     exclude = group.get('exclude', exclude)
-                    duration = group.get('duration', 0)
+                    duration = group.get('duration', duration)
 
         # Check if the user has an exception or not to aply the penalty
         if not self.bot.level_check(ctx, exclude):
@@ -91,3 +92,22 @@ class Moderation():
                     
                 case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, duration, reason)
                 case 'ban_user': api.set_ban(broadcaster_id, moderator_id, user_id, reason)
+
+    # Remove strikes from the specified user
+    @MyApp.register_command("strikes")
+    async def remove_strikes(self, ctx, parameter = None):
+        user = ctx.author.name
+        user_target = parameter.lower() if parameter else None
+        command_config = self.bot.default_commands.get('strikes')
+        required_level = command_config['user_level']
+        enable_command = command_config['enable']
+
+        # Activate or desactivate the command
+        if await self.bot.toggle_command(ctx, "help", parameter): return
+
+        if enable_command:
+            if self.bot.level_check(ctx, required_level) and user_target:
+                for filter_strikes in self.user_strikes.values():
+                    if user_target in filter_strikes: filter_strikes[user_target] = 0
+        else:
+            await ctx.send(f"@{user}, no tienes el permiso para realizar la acción.")
