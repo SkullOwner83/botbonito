@@ -80,7 +80,7 @@ class Moderation():
 
         # Check if the user has an exception or not to aply the penalty
         if not self.bot.level_check(ctx, exclude):
-            if penalty != 'ban_user' and strikes > 0:
+            if penalty != 'ban_user' and penalty != 'none' and strikes > 0:
                 for filter_strikes in self.user_strikes.values():
                     if filter_strikes.get(user, 0) >= strikes:
                         penalty = 'ban_user'
@@ -95,19 +95,8 @@ class Moderation():
 
     # Remove strikes from the specified user
     @MyApp.register_command("strikes")
-    async def remove_strikes(self, ctx, parameter = None):
-        user = ctx.author.name
-        user_target = parameter.lower() if parameter else None
-        command_config = self.bot.default_commands.get('strikes')
-        required_level = command_config['user_level']
-        enable_command = command_config['enable']
-
-        # Activate or desactivate the command
-        if await self.bot.toggle_command(ctx, "help", parameter): return
-
-        if enable_command:
-            if self.bot.level_check(ctx, required_level) and user_target:
-                for filter_strikes in self.user_strikes.values():
-                    if user_target in filter_strikes: filter_strikes[user_target] = 0
-        else:
-            await ctx.send(f"@{user}, no tienes el permiso para realizar la acción.")
+    async def remove_strikes(self, ctx, user_target = None):
+        if await self.bot.check_command_access(ctx, "strikes") and user_target:
+            for filter_strikes in self.user_strikes.values():
+                if user_target in filter_strikes: 
+                    filter_strikes[user_target] = 0

@@ -143,16 +143,11 @@ class Bot(commands.Bot):
 
     # Activate or desactivate a command
     async def toggle_command(self, ctx, command, value):
-        target_command = None
+        target_command = self.default_commands.get(command) or self.custom_commands.get(command)
         enable_word = self.config.get('enable_word', 'enable')
         disable_word = self.config.get('disable_word', 'disable')
         
         if value == enable_word or value == disable_word:
-            if self.default_commands.get(command):
-                target_command = self.default_commands[command]
-            elif self.custom_commands.get(command):
-                target_command = self.custom_commands[command]
-
             if self.level_check(ctx, 'broadcaster'):
                 if value == enable_word:
                     if target_command["enable"] == False:
@@ -172,3 +167,24 @@ class Bot(commands.Bot):
             
             return True
         return False
+
+    # Check if the is enable and user has the permission to excecute the command
+    async def check_command_access(self, ctx, command_name):
+        user = ctx.author.name
+        message_parts = ctx.message.content[1:].split()
+        parameter =  message_parts[1] if len(message_parts) > 1 else ""
+        command_config = self.default_commands.get(command_name) or self.custom_commands.get(command_name)
+        required_level = command_config.get('user_level', 'everyone')
+        enable_command = command_config.get('enable', False)
+
+        if await self.toggle_command(ctx, command_name, parameter):
+            return False
+        
+        if not enable_command:
+            return False
+
+        if not self.level_check(ctx, required_level):
+            await ctx.send(f"@{user}, no tienes el permiso para realizar la acción.")
+            return False
+
+        return True
