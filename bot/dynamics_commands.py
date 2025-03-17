@@ -2,21 +2,23 @@ import re
 import random
 import asyncio
 import pyperclip
+from typing import Optional
 from twitchio.ext import commands
+from twitchio.ext.commands import Context
 from myapp import MyApp
 
 class DynamicsCommands(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.bot) -> None:
         self.bot = bot
         self.giveaway_started = False
         self.feedback_started = False
-        self.giveaway_list = []
-        self.feedback_user_register = []
-        self.feedback_list = {}
+        self.giveaway_list: list[str] = []
+        self.feedback_user_register: list[str] = []
+        self.feedback_list: dict[str, str] = {}
         MyApp.bind_commands(self)
 
     @MyApp.register_command("giveaway")
-    async def giveaway_start(self, ctx, parameter):
+    async def giveaway_start(self, ctx: Context, parameter: str) -> None:
         user = ctx.author.name
         parameter = parameter.lower() if parameter else None
         command_config = self.bot.default_commands.get('giveaway')
@@ -52,18 +54,18 @@ class DynamicsCommands(commands.Cog):
                     self.giveaway_started = False
 
     @MyApp.register_command("giveaway_entry")
-    async def giveaway_entry(self, ctx, parameter: str = None):
-        user = ctx.author.name
+    async def giveaway_entry(self, ctx: Context, parameter: Optional[str] = None) -> None:
+        user = ctx.author.name  
         parameter = parameter.lower() if parameter else None
 
         if await self.bot.check_command_access(ctx, "giveaway_entry"):
-            if self.giveaway_started == True:
+            if self.giveaway_started:
                 if user not in self.giveaway_list:
                     self.giveaway_list.append(user)
                     await ctx.send(f"{user} se unió a la rifa!")
 
     @MyApp.register_command("feedback")
-    async def feedback(self, ctx, parameter):
+    async def feedback(self, ctx: Context, parameter: str) -> None:
         user = ctx.author.name
         parameter = parameter.lower() if parameter else None
 
@@ -87,7 +89,7 @@ class DynamicsCommands(commands.Cog):
                     pyperclip.copy(self.feedback_list[user_winner])
 
     @MyApp.register_command("send")
-    async def send(self, ctx, parameter):
+    async def send(self, ctx: Context, parameter: str) -> None:
         user = ctx.author.name
         parameter = parameter.lower() if parameter else None
         youtube_patter = re.compile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+$")

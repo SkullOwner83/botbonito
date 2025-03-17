@@ -7,14 +7,14 @@ from modules.file import File
 from myapp import MyApp
 
 class VoiceRecognition(commands.Cog):
-    def __init__(self, bot, config):
+    def __init__(self, bot: commands.bot, config: dict) -> None:
         self.bot = bot
         self.r = sr.Recognizer()
         self.wake_word = config['wake_word']
         self.user_alias = File.open(os.path.join(MyApp.config_path, "useralias.json"))
 
     # Create a loop to listen for audio input and recognize the voice
-    def capture_voice_commands(self):
+    def capture_voice_commands(self) -> None:
         while True:
             with sr.Microphone() as source:
                 self.r.adjust_for_ambient_noise(source)
@@ -38,7 +38,7 @@ class VoiceRecognition(commands.Cog):
                 print(command)
 
     # Get a main loop and execute the voice command or send the complete message
-    def handle_voice_command(self, command):
+    def handle_voice_command(self, command: str) -> None:
         loop = self.bot.loop
 
         if any(word in command for word in ["saluda", "saludo", "salúdame"]) and len(command) > 1:
@@ -52,7 +52,7 @@ class VoiceRecognition(commands.Cog):
         asyncio.run_coroutine_threadsafe(self.execute_commands(command), loop)
 
     # Create a fake message to execute the command
-    async def execute_commands(self, command):
+    async def execute_commands(self, command: str) -> None:
         fake_message = Message(
             content=f"!{command}",
             author=self.bot.connected_channels[0],

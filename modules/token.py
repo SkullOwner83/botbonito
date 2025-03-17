@@ -14,7 +14,7 @@ class Token:
 
     # Check if the token is valid
     @staticmethod
-    def validation(token):
+    def validation(token: str) -> bool:
         url = 'https://id.twitch.tv/oauth2/validate'
 
         headers = {
@@ -35,7 +35,7 @@ class Token:
         return False
     
     # Get an access token, redirecting the user to the authorization page
-    def get_authorization(self):
+    def get_authorization(self) -> str:
         url = 'https://id.twitch.tv/oauth2/authorize'
         encoded_scopes = urllib.parse.quote(' '.join(self.scope))
         auth_url = f'{url}?client_id={self.client_id}&redirect_uri={self.redirect_uri}&response_type=code&scope={encoded_scopes}'
@@ -56,7 +56,7 @@ class Token:
         return self.__get_access_token(server.auth_code)
     
     # Switch the obtainded authorization code for an access token
-    def __get_access_token(self, auth_code):
+    def __get_access_token(self, auth_code: str) -> str:
         url = 'https://id.twitch.tv/oauth2/token'
 
         parameters = {

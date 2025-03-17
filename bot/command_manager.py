@@ -1,28 +1,28 @@
-import random
 from twitchio.ext import commands
+from twitchio.ext.commands import Context
 from modules.api import Api
 from myapp import MyApp
 
 class CommandManager(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: commands.bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
 
     @MyApp.register_command("help")
-    async def help(self, ctx):
+    async def help(self, ctx: Context) -> None:
         if await self.bot.check_command_access(ctx, "help"):
             await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles. Si requieres mayor información, puedes escribir el comando seguido de help (!comando help):")
             await ctx.send(f"!{', !'.join(self.bot.default_commands)}")
 
 
     @MyApp.register_command("schedule")
-    async def schedule(self, ctx):
+    async def schedule(self, ctx: Context) -> None:
         if await self.bot.check_command_access(ctx, "schedule"):
             await ctx.send(f"Hola @{ctx.author.name}! El horario es: Martes y Jueves a partir de las 8:00pm (Zona Horaria GMT-6). Domingo si hay oportunidad, a partir de la misma hora")
 
     # Check if the user or a specified user follows the channel and since when
     @MyApp.register_command("following")
-    async def following(self, ctx, target_user = None):
+    async def following(self, ctx: Context, target_user: str = None) -> None:
         user = target_user if target_user else ctx.author.name
         channel_name = ctx.channel.name
         api = Api(self.bot.token, self.bot.client_id)
@@ -48,7 +48,7 @@ class CommandManager(commands.Cog):
             else:
                 await ctx.send(f'{user} no sigue este canal :(')
     
-    async def custom_command(self, ctx):
+    async def custom_command(self, ctx: Context) -> None:
         user = ctx.author.name
         message_parts = ctx.message.content[1:].split()
         command = message_parts[0]

@@ -1,11 +1,13 @@
 import os
 import re
+from twitchio.ext import commands
+from twitchio.ext.commands import Context
 from modules.file import File
 from modules.api import Api
 from myapp import MyApp
 
 class Moderation():
-    def __init__(self, bot):
+    def __init__(self, bot: commands.bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
         self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
@@ -18,12 +20,12 @@ class Moderation():
             "banned_words": {}
         }
 
-    async def message_filter(self, ctx):
+    async def message_filter(self, ctx: Context) -> None:
         message = ctx.message
         user = message.author.name
         api = Api(self.bot.token, self.bot.client_id)
-        penalty = 'none'
-        reason = ''
+        penalty = 'none' 
+        reason = '' 
         exclude = 'no_one'
         duration = 0
         strikes = 0
@@ -95,7 +97,7 @@ class Moderation():
 
     # Remove strikes from the specified user
     @MyApp.register_command("strikes")
-    async def remove_strikes(self, ctx, user_target = None):
+    async def remove_strikes(self, ctx: Context, user_target: str = None) -> None:
         if await self.bot.check_command_access(ctx, "strikes") and user_target:
             for filter_strikes in self.user_strikes.values():
                 if user_target in filter_strikes: 

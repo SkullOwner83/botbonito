@@ -3,7 +3,10 @@ import time
 import random
 import asyncio
 import threading
+from typing import Callable
+from twitchio import Message
 from twitchio.ext import commands
+from twitchio.ext.commands import Context
 from modules.file import File
 from modules.api import Api
 from bot.voice_recognition import VoiceRecognition
@@ -14,9 +17,9 @@ from bot.moderation import Moderation
 from myapp import MyApp
 
 class Bot(commands.Bot):
-    command_registry = {}
+    command_registry: dict[str, Callable] = {}
 
-    def __init__(self, config, credentials):
+    def __init__(self, config: dict, credentials: dict) -> None:
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self)
         self.dynamics_commands_cog = DynamicsCommands(self)
@@ -65,7 +68,7 @@ class Bot(commands.Bot):
         self.create_commands()
 
     # Create commands from 
-    def create_commands(self):
+    def create_commands(self) -> None:
         for command_name, config in self.default_commands.items():
             if command_name in MyApp.command_registry:
                 name = config['name']
@@ -75,19 +78,19 @@ class Bot(commands.Bot):
                 self.add_command(new_command)
 
     # Print a message when the bot is ready and send initial greeting in the specified channels
-    async def event_ready(self):
+    async def event_ready(self) -> None:
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
         asyncio.create_task(self.send_frequent_messages())
         #self.recognition_thread.start()
 
     # Check chat messages event
-    async def event_message(self, message):
+    async def event_message(self, message: Message) -> None:
         if message.echo:
             return
 
         message.content = message.content.lower() # crear una variable para hacer el low del mensaje y procesar el comando. Mandar el mensaje normal, ya que youtube si difieren las mayusculas
-        context = commands.Context(bot=self, message=message, prefix=self.prefix, command=None)
+        context = Context(bot=self, message=message, prefix=self.prefix, command=None)
         await self.moderation_cog.message_filter(context)
         
         # Check if the message is a custom command or a social media link request, before sending the message, handle it as a command
@@ -107,7 +110,7 @@ class Bot(commands.Bot):
         await self.handle_commands(message)
     
     # send random messages Frequently in the first bot Channel
-    async def send_frequent_messages(self):
+    async def send_frequent_messages(self) -> None:
         while True:
             await asyncio.sleep(self.frequency_message_time)
             random.seed(int(time.time()))
@@ -115,7 +118,7 @@ class Bot(commands.Bot):
             await self.send_message(message)
     
     # Find the current channel when doesn't have the context and send a message from the bot
-    async def send_message(self, message):
+    async def send_message(self, message: str) -> None:
         for channel_name in self.channels:
             channel = self.get_channel(channel_name)
 
@@ -123,7 +126,7 @@ class Bot(commands.Bot):
                 await channel.send(message)
 
     # Check if the user has a specific role in the channel
-    def level_check(self, ctx, role):
+    def level_check(self, ctx: Context, role: str) -> bool:
         user = ctx.author
         user_badges = list(user.badges.keys())
 
@@ -142,7 +145,7 @@ class Bot(commands.Bot):
         return False
 
     # Activate or desactivate a command
-    async def toggle_command(self, ctx, command, value):
+    async def toggle_command(self, ctx: Context, command: str, value: bool) -> None:
         target_command = self.default_commands.get(command) or self.custom_commands.get(command)
         enable_word = self.config.get('enable_word', 'enable')
         disable_word = self.config.get('disable_word', 'disable')
@@ -169,7 +172,7 @@ class Bot(commands.Bot):
         return False
 
     # Check if the is enable and user has the permission to excecute the command
-    async def check_command_access(self, ctx, command_name):
+    async def check_command_access(self, ctx: Context, command_name: str) -> bool:
         user = ctx.author.name
         message_parts = ctx.message.content[1:].split()
         parameter =  message_parts[1] if len(message_parts) > 1 else ""

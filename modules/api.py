@@ -1,13 +1,14 @@
-from datetime import datetime
 import requests
+from typing import Union
+from datetime import datetime
 
 class Api():
-    def __init__(self, token, client_id):
+    def __init__(self, token: str, client_id: str) -> None:
         self.token = token
         self.client_id = client_id
 
     # Get information about a specific user
-    def get_user(self, user):
+    def get_user(self, user: str) -> dict:
         url = 'https://api.twitch.tv/helix/users'
 
         parameters = {
@@ -36,7 +37,7 @@ class Api():
         return None
     
     # Check if the user follows the channel and return since when
-    def check_follow(self, user_id, broadcaster_id):
+    def check_follow(self, user_id: Union[int, str], broadcaster_id: Union[int, str]) -> dict:
         url = 'https://api.twitch.tv/helix/channels/followers'
 
         parameters = {
@@ -67,7 +68,7 @@ class Api():
 
         return None
     
-    def delete_message(self, broadcaster_id, moderator_id, message_id):
+    def delete_message(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], message_id: Union[int, str]) -> bool:
         url = 'https://api.twitch.tv/helix/moderation/chat'
 
         params = {
@@ -90,16 +91,16 @@ class Api():
                 print(f"Error {response.status_code}: {response.content}")
         except requests.RequestException as error:
             print(f"Error: {error}")
-        
+
         return False
     
-    def set_ban(self, broadcaster_id, moderator_id, user_id, reason=None):
+    def set_ban(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], reason: str = None) -> bool:
         self._penalty_request(broadcaster_id, moderator_id, user_id, reason=reason)
 
-    def set_timeout(self, broadcaster_id, moderator_id, user_id, duration=300, reason=None):
+    def set_timeout(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], duration: int = 300, reason: str = None) -> bool:
         self._penalty_request(broadcaster_id, moderator_id, user_id, duration=duration, reason=reason)
     
-    def _penalty_request(self, broadcaster_id, moderator_id, user_id, *, duration=0, reason=None):
+    def _penalty_request(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], *, duration: int = 0, reason: str = None) -> bool:
         url = 'https://api.twitch.tv/helix/moderation/bans'
 
         params = {
