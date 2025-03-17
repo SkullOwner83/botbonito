@@ -1,6 +1,7 @@
 from typing import Optional, List
 from twitchio import Message
-from twitchio.ext.commands import Bot
+from twitchio.ext.commands import Bot, Cog
+from twitchio.ext import commands
 from modules.api import Api
 
 class Protection:
@@ -27,24 +28,28 @@ class Protection:
     def __repr__(self):
         return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'
     
-    async def apply_penalty(self, ctx: Message, bot: Bot, penalty: Optional[str] = None) -> None:
+    async def apply_penalty(self, ctx: Message, cog: Cog) -> None:
         user = ctx.author.name
         message = ctx.message
-        penalty = penalty or self.penalty
-        api = Api(bot.token, bot.client_id)
-        user_data = api.get_user(user)
-        broadcaster_data = api.get_user(message.channel.name)
-        moderator_data = api.get_user(bot.name)
+        penalty = self.penalty 
 
-        user_id = user_data['id']
-        broadcaster_id = broadcaster_data['id']
-        moderator_id = moderator_data['id']
-        message_id = message.tags['id']
+        if not cog.bot.level_check(ctx, self.exclude):
+            api = Api(cog.bot.token, cog.bot.client_id)
+            user_id = (api.get_user(user) or {}).get('id')
+            broadcaster_id = (api.get_user(message.channel.name) or {}).get('id')
+            moderator_id = (api.get_user(cog.bot.name) or {}).get('id')
+            message_id = message.tags.get('id')
 
-        match(penalty):
-            case 'delete_message': 
-                api.delete_message(broadcaster_id, moderator_id, message_id)
-                if self.reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {self.reason}")
-            
-            case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
-            case 'ban_user': api.set_ban(broadcaster_id, moderator_id, self.user_id, self.reason)
+            # Change the penalty if the user exceed the allowed strikes
+            if self.penalty != 'ban_user' and self.strikes > 0:
+                for filter_strikes in cog.user_strikes.values():
+                    if filter_strikes.get(user, 0) >= self.strikes:
+                        penalty = 'ban_user'
+
+            match(penalty):
+                case 'delete_message': 
+                    api.delete_message(broadcaster_id, moderator_id, message_id)
+                    if self.reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {self.reason}")
+                
+                case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
+                case 'ban_user': api.set_ban(broadcaster_id, moderator_id, user_id, self.reason)
