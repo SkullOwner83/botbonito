@@ -6,17 +6,21 @@ from twitchio.ext.commands import Context
 from modules.file import File
 from modules.api import Api
 from myapp import MyApp
+from models.protection import Protection
 
 class Moderation():
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
         self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
-        self.banned_words = self.moderation_config.get('banned_words')
-        self.protection = self.moderation_config.get('protection')
+        self.protection = { name: Protection(**data) for name, data in self.moderation_config.get("protection", {}).items() }
+        self.banned_words = { name: Protection(**data) for name, data in self.moderation_config.get("banned_words", {}).items() }
+        self.repeated_messages = self.protection.get('repeated_messages')
+        self.links_protection = self.protection.get('links')
+
         self.user_messages = {}
         self.user_strikes = {
-            "Links": {},
+            "links": {},
             "repeated_messages": {},
             "banned_words": {}
         }
@@ -24,77 +28,49 @@ class Moderation():
     async def message_filter(self, ctx: Context) -> None:
         message = ctx.message
         user = message.author.name
-        api = Api(self.bot.token, self.bot.client_id)
-        penalty = 'none' 
-        reason = '' 
-        exclude = 'no_one'
-        duration = 0
-        strikes = 0
-
-        user_data = api.get_user(user)
-        broadcaster_data = api.get_user(message.channel.name)
-        moderator_data = api.get_user(self.bot.name)
-
-        user_id = user_data['id']
-        broadcaster_id = broadcaster_data['id']
-        moderator_id = moderator_data['id']
-        message_id = message.tags['id']
+        penalty = None
 
         # Save the user messages and check if it is a repeated message to detect spam
-        if self.protection.get('repeated_messages', {}).get('enable'):
-            strikes = self.protection['repeated_messages'].get('strikes', strikes)
-
+        if self.repeated_messages.enable:
             if self.user_messages.get(user) and self.user_messages[user] == message.content:
                 self.user_strikes['repeated_messages'][user] = self.user_strikes['repeated_messages'].get(user, 0) + 1
-            
+
             self.user_messages[user] = message.content
 
             if self.user_strikes['repeated_messages'].get(user, 0) >= strikes:
-                penalty = self.protection['repeated_messages'].get('penalty', 'delete_message')
-                reason = self.protection['repeated_messages'].get("reason", reason)
-                exclude = self.protection['repeated_messages'].get('exclude', exclude)
-                duration = self.protection['repeated_messages'].get('duration', duration)
+                penalty = self.repeated_messages
 
         # Check if the links protection is enable to delete the message if it contains a link
-        if self.protection.get('links', {}).get('enable'):
-            strikes = self.protection['links'].get('strikes', strikes)
+        if self.links_protection.enable:
+            strikes = self.links_protection.strikes
 
             for word in message.content.split():
                 if re.search(MyApp.link_pattern, word):
                     self.user_strikes['links'][user] = self.user_strikes['links'].get(user, 0) + 1
-                    penalty = self.protection['links'].get('penalty', 'delete_message')
-                    reason = self.protection['links'].get('reason', reason)
-                    exclude = self.protection['links'].get('exclude', exclude)
-                    duration = self.protection['links'].get('duration', duration)
+                    penalty = self.links_protection
+                    break
 
         # Check if the group is enable and is not a excluded user for each group
         for group in self.banned_words.values():
-            if group.get('enable', False):
-                target_words = group.get('words', [])
-                strikes = group.get('strikes', strikes)
+            if group.enable:
+                target_words = group.words
+                strikes = group.strikes
 
                 # Check if the message matches the banned words and apply the penalty
                 if any(word in message.content for word in target_words):
                     self.user_strikes['banned_words'][user] = self.user_strikes['banned_words'].get(user, 0) + 1
-                    penalty = group.get('penalty', 'delete_message')
-                    reason = group.get('reason', reason)
-                    exclude = group.get('exclude', exclude)
-                    duration = group.get('duration', duration)
+                    penalty = group
 
         # Check if the user has an exception or not to aply the penalty
-        if not self.bot.level_check(ctx, exclude) and penalty != 'none':
-            if penalty != 'ban_user' and strikes > 0:
-                for filter_strikes in self.user_strikes.values():
-                    if filter_strikes.get(user, 0) >= strikes:
-                        penalty = 'ban_user'
+        if penalty and not self.bot.level_check(ctx, penalty.exclude):
+            await penalty.apply_penalty(ctx, self.bot)
 
-            match(penalty):
-                case 'delete_message': 
-                    api.delete_message(broadcaster_id, moderator_id, message_id)
-                    if reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {reason}")
-                    
-                case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, duration, reason)
-                case 'ban_user': api.set_ban(broadcaster_id, moderator_id, user_id, reason)
+        # Check if the user has an exception or not to aply the penalty
+        # if not self.bot.level_check(ctx, exclude) and penalty != 'none':
+        #     if penalty != 'ban_user' and strikes > 0:
+        #         for filter_strikes in self.user_strikes.values():
+        #             if filter_strikes.get(user, 0) >= strikes:
+        #                 penalty = 'ban_user'
 
     # Remove strikes from the specified user
     @MyApp.register_command("strikes")
