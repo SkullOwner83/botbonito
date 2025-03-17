@@ -4,7 +4,7 @@ from modules.api import Api
 from myapp import MyApp
 
 class CommandManager(commands.Cog):
-    def __init__(self, bot: commands.bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
 
@@ -13,7 +13,6 @@ class CommandManager(commands.Cog):
         if await self.bot.check_command_access(ctx, "help"):
             await ctx.send("¡Hola! Soy el bot bonito del Skull Owner y estoy aquí para ayudarte. Te envió los comandos que tengo disponibles. Si requieres mayor información, puedes escribir el comando seguido de help (!comando help):")
             await ctx.send(f"!{', !'.join(self.bot.default_commands)}")
-
 
     @MyApp.register_command("schedule")
     async def schedule(self, ctx: Context) -> None:
@@ -38,7 +37,7 @@ class CommandManager(commands.Cog):
             if user_data is None:
                 await ctx.send("No se ha encontrado el usuario")
                 return
-
+            
             broadcaster_id = broadcaster_data['id']
             user_id = user_data['id']
             following_since = api.check_follow(user_id, broadcaster_id)
@@ -53,10 +52,10 @@ class CommandManager(commands.Cog):
         message_parts = ctx.message.content[1:].split()
         command = message_parts[0]
         command_config = self.bot.custom_commands.get(self.bot.custom_alias.get(command, command))
-        response = command_config.get('response', '')
-        response_type = command_config.get('response_type', 'say')
+        response = command_config.response
+        response_type = command_config.response_type
 
-        if await self.bot.check_command_access(ctx, command_config['name']):
+        if await self.bot.check_command_access(ctx, command_config.name) and response:
             match response_type:
                 case 'say': await ctx.send(response)
                 case 'repy': await ctx.reply(response)

@@ -1,5 +1,6 @@
 import os
 import re
+from typing import List, Optional
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from modules.file import File
@@ -7,7 +8,7 @@ from modules.api import Api
 from myapp import MyApp
 
 class Moderation():
-    def __init__(self, bot: commands.bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
         self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
@@ -81,8 +82,8 @@ class Moderation():
                     duration = group.get('duration', duration)
 
         # Check if the user has an exception or not to aply the penalty
-        if not self.bot.level_check(ctx, exclude):
-            if penalty != 'ban_user' and penalty != 'none' and strikes > 0:
+        if not self.bot.level_check(ctx, exclude) and penalty != 'none':
+            if penalty != 'ban_user' and strikes > 0:
                 for filter_strikes in self.user_strikes.values():
                     if filter_strikes.get(user, 0) >= strikes:
                         penalty = 'ban_user'

@@ -8,7 +8,7 @@ from twitchio.ext.commands import Context
 from myapp import MyApp
 
 class DynamicsCommands(commands.Cog):
-    def __init__(self, bot: commands.bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.giveaway_started = False
         self.feedback_started = False
@@ -22,13 +22,13 @@ class DynamicsCommands(commands.Cog):
         user = ctx.author.name
         parameter = parameter.lower() if parameter else None
         command_config = self.bot.default_commands.get('giveaway')
-        entry_command_config = self.bot.default_commands.get('giveaway_entry')
+        entry_command = self.bot.default_commands.get('giveaway_entry')
 
         if await self.bot.check_command_access(ctx, "help"):
             if parameter == self.bot.config.get('help_word', 'help'):
-                await ctx.send(f"Utiliza el comando !{command_config['name']} start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
-                await ctx.send(f"Utiliza el comando !{command_config['name']} finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {self.ProjectPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
-                await ctx.send(f"Utiliza el comando !{command_config['name']} copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
+                await ctx.send(f"Utiliza el comando !{command_config.name} start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
+                await ctx.send(f"Utiliza el comando !{command_config.name} finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {self.ProjectPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
+                await ctx.send(f"Utiliza el comando !{command_config.name} copyagain, para volver a copiar la lista de participantes en caso de que no encuentres el fichero o ya no se encuentre en el portapapeles.")
                 return
 
             # Start the participant collection
@@ -36,7 +36,7 @@ class DynamicsCommands(commands.Cog):
                 if not self.giveaway_started:
                     self.giveaway_started = True
                     self.giveaway_list.clear()
-                    await ctx.send(f"Iniciamos con la recopilación de participantes para el sorteo. Recuerda seguir el canal para poder participar. Para entrar escribe el comando !{entry_command_config['name']}")
+                    await ctx.send(f"Iniciamos con la recopilación de participantes para el sorteo. Recuerda seguir el canal para poder participar. Para entrar escribe el comando !{entry_command.name}")
 
             # Finish the give away, save the list in a text file and copy it tol the clipboard
             if parameter == "finish":
@@ -66,7 +66,6 @@ class DynamicsCommands(commands.Cog):
 
     @MyApp.register_command("feedback")
     async def feedback(self, ctx: Context, parameter: str) -> None:
-        user = ctx.author.name
         parameter = parameter.lower() if parameter else None
 
         if await self.bot.check_command_access(ctx, "feedback"): 

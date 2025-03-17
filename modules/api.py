@@ -7,7 +7,7 @@ class Api():
         self.token = token
         self.client_id = client_id
 
-    # Get information about a specific user
+    # Get information about a specific user.
     def get_user(self, user: str) -> dict:
         url = 'https://api.twitch.tv/helix/users'
 

@@ -7,7 +7,7 @@ from modules.file import File
 from myapp import MyApp
 
 class VoiceRecognition(commands.Cog):
-    def __init__(self, bot: commands.bot, config: dict) -> None:
+    def __init__(self, bot: commands.Bot, config: dict) -> None:
         self.bot = bot
         self.r = sr.Recognizer()
         self.wake_word = config['wake_word']

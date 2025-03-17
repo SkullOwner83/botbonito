@@ -8,7 +8,7 @@ from modules.file import File
 from myapp import MyApp
 
 class SoundManager(commands.Cog):
-    def __init__(self, bot: commands.bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.sound_list = File.open(os.path.join(MyApp.config_path, "soundlist.json"))
         self.snd_user_register: dict[str, float] = {}
@@ -33,7 +33,7 @@ class SoundManager(commands.Cog):
                 
             current_time = time.time()
             user_cooldown = self.snd_user_register.get(user, 0)
-            rest_time = self.bot.snd_cooldown - (current_time - user_cooldown)
+            rest_time = command_config.cooldown - (current_time - user_cooldown)
 
             # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
             if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
@@ -53,14 +53,14 @@ class SoundManager(commands.Cog):
 
         if await self.bot.check_command_access(ctx, "giveaway_entry"):
             if parameter == self.bot.config.get('help_word', 'help'):
-                await ctx.send(f"Escribe el comando !{command_config['name']}, seguido de un mensaje no mayor a 200 caracteres, para que pueda ser leido.")
+                await ctx.send(f"Escribe el comando !{command_config.name}, seguido de un mensaje no mayor a {command_config.max_lenght} caracteres, para que pueda ser leido.")
                 return
                 
             current_time = time.time()
             user_cooldown = self.spk_user_register.get(user, 0)
-            rest_time = self.bot.spk_cooldown - (current_time - user_cooldown)
+            rest_time = command_config.cooldown - (current_time - user_cooldown)
 
-            if len(parameter) <= self.bot.speak_max_lenght:
+            if len(parameter) <= command_config.max_lenght:
                 # Check if the user cooldown has already passed to speak the text
                 if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
                     message = str.join(" ", ctx.message.content.split()[1:])
@@ -73,4 +73,4 @@ class SoundManager(commands.Cog):
                 else: 
                     await ctx.send(f"@{user} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(rest_time)}s)")
             else:
-                await ctx.send(f"@{user} Has escrito un mensaje demasiado largo. El máximo de caracteres es {self.bot.speak_max_lenght} caracteres")
+                await ctx.send(f"@{user} Has escrito un mensaje demasiado largo. El máximo de caracteres es {command_config.max_lenght} caracteres")

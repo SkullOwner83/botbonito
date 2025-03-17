@@ -15,6 +15,7 @@ from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
 from myapp import MyApp
+from models.commands import CommandConfig
 
 class Bot(commands.Bot):
     command_registry: dict[str, Callable] = {}
@@ -37,14 +38,7 @@ class Bot(commands.Bot):
         self.channels = config['channels']
         self.prefix = config['prefix']
         self.frequency_message_time = config['frequency_message_time']
-        self.snd_cooldown = config['snd_cooldown']
-        self.spk_cooldown = config['spk_cooldown']
-        self.speak_max_lenght = config['speak_max_lenght']
         self.__frequency_messages = config['frecuency_messages']
-        self.__commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
-        self.default_commands = self.__commands_config.get("default_commands", {})
-        self.custom_commands = self.__commands_config.get("custom_commands", {})
-        self.custom_alias = {alias: key for key, value in self.custom_commands.items() for alias in value.get("alias", [])}
 
         # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
         self.social_media = File.open(os.path.join(MyApp.config_path, "socialmedia.json"))
@@ -53,8 +47,14 @@ class Bot(commands.Bot):
             message.format(**self.social_media) for message in self.__frequency_messages
         ]
 
+        # Read the config file and map the values into the CommandConfig model
+        self.__commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
+        self.default_commands = { name: CommandConfig(**data) for name, data in self.__commands_config.get("default_commands", {}).items() }
+        self.custom_commands = { name: CommandConfig(**data) for name, data in self.__commands_config.get("custom_commands", {}).items() }
+        self.custom_alias = { alias: key for key, value in self.custom_commands.items() for alias in value.alias }
+
         # Initialize the bot with the received config
-        super().__init__(
+        super().__init__( 
             token=f'oauth:{self.token}',
             client_secret=self.client_secret,
             prefix=self.prefix,
@@ -71,8 +71,8 @@ class Bot(commands.Bot):
     def create_commands(self) -> None:
         for command_name, config in self.default_commands.items():
             if command_name in MyApp.command_registry:
-                name = config['name']
-                alias = config['alias']
+                name = config.name
+                alias = config.alias
                 callable_function = MyApp.command_registry[command_name]
                 new_command = commands.Command(name=name, func=callable_function, aliases=alias)
                 self.add_command(new_command)
@@ -153,8 +153,8 @@ class Bot(commands.Bot):
         if value == enable_word or value == disable_word:
             if self.level_check(ctx, 'broadcaster'):
                 if value == enable_word:
-                    if target_command["enable"] == False:
-                        target_command["enable"] = True
+                    if target_command.enable == False:
+                        target_command.enable = True
                         await ctx.send(f"Se ha activado el comando {command}.")
                     else:
                         await ctx.send(f"El comando {command} ya esta activado.") 
@@ -177,8 +177,8 @@ class Bot(commands.Bot):
         message_parts = ctx.message.content[1:].split()
         parameter =  message_parts[1] if len(message_parts) > 1 else ""
         command_config = self.default_commands.get(command_name) or self.custom_commands.get(command_name)
-        required_level = command_config.get('user_level', 'everyone')
-        enable_command = command_config.get('enable', False)
+        required_level = command_config.user_level
+        enable_command = command_config.enable
 
         if await self.toggle_command(ctx, command_name, parameter):
             return False
