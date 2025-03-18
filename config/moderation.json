@@ -1,29 +1,40 @@
 {
     "protection": {
         "links": {
+            "name": "links",
             "enable": true,
             "penalty": "delete_message",
             "reason": "Por seguridad, no esta permitido enviar links.",
             "exclude": "moderator",
-            "words": [""],
             "duration": 0,
             "strikes": 0
         },
 
         "repeated_messages": {
+            "name": "repeated_messages",
             "enable": true,
             "penalty": "timeout",
             "reason": "Spam: Envío repetitivo de mensajes idénticos.",
             "exclude": "no_one",
-            "words": [""],
             "duration": 0,
             "strikes": 3
+        },
+
+        "long_messages": {
+            "name": "long_messages",
+            "enable": true,
+            "penalty": "delete_message",
+            "reason": "Envió de mensaje demasiado largo.",
+            "exclude": "no_one",
+            "max_length": 300,
+            "duration": 0,
+            "strikes": 0
         }
     },
 
     "banned_words": {
         "spam": {
-            "group_name": "Spam",
+            "name": "Spam",
             "enable": true,
             "penalty": "ban_user",
             "exclude": "no_one",
@@ -34,7 +45,7 @@
         },
 
         "racism": {
-            "group_name": "Racismo",
+            "name": "Racismo",
             "enable": true,
             "penalty": "timeout",
             "exclude": "no_one",
@@ -45,7 +56,7 @@
         },
 
         "violence": {
-            "group_name": "Violencia",
+            "name": "Violencia",
             "enable": true,
             "penalty": "delete_message",
             "exclude": "no_one",
@@ -56,7 +67,7 @@
         },
 
         "profanity": {
-            "group_name": "Malas palabras",
+            "name": "Malas palabras",
             "enable": true,
             "penalty": "delete_message",
             "exclude": "no_one",

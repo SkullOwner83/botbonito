@@ -12,6 +12,7 @@ class Protection:
         reason: Optional[str] = None,
         exclude: Optional[str] = 'no_one',
         words: Optional[List[str]] = None,
+        max_length: Optional[int] = 0,
         duration: Optional[int] = 0,
         strikes: Optional[int] = 0
     ):
@@ -22,6 +23,7 @@ class Protection:
         self.reason = reason
         self.exclude = exclude
         self.words = words
+        self.max_length = max_length
         self.duration = duration
         self.strikes = strikes
 

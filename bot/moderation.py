@@ -1,10 +1,8 @@
 import os
 import re
-from typing import List, Optional
 from twitchio.ext import commands
 from twitchio.ext.commands import Context, Cog
 from modules.file import File
-from modules.api import Api
 from myapp import MyApp
 from models.protection import Protection
 
@@ -16,12 +14,14 @@ class Moderation(Cog):
         self.protection = { name: Protection(**data) for name, data in self.moderation_config.get("protection", {}).items() }
         self.banned_words = { name: Protection(**data) for name, data in self.moderation_config.get("banned_words", {}).items() }
         self.repeated_messages = self.protection.get('repeated_messages')
+        self.long_messages = self.protection.get('long_messages')
         self.links_protection = self.protection.get('links')
 
         self.user_messages: dict[str, str] = {}
         self.user_strikes: dict[str, dict] = {
             "links": {},
             "repeated_messages": {},
+            "long_message": {},
             "banned_words": {}
         }
 
@@ -37,6 +37,7 @@ class Moderation(Cog):
         await self.__spam_filter(ctx)
         await self.__links_filter(ctx)
         await self.__words_filter(ctx)
+        await self.__long_message_filter(ctx)
 
     # Save the user messages and check if it is a repeated message to detect spam
     async def __spam_filter(self, ctx: Context) -> None:
@@ -64,6 +65,16 @@ class Moderation(Cog):
                     await self.links_protection.apply_penalty(ctx, self)
                     break
 
+    # Check if the message lenght is greater than the maximum allowed
+    async def __long_message_filter(self, ctx: Context):
+        message = ctx.message
+        user = message.author.name
+
+        if self.long_messages.enable:
+            if len(message.content) > self.long_messages.max_length:
+                self.user_strikes['long_message'][user] = self.user_strikes['long_message'].get(user, 0) + 1
+                await self.long_messages.apply_penalty(ctx, self)
+
     # Check if the group is enable and is not a excluded user for each group
     async def __words_filter(self, ctx: Context) -> None:
         message = ctx.message
@@ -74,5 +85,3 @@ class Moderation(Cog):
                 if any(word in message.content for word in group.words):
                     self.user_strikes['banned_words'][user] = self.user_strikes['banned_words'].get(user, 0) + 1
                     await group.apply_penalty(ctx, self)
-
-    
