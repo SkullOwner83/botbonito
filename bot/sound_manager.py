@@ -53,14 +53,14 @@ class SoundManager(commands.Cog):
 
         if await self.bot.check_command_access(ctx, "giveaway_entry"):
             if parameter == self.bot.config.get('help_word', 'help'):
-                await ctx.send(f"Escribe el comando !{command_config.name}, seguido de un mensaje no mayor a {command_config.max_lenght} caracteres, para que pueda ser leido.")
+                await ctx.send(f"Escribe el comando !{command_config.name}, seguido de un mensaje no mayor a {command_config.max_length} caracteres, para que pueda ser leido.")
                 return
                 
             current_time = time.time()
             user_cooldown = self.spk_user_register.get(user, 0)
             rest_time = command_config.cooldown - (current_time - user_cooldown)
 
-            if len(parameter) <= command_config.max_lenght:
+            if len(parameter) <= command_config.max_length:
                 # Check if the user cooldown has already passed to speak the text
                 if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
                     message = str.join(" ", ctx.message.content.split()[1:])
@@ -73,4 +73,4 @@ class SoundManager(commands.Cog):
                 else: 
                     await ctx.send(f"@{user} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(rest_time)}s)")
             else:
-                await ctx.send(f"@{user} Has escrito un mensaje demasiado largo. El máximo de caracteres es {command_config.max_lenght} caracteres")
+                await ctx.send(f"@{user} Has escrito un mensaje demasiado largo. El máximo de caracteres es {command_config.max_length} caracteres")
