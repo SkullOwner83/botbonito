@@ -6,18 +6,20 @@ class MenuButton(ft.Container):
         super().__init__()
         self.text = text
         self.icon = icon
-        self.bgcolor = '#fff'
-        self.padding = ft.padding.symmetric(horizontal=16, vertical=8)
+
+        self.height = 32
+        self.bgcolor = ft.Colors.WHITE
+        self.padding = ft.padding.symmetric(horizontal=16)
         self.on_hover = self.hover_event
         self.on_click = onclick
         
         self.content = ft.Row (
+            spacing=8,
             controls = [
-                ft.Image(
-                    src=self.icon, 
-                    width=16, 
-                    height=16,
-
+                ft.Container(
+                     width=18,
+                     height=18,
+                     content=ft.Image(src=self.icon),
                 ),
 
                 ft.Text(
@@ -29,5 +31,5 @@ class MenuButton(ft.Container):
         )
     
     def hover_event(self, e: ft.ControlEvent):
-            self.bgcolor = "#e9e9e9" if e.data == "true" else "#fff" 
+            self.bgcolor = "#e9e9e9" if e.data == "true" else ft.Colors.WHITE
             self.update()

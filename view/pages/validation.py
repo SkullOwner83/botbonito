@@ -17,6 +17,7 @@ class ValidationPage:
     def get_view(self) -> ft.View:
         return ft.View(
             route = '/',
+            vertical_alignment=ft.MainAxisAlignment.CENTER,
             controls=[
                 ft.Row(controls=[ft.Text(value="Tu token no es valido. Ingresa al siguiente sitio para obtener un nuevo token.", )]),
                 ft.Row([ft.TextField()]),

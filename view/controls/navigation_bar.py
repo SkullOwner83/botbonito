@@ -9,6 +9,7 @@ class NavigationBar(ft.Container):
         self.commands_icon = "assets/icons/commands.svg"
         self.moderation_icon = "assets/icons/moderation.svg"
         self.configuration_icon = "assets/icons/configuration.svg"
+        #self.expand = True
 
         self.content = ft.Container(
             bgcolor=ft.Colors.WHITE,
