@@ -14,11 +14,12 @@ class ValidationPage:
         self.redirect_uri = self.botconfig['redirect_uri']
         self.scope = self.botconfig['scope']
     
-    def get_view(self) -> ft.Page:
+    def get_view(self) -> ft.View:
         return ft.View(
             route = '/',
             controls=[
                 ft.Row(controls=[ft.Text(value="Tu token no es valido. Ingresa al siguiente sitio para obtener un nuevo token.", )]),
+                ft.Row([ft.TextField()]),
                 ft.Row(
                     controls = [
                         ft.Button(text="Abrir", width=100, on_click=self.token_validation),

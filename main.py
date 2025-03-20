@@ -16,7 +16,6 @@ class BotUI:
         self.page.title = self.title
         self.page.window.width = 420
         self.page.window.height = 420
-        self.page.window.resizable = False
         self.page.update()
         
         self.page.window.always_on_top = True
@@ -39,7 +38,7 @@ class BotUI:
         ValidToken = Token.validation(self.token)
 
         if ValidToken:
-            self.run_bot()
+            #self.run_bot()
             self.page.go('/')
         else:
             self.page.go('/validation')
