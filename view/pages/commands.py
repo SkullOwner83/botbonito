@@ -1,6 +1,15 @@
 import flet as ft
 from ..controls.navigation_bar import NavigationBar
 
+class CommandOption(ft.Container):
+    def __init__(self, page: ft.Page):
+        self.page = page
+
+        self.content = ft.Row(
+
+        )
+
+
 class CommandsPage():
     def __init__(self, page: ft.Page):
         self.page = page
@@ -21,7 +30,9 @@ class CommandsPage():
                                 expand=True,
                                 bgcolor=ft.Colors.GREY_100,
                                 alignment=ft.alignment.center,
-                                content=ft.Text(value="Página de comandos.")
+                                content=ft.Column(
+                                    spacing=0,
+                                )
                             )
                         ]
                     )
