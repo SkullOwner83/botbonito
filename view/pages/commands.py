@@ -31,24 +31,63 @@ class CommandsPage():
                                 bgcolor=ft.Colors.GREY_100,
                                 alignment=ft.alignment.top_center,
                                 content=ft.Column(
-                                    scroll= ft.ScrollMode.ADAPTIVE,
+                                    spacing=16,
                                     controls = [
                                         ft.Row(
-                                            spacing=0,
-                                            controls = [
-                                                ft.DataTable(
-                                                    expand=True,
-                                                    bgcolor=ft.Colors.WHITE,
-                                                    column_spacing=0,
-                                                    border_radius=8,
-                                                    columns=[
-                                                        ft.DataColumn(ft.Text("Activo")),
-                                                        ft.DataColumn(ft.Text("Comando")),
-                                                        ft.DataColumn(ft.Text("Descrición")),
-                                                        ft.DataColumn(ft.Text("Nivel de usuario")),
-                                                    ],
+                                            controls=[
+                                                ft.Container(
+                                                    expand=1,
+                                                    content=ft.Row(
+                                                        controls=[
+                                                            ft.FilledButton(text="Predeterminados"),
+                                                            ft.FilledButton(text="Personalizados"),
+                                                        ]
+                                                    )
+                                                ),
 
-                                                    rows=self.commands
+                                                ft.Container(
+                                                    expand=1,
+                                                    content= ft.TextField(
+                                                        hint_text="Buscar comando...",
+                                                        bgcolor=ft.Colors.WHITE,
+                                                        prefix_icon= ft.Icons.SEARCH,
+                                                        text_vertical_align=ft.VerticalAlignment.CENTER,
+                                                        content_padding=0,
+                                                        height=32   ,
+                                                        border_width=0,
+                                                        border_radius=12
+                                                    )
+                                                )
+                                            ]
+                                        ),
+
+                                        ft.Row(
+                                            expand=True,
+                                            vertical_alignment= ft.CrossAxisAlignment.START,
+                                            controls=[
+                                                ft.Column(
+                                                    expand=True,
+                                                    scroll=ft.ScrollMode.ALWAYS,
+                                                    controls=[
+                                                        ft.Row(
+                                                            controls=
+                                                            [
+                                                                ft.DataTable(
+                                                                    expand=True,
+                                                                    bgcolor=ft.Colors.WHITE,
+                                                                    column_spacing=0,
+                                                                    border_radius=8,
+                                                                    columns=[
+                                                                        ft.DataColumn(ft.Text("Activo")),
+                                                                        ft.DataColumn(ft.Text("Comando")),
+                                                                        ft.DataColumn(ft.Text("Descripción")),
+                                                                        ft.DataColumn(ft.Text("Nivel de usuario")),
+                                                                    ],
+                                                                    rows=self.commands,
+                                                                )
+                                                            ]
+                                                        )
+                                                    ]
                                                 )
                                             ]
                                         )

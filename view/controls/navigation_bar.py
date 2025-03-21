@@ -9,7 +9,7 @@ class NavigationBar(ft.Container):
         self.commands_icon = "assets/icons/commands.svg"
         self.moderation_icon = "assets/icons/moderation.svg"
         self.configuration_icon = "assets/icons/configuration.svg"
-        #self.expand = True
+        
 
         self.content = ft.Container(
             bgcolor=ft.Colors.WHITE,
@@ -17,6 +17,12 @@ class NavigationBar(ft.Container):
                 width=200,
                 spacing=0,
                 controls=[
+                    ft.Container(
+                        height=80,
+                        padding=16,
+                        content=ft.Image(src="assets/icons/botbonito.svg")
+                    ),
+
                     MenuButton('Inicio', lambda e: self.page.go('/'), self.home_icon),
                     MenuButton('Comandos', lambda e: self.page.go('/commands'), self.commands_icon),
                     MenuButton('Moderación', lambda e: self.page.go('/moderation'), self.moderation_icon),

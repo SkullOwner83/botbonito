@@ -13,20 +13,29 @@ class ValidationPage:
         self.client_secret = self.credentials['client_secret']
         self.redirect_uri = self.botconfig['redirect_uri']
         self.scope = self.botconfig['scope']
-    
+
     def get_view(self) -> ft.View:
         return ft.View(
             route = '/',
-            vertical_alignment=ft.MainAxisAlignment.CENTER,
+            padding=0,
             controls=[
-                ft.Row(controls=[ft.Text(value="Tu token no es valido. Ingresa al siguiente sitio para obtener un nuevo token.", )]),
-                ft.Row([ft.TextField()]),
-                ft.Row(
-                    controls = [
-                        ft.Button(text="Abrir", width=100, on_click=self.token_validation),
-                        ft.Button(text="Copiar", width=100)
-                    ],
-                    alignment = ft.MainAxisAlignment.CENTER 
+                ft.Container(
+                    expand=True,
+                    content=ft.Column(
+                        alignment= ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Text(value="Tu token no es válido.", size=32, weight=ft.FontWeight.BOLD),
+                            ft.Text(value="Ingresa al siguiente sitio para obtener un nuevo token.", ),
+                            ft.Row(
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                controls = [
+                                    ft.Button(text="Abrir", width=100, on_click=self.token_validation),
+                                    ft.Button(text="Copiar", width=100)
+                                ],
+                            )
+                        ]
+                    )
                 )
             ]
         )
