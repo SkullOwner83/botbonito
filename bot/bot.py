@@ -86,7 +86,7 @@ class Bot(commands.Bot):
 
     # Check chat messages event
     async def event_message(self, message: Message) -> None:
-        if message.echo:
+        if message.author is self.name or message.author is None:
             return
 
         message.content = message.content.lower() # crear una variable para hacer el low del mensaje y procesar el comando. Mandar el mensaje normal, ya que youtube si difieren las mayusculas
@@ -160,8 +160,8 @@ class Bot(commands.Bot):
                         await ctx.send(f"El comando {command} ya esta activado.") 
                 
                 if value == disable_word:
-                    if target_command['enable'] == True:
-                        target_command['enable'] = False
+                    if target_command.enable == True:
+                        target_command.enable = False
                         await ctx.send(f"Se ha desactivado el comando {command}.")
                     else:
                         await ctx.send(f"El comando {command} ya esta desactivado.")
