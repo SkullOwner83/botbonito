@@ -16,7 +16,7 @@ class ValidationPage:
 
     def get_view(self) -> ft.View:
         return ft.View(
-            route = '/',
+            route = '/validation',
             padding=0,
             controls=[
                 ft.Container(
