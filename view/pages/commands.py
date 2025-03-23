@@ -1,5 +1,7 @@
 import flet as ft
+from models.commands import CommandConfig
 from ..controls.navigation_bar import NavigationBar
+from ..controls.header import Header
 from ..controls.data_table import DataTable
 from myapp import MyApp
 
@@ -41,7 +43,12 @@ class CommandsPage():
                     table.rows.append(
                         ft.DataRow(
                             cells=[
-                                ft.DataCell(ft.Switch(value=command.enable, width=32)),
+                                ft.DataCell(ft.Switch(
+                                    on_change=lambda e, c = command: self.disble_command(e, c),
+                                    value=command.enable, 
+                                    width=32)
+                                ),
+
                                 ft.DataCell(ft.Text(f"!{command.name}")),
                                 ft.DataCell(ft.Text(command.name)),
                                 ft.DataCell(ft.Text(command.user_level))
@@ -49,16 +56,16 @@ class CommandsPage():
                         )
                     )
     
+    def disble_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
+        command.enable = e.control.value
+    
+    # Apply the filter and refresh the data in the corresponding table
     def search_command(self, e: ft.ControlEvent) -> None:
         self.filter = e.control.value.lower()
+        self.load_data(self.target_table, self.filter)
+        self.target_table.update()
 
-        if not e.control.value == "":
-            self.load_data(self.target_table, self.filter)
-        else:
-            self.load_data(self.target_table, self.filter)
-        
-        self.default_commands.update()
-
+    # Change the view to display the corresponding table for the selected tab
     def change_tab(self, e: ft.ControlEvent) -> None:
         if e.control.selected == {"1"}:
             self.default_commands.visible = True
@@ -88,11 +95,13 @@ class CommandsPage():
                         spacing=0,
                         controls =[
                             NavigationBar(self.page),
-
+                            
                             ft.Column(
                                 expand=True,
                                 spacing=0,
                                 controls = [
+                                    Header("Comandos"),
+                                    
                                     ft.Container(
                                         expand=True,
                                         padding=32,
