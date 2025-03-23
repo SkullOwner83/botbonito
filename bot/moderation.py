@@ -34,10 +34,11 @@ class Moderation(Cog):
                     filter_strikes[user] = 0
 
     async def message_filter(self, ctx: Context) -> None:
-        await self.__spam_filter(ctx)
-        await self.__links_filter(ctx)
-        await self.__words_filter(ctx)
-        await self.__long_message_filter(ctx)
+        if not self.bot.level_check(ctx, 'broadcaster'):
+            await self.__spam_filter(ctx)
+            await self.__links_filter(ctx)
+            await self.__words_filter(ctx)
+            await self.__long_message_filter(ctx)
 
     # Save the user messages and check if it is a repeated message to detect spam
     async def __spam_filter(self, ctx: Context) -> None:
