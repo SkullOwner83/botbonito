@@ -1,17 +1,20 @@
 import flet as ft
 from models.commands import CommandConfig
 from ..controls.navigation_bar import NavigationBar
-from ..controls.header import Header
 from ..controls.data_table import DataTable
 from myapp import MyApp
 
+from models.config import ConfigManager
 
 class CommandsPage():
     def __init__(self, page: ft.Page):
         self.page = page
         self.filter = ''
+        self.config_manager = ConfigManager()
+        self.default_commands = self.config_manager.default_commands
+        self.custom_commands = self.config_manager.custom_commands
         
-        self.default_commands = DataTable(
+        self.default_commands_table = DataTable(
             visible=True,
             columns=[
                 ft.DataColumn(ft.Text("ACTIVO")),
@@ -21,7 +24,7 @@ class CommandsPage():
             ]
         )
 
-        self.custom_commands = DataTable(
+        self.custom_commands_table = DataTable(
             visible=False,
             columns=[
                 ft.DataColumn(ft.Text("ACTIVO")),
@@ -31,11 +34,10 @@ class CommandsPage():
             ]
         )
 
-        self.target_table = self.default_commands
+        self.target_table = self.default_commands_table
 
     def load_data(self, table: DataTable, filter: str = '') -> None:
-        if MyApp.bot:
-            target_commands = MyApp.bot.default_commands.values() if table == self.default_commands else MyApp.bot.custom_commands.values()
+            target_commands = self.default_commands.values() if table == self.default_commands_table else self.custom_commands.values()
             table.rows.clear()
 
             for command in target_commands:
@@ -68,21 +70,21 @@ class CommandsPage():
     # Change the view to display the corresponding table for the selected tab
     def change_tab(self, e: ft.ControlEvent) -> None:
         if e.control.selected == {"1"}:
-            self.default_commands.visible = True
-            self.custom_commands.visible = False
-            self.target_table = self.default_commands
+            self.default_commands_table.visible = True
+            self.custom_commands_table.visible = False
+            self.target_table = self.default_commands_table
 
         elif e.control.selected == {"2"}:
-            self.custom_commands.visible = True
-            self.default_commands.visible = False
-            self.target_table = self.custom_commands
+            self.custom_commands_table.visible = True
+            self.default_commands_table.visible = False
+            self.target_table = self.custom_commands_table
 
         self.load_data(self.target_table, self.filter)
         self.page.update()
 
     def get_view(self) -> ft.View:
-        self.load_data(self.default_commands)
-        self.load_data(self.custom_commands)
+        self.load_data(self.default_commands_table)
+        self.load_data(self.custom_commands_table)
 
         return ft.View(
             route = '/commands',
@@ -99,9 +101,7 @@ class CommandsPage():
                             ft.Column(
                                 expand=True,
                                 spacing=0,
-                                controls = [
-                                    Header("Comandos"),
-                                    
+                                controls = [ 
                                     ft.Container(
                                         expand=True,
                                         padding=32,
@@ -124,8 +124,13 @@ class CommandsPage():
                                                                         on_change=self.change_tab,
 
                                                                         style=ft.ButtonStyle(
-                                                                            shape= ft.RoundedRectangleBorder(radius=8),
-                                                                            side=ft.BorderSide(width=0),
+                                                                            shape=ft.RoundedRectangleBorder(radius=8),
+                                                                            side=ft.BorderSide(width=0, color=ft.Colors.TRANSPARENT),
+                                                                            bgcolor={
+                                                                                ft.ControlState.DEFAULT: ft.Colors.WHITE,
+                                                                                ft.ControlState.HOVERED: ft.Colors.GREY_200,
+                                                                                ft.ControlState.SELECTED: ft.Colors.PRIMARY
+                                                                            },
                                                                             
                                                                             text_style=ft.TextStyle(
                                                                                 font_family=MyApp.font_secondary,
@@ -146,14 +151,16 @@ class CommandsPage():
                                                         ft.Container(
                                                             expand=True,
                                                             alignment=ft.alignment.center_right,
-                                                            content= ft.TextField(
+                                                            content=ft.TextField(
                                                                 width=350,
                                                                 height=32,
-                                                                text_style= ft.TextStyle(font_family=MyApp.font_secondary, size=14),
+                                                                text_style=ft.TextStyle(font_family=MyApp.font_secondary, size=14),
                                                                 text_vertical_align=ft.VerticalAlignment.CENTER,
                                                                 hint_text="Buscar comando...",
                                                                 bgcolor=ft.Colors.WHITE,
-                                                                prefix_icon= ft.Icons.SEARCH,
+                                                                hover_color=ft.Colors.TRANSPARENT,
+                                                                selection_color=ft.Colors.LIGHT_BLUE_100,
+                                                                prefix_icon=ft.Icons.SEARCH,
                                                                 content_padding=ft.padding.symmetric(horizontal=16),
                                                                 border_width=0,
                                                                 border_radius=8,
@@ -165,13 +172,13 @@ class CommandsPage():
 
                                                 ft.Row(
                                                     expand=True,
-                                                    vertical_alignment= ft.CrossAxisAlignment.START,
+                                                    vertical_alignment=ft.CrossAxisAlignment.START,
                                                     controls=[
                                                         ft.Stack(
                                                             expand=True,
                                                             controls=[
-                                                                self.default_commands,
-                                                                self.custom_commands
+                                                                self.default_commands_table,
+                                                                self.custom_commands_table
                                                             ]
                                                         )
                                                     ]
