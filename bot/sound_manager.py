@@ -25,7 +25,7 @@ class SoundManager(commands.Cog):
         sound_commands = self.sound_list.keys()
         user_cooldown = 0
 
-        if await self.bot.check_command_access(ctx, "giveaway_entry"):
+        if await self.bot.check_command_access(ctx, "playsound"):
             if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Para reproducir un sonido, escribe el comando !{command_config['name']}, seguido del nombre de uno de los siguientes sonidos (!{command_config['name']} holi):")
                 await ctx.send(f"!{', !'.join(sound_commands)}")
@@ -51,7 +51,7 @@ class SoundManager(commands.Cog):
         command_config = self.bot.default_commands.get('speak')
         user_cooldown = 0
 
-        if await self.bot.check_command_access(ctx, "giveaway_entry"):
+        if await self.bot.check_command_access(ctx, "speak"):
             if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Escribe el comando !{command_config.name}, seguido de un mensaje no mayor a {command_config.max_length} caracteres, para que pueda ser leido.")
                 return

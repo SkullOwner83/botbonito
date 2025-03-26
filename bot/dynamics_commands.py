@@ -24,7 +24,7 @@ class DynamicsCommands(commands.Cog):
         command_config = self.bot.default_commands.get('giveaway')
         entry_command = self.bot.default_commands.get('giveaway_entry')
 
-        if await self.bot.check_command_access(ctx, "help"):
+        if await self.bot.check_command_access(ctx, "giveaway"):
             if parameter == self.bot.config.get('help_word', 'help'):
                 await ctx.send(f"Utiliza el comando !{command_config.name} start, para iniciar una recopilación de participantes que se almacenarán en una lista. Los usuarios pueden entrar a la lista escribiendo el comando !leentro. Los usuarios deben seguir el canal para poder particiar.")
                 await ctx.send(f"Utiliza el comando !{command_config.name} finish, para concluir con la recopilación de participantes. Se creará un archivo de texto en la ruta {self.ProjectPath} con la lista de participantes. Adicionalmente se copiará la lista a tu portapapeles para mayor accesibilidad.")
@@ -94,7 +94,7 @@ class DynamicsCommands(commands.Cog):
         youtube_patter = re.compile(r"(https?://)?(www\.)?(youtube|youtu|youtube-nocookie)\.(com|be)/.+$")
         soundcloud_patter = re.compile(r'https?://soundcloud\.com/[\w-]+/[\w-]+')
 
-        if await self.bot.check_command_access(ctx, "giveaway_entry"):
+        if await self.bot.check_command_access(ctx, "send"):
             if self.feedback_started:
                 if youtube_patter.match(parameter) or soundcloud_patter.match(parameter):
                     if not user in self.feedback_list:
