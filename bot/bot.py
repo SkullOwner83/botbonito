@@ -15,7 +15,7 @@ from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
 from myapp import MyApp
-from models.commands import CommandConfig
+from models.config import ConfigManager
 
 class Bot(commands.Bot):
     command_registry: dict[str, Callable] = {}
@@ -47,11 +47,11 @@ class Bot(commands.Bot):
             message.format(**self.social_media) for message in self.__frequency_messages
         ]
 
-        # Read the config file and map the values into the CommandConfig model
-        self.__commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
-        self.default_commands = { name: CommandConfig(**data) for name, data in self.__commands_config.get("default_commands", {}).items() }
-        self.custom_commands = { name: CommandConfig(**data) for name, data in self.__commands_config.get("custom_commands", {}).items() }
-        self.custom_alias = { alias: key for key, value in self.custom_commands.items() for alias in value.alias }
+        # Get the config manager instance to load the commands
+        self.config_manager = ConfigManager()
+        self.default_commands = self.config_manager.default_commands
+        self.custom_commands = self.config_manager.custom_alias
+        self.custom_alias = self.config_manager.custom_alias
 
         # Initialize the bot with the received config
         super().__init__( 

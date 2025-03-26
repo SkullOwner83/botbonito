@@ -1,10 +1,11 @@
+from typing import Callable
 import flet as ft
 from models.commands import CommandConfig
 from ..controls.navigation_bar import NavigationBar
 from ..controls.data_table import DataTable
-from myapp import MyApp
-
+from ..controls.tag import Tag
 from models.config import ConfigManager
+from myapp import MyApp
 
 class CommandsPage():
     def __init__(self, page: ft.Page):
@@ -41,24 +42,24 @@ class CommandsPage():
             table.rows.clear()
 
             for command in target_commands:
-                if filter == '' or filter in command.name:
+                if filter == '' or filter in command.name.lower():
                     table.rows.append(
                         ft.DataRow(
                             cells=[
                                 ft.DataCell(ft.Switch(
-                                    on_change=lambda e, c = command: self.disble_command(e, c),
+                                    on_change=lambda e, c=command: self.disable_command(e, c),
                                     value=command.enable, 
-                                    width=32)
+                                    width=32,)
                                 ),
 
-                                ft.DataCell(ft.Text(f"!{command.name}")),
+                                ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.page.open(DefaultCommandModel(c))),
                                 ft.DataCell(ft.Text(command.name)),
                                 ft.DataCell(ft.Text(command.user_level))
                             ]
                         )
                     )
-    
-    def disble_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
+
+    def disable_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
         command.enable = e.control.value
     
     # Apply the filter and refresh the data in the corresponding table
@@ -82,6 +83,7 @@ class CommandsPage():
         self.load_data(self.target_table, self.filter)
         self.page.update()
 
+    # Build the view UI and load the data into the tables
     def get_view(self) -> ft.View:
         self.load_data(self.default_commands_table)
         self.load_data(self.custom_commands_table)
@@ -92,6 +94,7 @@ class CommandsPage():
             controls = [
                 ft.Container(
                     expand=True,
+                    bgcolor=ft.Colors.GREY_100,
                     content=ft.Row(
                         expand=True,
                         spacing=0,
@@ -101,7 +104,7 @@ class CommandsPage():
                             ft.Column(
                                 expand=True,
                                 spacing=0,
-                                controls = [ 
+                                controls = [
                                     ft.Container(
                                         expand=True,
                                         padding=32,
@@ -128,7 +131,6 @@ class CommandsPage():
                                                                             side=ft.BorderSide(width=0, color=ft.Colors.TRANSPARENT),
                                                                             bgcolor={
                                                                                 ft.ControlState.DEFAULT: ft.Colors.WHITE,
-                                                                                ft.ControlState.HOVERED: ft.Colors.GREY_200,
                                                                                 ft.ControlState.SELECTED: ft.Colors.PRIMARY
                                                                             },
                                                                             
@@ -194,4 +196,87 @@ class CommandsPage():
             ]
         )
     
+
+import copy
+
+class DefaultCommandModel(ft.AlertDialog):
+    def __init__(self, command: CommandConfig) -> None:
+        self.alias = copy.copy(command.alias)
+
+        self.name_textbox = ft.TextField(value=command.name)
+        self.alias_textbox = ft.TextField(on_submit=self.add_alias)
+        self.alias_container = ft.Row(wrap=True)
+        self.load_alias()
+       
+        self.user_level_dropdown = ft.Dropdown(
+            value=command.user_level or "everyone",
+            expand=True,
+            options=[
+                ft.DropdownOption(key="everyone", content=ft.Text("Everyone")),
+                ft.DropdownOption(key="moderator", content=ft.Text("Moderator")),
+                ft.DropdownOption(key="suscriptor", content=ft.Text("Suscriptor")),
+            ]
+        )
+
+        super().__init__(
+            title_padding=ft.padding.only(left=32, right=32, top=32, bottom=0),
+            content_padding=32,
+            action_button_padding=16,
+            inset_padding=32,
+            shape=ft.RoundedRectangleBorder(radius=16),
+            modal=False,
+            bgcolor=ft.Colors.WHITE,
+            title=ft.Text("Editar comando predeterminado"),
+            actions_alignment=ft.MainAxisAlignment.END,
+            content=ft.Column(
+                spacing=8,
+                scroll=ft.ScrollMode.ADAPTIVE,
+                controls=[
+                    ft.Text("Nombre"),
+                    self.name_textbox,
+                    ft.Text("Nivel requerido"),
+                    self.user_level_dropdown,
+                    ft.Text("Alias de comando"),
+                    self.alias_textbox,
+                    self.alias_container
+                ]
+            ),
+
+            actions=[
+                ft.FilledButton(text="Guardar", on_click=lambda e, c=command: self.save_command(e, c)),
+                ft.FilledButton(text="Cancelar", on_click=self.on_modal)
+            ]
+        )
     
+    def load_alias(self):
+        self.alias_container.controls.clear()
+
+        for alias in self.alias:
+            self.alias_container.controls.append(
+                Tag(alias, lambda e, a=alias: self.remove_alias(e, a))
+            )
+
+    def add_alias(self, e: ft.ControlEvent) -> None:
+        textbox = e.control
+
+        if not textbox.value in self.alias:
+            self.alias.append(textbox.value)
+            textbox.value = ""
+            textbox.focus()
+            self.load_alias()
+            self.page.update()
+    
+    def remove_alias(self, e: ft.ControlEvent, alias: str) -> None:
+        if alias in self.alias:
+            self.alias.remove(alias)
+            self.load_alias()
+            self.page.update()
+
+    def save_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
+        command.name = self.name_textbox.value
+        command.user_level = self.user_level_dropdown.value
+        command.alias = copy.copy(self.alias)
+        self.page.close(self)
+
+    def on_modal(self, e: ft.ControlEvent) -> None:
+        self.page.close(self)

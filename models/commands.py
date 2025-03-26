@@ -23,4 +23,4 @@ class CommandConfig:
         self.response_type = response_type
 
     def __repr__(self):
-        return f'<Command "{self.name}": enabled="{self.enable}">'
+        return f'<Command "{self.name}": enabled="{self.enable}", id="{id(self)}">'

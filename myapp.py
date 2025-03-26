@@ -9,6 +9,11 @@ class MyApp:
     botconfig_path = os.path.join(config_path, "botconfig.json")
     command_registry: dict[str, Callable] = {}
 
+    font_primary = 'Century Gothic'
+    font_secondary = 'Arial'
+
+    bot = None
+
     link_pattern = re.compile(
         r'^(https?://)?'
         r'([\w.-]+)\.'
