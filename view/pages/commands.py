@@ -1,9 +1,7 @@
-from typing import Callable
+import copy
 import flet as ft
 from models.commands import CommandConfig
-from ..controls.navigation_bar import NavigationBar
-from ..controls.data_table import DataTable
-from ..controls.tag import Tag
+from ..controls import NavigationBar, DataTable, Tag, Button, TextBox, SegmentedButton, DropDown, Label
 from models.config import ConfigManager
 from myapp import MyApp
 
@@ -18,49 +16,46 @@ class CommandsPage():
         self.default_commands_table = DataTable(
             visible=True,
             columns=[
-                ft.DataColumn(ft.Text("ACTIVO")),
-                ft.DataColumn(ft.Text("COMANDO")),
-                ft.DataColumn(ft.Text("DESCRIPCIÓN")),
-                ft.DataColumn(ft.Text("PERMISOS"))
+                ft.DataColumn(ft.Text("Activo")),
+                ft.DataColumn(ft.Text("Comando")),
+                ft.DataColumn(ft.Text("Decripción")),
+                ft.DataColumn(ft.Text("Permisos"))
             ]
         )
 
         self.custom_commands_table = DataTable(
             visible=False,
             columns=[
-                ft.DataColumn(ft.Text("ACTIVO")),
-                ft.DataColumn(ft.Text("COMANDO")),
-                ft.DataColumn(ft.Text("DESCRIPCIÓN")),
-                ft.DataColumn(ft.Text("PERMISOS"))
+                ft.DataColumn(ft.Text("Activo")),
+                ft.DataColumn(ft.Text("Comando")),
+                ft.DataColumn(ft.Text("Respuesta")),
+                ft.DataColumn(ft.Text("Permisos"))
             ]
         )
 
         self.target_table = self.default_commands_table
 
     def load_data(self, table: DataTable, filter: str = '') -> None:
-            target_commands = self.default_commands.values() if table == self.default_commands_table else self.custom_commands.values()
-            table.rows.clear()
+        target_commands = self.default_commands.values() if table == self.default_commands_table else self.custom_commands.values()
+        table.rows.clear()
 
-            for command in target_commands:
-                if filter == '' or filter in command.name.lower():
-                    table.rows.append(
-                        ft.DataRow(
-                            cells=[
-                                ft.DataCell(ft.Switch(
-                                    on_change=lambda e, c=command: self.disable_command(e, c),
-                                    value=command.enable, 
-                                    width=32,)
-                                ),
+        for command in target_commands:
+            if filter == '' or filter in command.name.lower():
+                table.rows.append(
+                    ft.DataRow(
+                        cells=[
+                            ft.DataCell(ft.Switch(
+                                on_change=lambda e, c=command: self.disable_command(e, c),
+                                value=command.enable, 
+                                width=32,)
+                            ),
 
-                                ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.page.open(DefaultCommandModel(c))),
-                                ft.DataCell(ft.Text(command.name)),
-                                ft.DataCell(ft.Text(command.user_level))
-                            ]
-                        )
+                            ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.page.open(DefaultCommandModel(c))),
+                            ft.DataCell(ft.Text(command.name if table == self.default_commands_table else command.response)),
+                            ft.DataCell(ft.Text(command.user_level))
+                        ]
                     )
-
-    def disable_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
-        command.enable = e.control.value
+                )
     
     # Apply the filter and refresh the data in the corresponding table
     def search_command(self, e: ft.ControlEvent) -> None:
@@ -82,6 +77,9 @@ class CommandsPage():
 
         self.load_data(self.target_table, self.filter)
         self.page.update()
+    
+    def disable_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
+        command.enable = e.control.value
 
     # Build the view UI and load the data into the tables
     def get_view(self) -> ft.View:
@@ -116,36 +114,11 @@ class CommandsPage():
                                                     spacing=32,
                                                     controls=[
                                                         ft.Container(
-                                                            content=ft.Row(
-                                                                controls=[
-                                                                    ft.SegmentedButton(
-                                                                        height=32,
-                                                                        allow_multiple_selection=False,
-                                                                        allow_empty_selection=False,
-                                                                        show_selected_icon=False,
-                                                                        selected={"1"},
-                                                                        on_change=self.change_tab,
-
-                                                                        style=ft.ButtonStyle(
-                                                                            shape=ft.RoundedRectangleBorder(radius=8),
-                                                                            side=ft.BorderSide(width=0, color=ft.Colors.TRANSPARENT),
-                                                                            bgcolor={
-                                                                                ft.ControlState.DEFAULT: ft.Colors.WHITE,
-                                                                                ft.ControlState.SELECTED: ft.Colors.PRIMARY
-                                                                            },
-                                                                            
-                                                                            text_style=ft.TextStyle(
-                                                                                font_family=MyApp.font_secondary,
-                                                                                weight=ft.FontWeight.BOLD,
-                                                                                size=14
-                                                                            )
-                                                                        ),
-
-                                                                        segments=[
-                                                                            ft.Segment(value="1", label=ft.Text("Predeterminados")),
-                                                                            ft.Segment(value="2", label=ft.Text("Personalizados")),
-                                                                        ]
-                                                                    )
+                                                            content=SegmentedButton(
+                                                                on_change=self.change_tab,
+                                                                segments=[
+                                                                    ft.Segment(value="1", label=ft.Text("Predeterminados")),
+                                                                    ft.Segment(value="2", label=ft.Text("Personalizados")),
                                                                 ]
                                                             )
                                                         ),
@@ -156,7 +129,7 @@ class CommandsPage():
                                                             content=ft.TextField(
                                                                 width=350,
                                                                 height=32,
-                                                                text_style=ft.TextStyle(font_family=MyApp.font_secondary, size=14),
+                                                                text_style=ft.TextStyle(font_family=MyApp.font_secondary, size=16),
                                                                 text_vertical_align=ft.VerticalAlignment.CENTER,
                                                                 hint_text="Buscar comando...",
                                                                 bgcolor=ft.Colors.WHITE,
@@ -196,21 +169,17 @@ class CommandsPage():
             ]
         )
     
-
-import copy
-
 class DefaultCommandModel(ft.AlertDialog):
     def __init__(self, command: CommandConfig) -> None:
         self.alias = copy.copy(command.alias)
 
-        self.name_textbox = ft.TextField(value=command.name)
-        self.alias_textbox = ft.TextField(on_submit=self.add_alias)
+        self.name_textbox = TextBox(value=command.name)
+        self.alias_textbox = TextBox(on_submit=self.add_alias)
         self.alias_container = ft.Row(wrap=True)
         self.load_alias()
        
-        self.user_level_dropdown = ft.Dropdown(
+        self.user_level_dropdown = DropDown(
             value=command.user_level or "everyone",
-            expand=True,
             options=[
                 ft.DropdownOption(key="everyone", content=ft.Text("Everyone")),
                 ft.DropdownOption(key="moderator", content=ft.Text("Moderator")),
@@ -226,25 +195,46 @@ class DefaultCommandModel(ft.AlertDialog):
             shape=ft.RoundedRectangleBorder(radius=16),
             modal=False,
             bgcolor=ft.Colors.WHITE,
-            title=ft.Text("Editar comando predeterminado"),
+            title=ft.Text("Editar comando", font_family=MyApp.font_primary, weight=ft.FontWeight.BOLD),
             actions_alignment=ft.MainAxisAlignment.END,
-            content=ft.Column(
-                spacing=8,
-                scroll=ft.ScrollMode.ADAPTIVE,
-                controls=[
-                    ft.Text("Nombre"),
-                    self.name_textbox,
-                    ft.Text("Nivel requerido"),
-                    self.user_level_dropdown,
-                    ft.Text("Alias de comando"),
-                    self.alias_textbox,
-                    self.alias_container
-                ]
+            content=ft.Container(
+                width=400,
+                content=ft.Column(
+                    spacing=16,
+                    scroll=ft.ScrollMode.ADAPTIVE,
+                    controls=[
+                        ft.Column(
+                            spacing=0,
+                            controls=[
+                                Label(text="Nombre:"),
+                                self.name_textbox,
+                            ]
+                        ),
+
+                        ft.Column(
+                            spacing=0,
+                            controls=[
+                                Label(text="Nivel requerido"),
+                                self.user_level_dropdown,
+                            ]
+                        ),
+
+                        ft.Column(
+                            spacing=0,
+                            controls=[
+                                Label(text="Alias de comando"),
+                                self.alias_textbox,
+                            ]
+                        ),
+                        
+                        self.alias_container
+                    ]
+                ),
             ),
 
             actions=[
-                ft.FilledButton(text="Guardar", on_click=lambda e, c=command: self.save_command(e, c)),
-                ft.FilledButton(text="Cancelar", on_click=self.on_modal)
+                Button(text="Cancelar", style="Outlined", on_click=self.on_modal),
+                Button(text="Guardar", style="Filled", on_click=lambda e, c=command: self.save_command(e, c))
             ]
         )
     
@@ -280,3 +270,4 @@ class DefaultCommandModel(ft.AlertDialog):
 
     def on_modal(self, e: ft.ControlEvent) -> None:
         self.page.close(self)
+        self.page.update()

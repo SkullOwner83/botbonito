@@ -1,5 +1,6 @@
 from typing import Callable
 import flet as ft
+from myapp import MyApp
 
 class Tag(ft.Container):
     def __init__(self, text: str, on_remove: Callable) -> None:
@@ -12,7 +13,12 @@ class Tag(ft.Container):
                 tight=True,
                 spacing=0,
                 controls=[
-                    ft.Text(text),
+                    ft.Text(
+                        value=text,
+                        size=16,
+                        font_family=MyApp.font_secondary,
+                    ),
+
                     ft.IconButton(ft.Icons.CLOSE, 
                         icon_size=16, 
                         width=32, 

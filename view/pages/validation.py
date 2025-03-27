@@ -26,13 +26,16 @@ class ValidationPage:
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
                             ft.Text(value="Tu token no es válido.", size=32, weight=ft.FontWeight.BOLD),
-                            ft.Text(value="Ingresa al siguiente sitio para obtener un nuevo token.", ),
-                            ft.Row(
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                controls = [
-                                    ft.Button(text="Abrir", width=100, on_click=self.token_validation),
-                                    ft.Button(text="Copiar", width=100)
-                                ],
+                            ft.Text(value="Ingresa al siguiente sitio para obtener un nuevo token."),
+                            ft.Container(
+                                margin=ft.margin.only(top=32),
+                                content=ft.Row(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    controls = [
+                                        ft.Button(text="Abrir", width=100, on_click=self.token_validation),
+                                        ft.Button(text="Copiar", width=100)
+                                    ],
+                                )
                             )
                         ]
                     )

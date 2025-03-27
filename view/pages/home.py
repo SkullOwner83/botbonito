@@ -1,6 +1,5 @@
 import flet as ft
-from ..controls.navigation_bar import NavigationBar
-
+from ..controls import NavigationBar
 
 class HomePage:
     def __init__(self, page: ft.Page):
