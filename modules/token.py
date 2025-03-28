@@ -1,9 +1,7 @@
-import webbrowser
 import requests
 import http.server
 import threading
 import urllib.parse
-import pyperclip
 
 class Token:
     def __init__(self, client_id, client_secret, scope, redirect_uri, server_port = 3000):
@@ -35,22 +33,16 @@ class Token:
 
         return False
     
-    # Get an access token, redirecting the user to the authorization page
-    def get_authorization(self, mode: str = 'open_browser') -> str:
+    def get_auth_link(self):
         url = 'https://id.twitch.tv/oauth2/authorize'
         encoded_scopes = urllib.parse.quote(' '.join(self.scope))
         auth_url = f'{url}?client_id={self.client_id}&redirect_uri={self.redirect_uri}&response_type=code&scope={encoded_scopes}'
+        return auth_url
+    
+    # Get an access token, redirecting the user to the authorization page
+    def get_authorization(self) -> str:
         server = http.server.HTTPServer(('localhost', self.server_port), self.__OAuthHandler)
         server.auth_code = None
-
-        # Start the server to capture the redirection
-        if mode == 'open_browser':
-            webbrowser.open(auth_url)
-
-        if mode == 'copy_link':
-            pyperclip.copy(auth_url)
-
-
         thread = threading.Thread(target=server.serve_forever)
         thread.daemon = True
         thread.start()

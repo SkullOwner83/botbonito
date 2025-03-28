@@ -1,3 +1,5 @@
+import webbrowser
+import pyperclip
 from modules.file import File
 from modules.token import Token
 from myapp import MyApp
@@ -32,8 +34,8 @@ class ValidationPage:
                                 content=ft.Row(
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls = [
-                                        ft.Button(text="Abrir", width=100, on_click=self.token_validation),
-                                        ft.Button(text="Copiar", width=100)
+                                        ft.Button(text="Abrir", width=100, on_click=lambda e: self.token_validation("OPEN")),
+                                        ft.Button(text="Copiar", width=100, on_click=lambda e: self.token_validation("COPY"))
                                     ],
                                 )
                             )
@@ -43,9 +45,17 @@ class ValidationPage:
             ]
         )
 
-    def token_validation(self, e: ft.ControlEvent):
+    def token_validation(self, mode: str) -> None:
         token = Token(self.client_id, self.client_secret, self.scope, self.redirect_uri)
-        NewToken = token.get_authorization('copy_link')
+        auth_url = token.get_auth_link()
+
+        if mode == 'OPEN':
+            webbrowser.open(auth_url)
+
+        if mode == 'COPY':
+            pyperclip.copy(auth_url)
+
+        NewToken = token.get_authorization()
 
         if token.validation(NewToken):
             self.credentials['token'] = NewToken
