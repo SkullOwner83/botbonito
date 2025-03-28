@@ -47,14 +47,10 @@ class ValidationPage:
 
     def token_validation(self, mode: str) -> None:
         token = Token(self.client_id, self.client_secret, self.scope, self.redirect_uri)
-        auth_url = token.get_auth_link()
+        auth_url = token.generate_auth_url()
 
-        if mode == 'OPEN':
-            webbrowser.open(auth_url)
-
-        if mode == 'COPY':
-            pyperclip.copy(auth_url)
-
+        if mode == 'OPEN': webbrowser.open(auth_url)
+        if mode == 'COPY': pyperclip.copy(auth_url)
         NewToken = token.get_authorization()
 
         if token.validation(NewToken):
