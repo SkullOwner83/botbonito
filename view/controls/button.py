@@ -6,12 +6,12 @@ class Button(ft.FilledButton):
     def __init__(self, text: str, on_click: Callable = None, style: str = 'Filled') -> None:
         super().__init__(
             text=text,
-            width=96,
             height=32,
             on_click=on_click,
             style=ft.ButtonStyle(
                 bgcolor=ft.Colors.PRIMARY,
                 shape=ft.RoundedRectangleBorder(radius=8),
+                padding=ft.padding.symmetric(horizontal=16),
                 text_style=ft.TextStyle(
                     foreground=ft.Paint(color=ft.Colors.WHITE),
                     font_family=MyApp.font_primary,

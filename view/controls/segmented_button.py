@@ -15,6 +15,7 @@ class SegmentedButton(ft.SegmentedButton):
             
             style=ft.ButtonStyle(
                 shape=ft.RoundedRectangleBorder(radius=8),
+                padding=ft.padding.symmetric(horizontal=16),
                 side=ft.BorderSide(width=0, color=ft.Colors.TRANSPARENT),
                 bgcolor={
                     ft.ControlState.DEFAULT: ft.Colors.WHITE,
