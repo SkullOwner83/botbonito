@@ -12,22 +12,25 @@ class NavigationBar(ft.Container):
 
         super().__init__(
             bgcolor=ft.Colors.WHITE,
-            content=ft.Column(
-                width=200,
-                spacing=0,
-                controls=[
-                    ft.Container(
-                        height=64,
-                        padding=16,
-                        content=ft.Image(src="icons/botbonito.svg", width=150)
-                    ),
+            content=self.build()
+        )
+    
+    def build(self):
+        return ft.Column(
+            width=200,
+            spacing=0,
+            controls=[
+                ft.Container(
+                    height=64,
+                    padding=16,
+                    content=ft.Image(src="icons/botbonito.svg", width=150)
+                ),
 
-                    MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),
-                    MenuButton('Comandos', self.commands_icon, lambda e: self.page.go('/commands')),
-                    MenuButton('Moderación', self.moderation_icon, lambda e: self.page.go('/moderation')),
-                    MenuButton('Configuración', self.configuration_icon, lambda e: self.page.go('/configuration'))
-                ]
-            )
+                MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),
+                MenuButton('Comandos', self.commands_icon, lambda e: self.page.go('/commands')),
+                MenuButton('Moderación', self.moderation_icon, lambda e: self.page.go('/moderation')),
+                MenuButton('Configuración', self.configuration_icon, lambda e: self.page.go('/configuration'))
+            ]
         )
 
 
@@ -44,8 +47,10 @@ class MenuButton(ft.Container):
         self.icon = icon
         self.hover_color = ft.Colors.GREY_300
         self.on_click = onclick
-        
-        self.content = ft.Row(
+        self.content = self.build()
+
+    def build(self) -> ft.Row:
+        return ft.Row(
             spacing=8,
             controls = [
                 ft.Container(
@@ -55,7 +60,7 @@ class MenuButton(ft.Container):
                 ),
 
                 ft.Text(
-                    value=text,
+                    value=self.text,
                     color= ft.Colors.BLACK,
                     font_family=MyApp.font_primary,
                     weight= ft.FontWeight.BOLD,

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 import flet as ft
 from myapp import MyApp
 
@@ -11,8 +11,10 @@ class DataTable(ft.Container):
         self.rows = rows or []
         self.bgcolor=ft.Colors.WHITE
         self.border_radius=8
+        self.content = self.build()
 
-        self.content = ft.Column(
+    def build(self) -> ft.Column:
+        return ft.Column(
             expand=True,
             spacing=0,
             scroll=ft.ScrollMode.ADAPTIVE,

@@ -8,8 +8,10 @@ class Header(ft.Container):
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32, vertical=12)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
+        self.content = self.build()
 
-        self.content = ft.Row(
+    def build(self) -> ft.Row:
+        return ft.Row(
             spacing=0,
             controls= [
                 ft.Container(
