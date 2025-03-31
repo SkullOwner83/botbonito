@@ -15,8 +15,8 @@ class BotUI:
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
-        self.page.window.width = 720
-        self.page.window.height = 480
+        self.page.window.width = 800
+        self.page.window.height = 600
         self.page.window.always_on_top = True #This property is temporary, used only to maintain the app on top while it is beign designed
         self.page.update()
 
@@ -42,7 +42,7 @@ class BotUI:
         ValidToken = Token.validation(self.token)
 
         if ValidToken:
-            self.run_bot()  
+            self.run_bot()
             self.page.go('/')
         else:
             pass

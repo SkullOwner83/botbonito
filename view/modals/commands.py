@@ -2,24 +2,27 @@ from typing import Callable, Optional
 import flet as ft
 from ..controls import Modal, Button, TextBox, DropDown, Label, Tag
 from models.commands import CommandConfig
+from models.config import ConfigManager
 
 class CommandsModel(Modal):
     def __init__(self, command: CommandConfig, on_save: Optional[Callable] = None) -> None:
+        self.commands_config = ConfigManager()
         self.command = command
+        self.command_type = 'default' if command.name in self.commands_config.default_commands.keys() else 'custom'
         self.alias = command.alias.copy()
         self.on_save = on_save
-        self.build_controls()
+        self.set_controls()
 
         super().__init__(
             title="Editar comando",
             content=self.build(),
             actions=[
-                Button(text="Cancelar", style="Outlined", on_click=self.on_modal),
+                Button(text="Cancelar", style="Outlined", on_click=self.on_close),
                 Button(text="Guardar", style="Filled", on_click=lambda e, c=command: self.save_command(e, c))
             ]
         )
 
-    def build_controls(self) -> None:
+    def set_controls(self) -> None:
         self.name_textbox = TextBox(value=self.command.name)
         self.alias_textbox = TextBox(on_submit=self.add_alias)
         self.alias_container = ft.Row(wrap=True)
@@ -35,7 +38,33 @@ class CommandsModel(Modal):
             ]
         )
 
-    def build(self):
+        
+        self.customs_controls = [
+            ft.Column(
+                    spacing=0,
+                    controls=[
+                        Label(text="Respuesta:"),
+                        TextBox(value=self.command.response)
+                    ]
+                ),
+
+                ft.Column(
+                    spacing=0,
+                    controls=[
+                        Label(text="Tipo de respuesta:"),
+                        DropDown(
+                            value=self.command.response_type or "say",
+                            options=[
+                                ft.DropdownOption(key="say", content=ft.Text("Decir")),
+                                ft.DropdownOption(key="mention", content=ft.Text("Mencionar")),
+                                ft.DropdownOption(key="reply", content=ft.Text("Responder")),
+                            ]
+                        )
+                    ]
+                )
+        ] if self.command_type == 'custom' else None
+
+    def build(self) -> ft.Column:
         return ft.Column(
             spacing=16,
             scroll=ft.ScrollMode.ADAPTIVE,
@@ -56,6 +85,8 @@ class CommandsModel(Modal):
                     ]
                 ),
 
+                *(self.customs_controls if self.customs_controls else []),
+                
                 ft.Column(
                     spacing=0,
                     controls=[
@@ -100,6 +131,6 @@ class CommandsModel(Modal):
         self.page.close(self)
         self.on_save() if self.on_save else None
 
-    def on_modal(self, e: ft.ControlEvent) -> None:
+    def on_close(self, e: ft.ControlEvent) -> None:
         self.page.close(self)
         self.page.update()
