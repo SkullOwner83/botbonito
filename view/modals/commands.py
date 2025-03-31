@@ -8,7 +8,7 @@ class CommandsModel(Modal):
     def __init__(self, command: CommandConfig, on_save: Optional[Callable] = None) -> None:
         self.commands_config = ConfigManager()
         self.command = command
-        self.command_type = 'default' if command.name in self.commands_config.default_commands.keys() else 'custom'
+        self.command_type = 'default' if command in self.commands_config.default_commands.values() else 'custom'
         self.alias = command.alias.copy()
         self.on_save = on_save
         self.set_controls()
@@ -26,6 +26,7 @@ class CommandsModel(Modal):
         self.name_textbox = TextBox(value=self.command.name)
         self.alias_textbox = TextBox(on_submit=self.add_alias)
         self.alias_container = ft.Row(wrap=True)
+        self.customs_controls = []
         self.load_alias()
        
         self.user_level_dropdown = DropDown(
@@ -38,13 +39,24 @@ class CommandsModel(Modal):
             ]
         )
 
-        
-        self.customs_controls = [
-            ft.Column(
+        if self.command_type == 'custom':
+            self.response_textbox = TextBox(value=self.command.response)
+
+            self.response_type_dropdown = DropDown(
+                value=self.command.response_type or "say",
+                options=[
+                    ft.DropdownOption(key="say", content=ft.Text("Decir")),
+                    ft.DropdownOption(key="mention", content=ft.Text("Mencionar")),
+                    ft.DropdownOption(key="reply", content=ft.Text("Responder")),
+                ]
+            )
+
+            self.customs_controls.extend([
+                ft.Column(
                     spacing=0,
                     controls=[
                         Label(text="Respuesta:"),
-                        TextBox(value=self.command.response)
+                        self.response_textbox
                     ]
                 ),
 
@@ -52,17 +64,10 @@ class CommandsModel(Modal):
                     spacing=0,
                     controls=[
                         Label(text="Tipo de respuesta:"),
-                        DropDown(
-                            value=self.command.response_type or "say",
-                            options=[
-                                ft.DropdownOption(key="say", content=ft.Text("Decir")),
-                                ft.DropdownOption(key="mention", content=ft.Text("Mencionar")),
-                                ft.DropdownOption(key="reply", content=ft.Text("Responder")),
-                            ]
-                        )
+                        self.response_type_dropdown
                     ]
                 )
-        ] if self.command_type == 'custom' else None
+            ])
 
     def build(self) -> ft.Column:
         return ft.Column(
@@ -85,8 +90,8 @@ class CommandsModel(Modal):
                     ]
                 ),
 
-                *(self.customs_controls if self.customs_controls else []),
-                
+                *self.customs_controls,
+
                 ft.Column(
                     spacing=0,
                     controls=[
@@ -128,6 +133,11 @@ class CommandsModel(Modal):
         command.name = self.name_textbox.value
         command.user_level = self.user_level_dropdown.value
         command.alias = self.alias.copy()
+
+        if self.command_type == 'custom':
+            command.response = self.response_textbox.value
+            command.response_type = self.response_type_dropdown.value
+
         self.page.close(self)
         self.on_save() if self.on_save else None
 
