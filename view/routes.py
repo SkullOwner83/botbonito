@@ -5,23 +5,20 @@ from .pages.commands import CommandsPage
 from .pages.moderation import ModerationPage
 from .pages.configuration import ConfigurationPage
 
-class Routes:
+class RouteHandler:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.home_page = HomePage(page)
-        self.validation_page = ValidationPage(page)
-        self.commands_page = CommandsPage(page)
-        self.moderation_page = ModerationPage(page)
-        self.configuration_page = ConfigurationPage(page)
     
     def route_change(self, e) -> None:
         self.page.views.clear()
 
-        if self.page.route == "/": self.page.views.append(self.home_page.get_view())
-        elif self.page.route == "/validation": self.page.views.append(self.validation_page.get_view())
-        elif self.page.route == "/commands": self.page.views.append(self.commands_page.get_view())
-        elif self.page.route == "/moderation": self.page.views.append(self.moderation_page.get_view())
-        elif self.page.route == "/configuration": self.page.views.append(self.configuration_page.get_view())
+        match(self.page.route):
+            case "/": self.page.views.append(HomePage(self.page))
+            case "/validation": self.page.views.append(ValidationPage(self.page))
+            case "/commands": self.page.views.append(CommandsPage(self.page))
+            case "/moderation": self.page.views.append(ModerationPage(self.page))
+            case "/configuration": self.page.views.append(ConfigurationPage(self.page))
+            case _: self.page.views.append(HomePage(self.page))
 
         self.page.update()
     
