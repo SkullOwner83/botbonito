@@ -5,20 +5,28 @@ from models.commands import CommandConfig
 from models.config import ConfigManager
 
 class CommandsModel(Modal):
-    def __init__(self, command: CommandConfig, on_save: Optional[Callable] = None) -> None:
+    def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:
         self.commands_config = ConfigManager()
-        self.command = command
-        self.command_type = 'default' if command in self.commands_config.default_commands.values() else 'custom'
-        self.alias = command.alias.copy()
+
+        if command is None:
+            self.action = 'create'
+            self.command = CommandConfig('nombre')
+            self.command_type = 'custom'
+        else:
+            self.action = 'edit'
+            self.command = command
+            self.command_type = 'default' if command in self.commands_config.default_commands.values() else 'custom'
+
+        self.alias = self.command.alias.copy()
         self.on_save = on_save
         self.set_controls()
 
         super().__init__(
-            title="Editar comando",
+            title="Editar comando" if self.action == 'edit' else "Nuevo comando",
             content=self.build(),
             actions=[
                 Button(text="Cancelar", style="Outlined", on_click=self.on_close),
-                Button(text="Guardar", style="Filled", on_click=lambda e, c=command: self.save_command(e, c))
+                Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command(e))
             ]
         )
 
@@ -129,14 +137,17 @@ class CommandsModel(Modal):
             self.load_alias()
             self.page.update()
 
-    def save_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
-        command.name = self.name_textbox.value
-        command.user_level = self.user_level_dropdown.value
-        command.alias = self.alias.copy()
+    def save_command(self, e: ft.ControlEvent) -> None:
+        self.command.name = self.name_textbox.value
+        self.command.user_level = self.user_level_dropdown.value
+        self.command.alias = self.alias.copy()
 
         if self.command_type == 'custom':
-            command.response = self.response_textbox.value
-            command.response_type = self.response_type_dropdown.value
+            self.command.response = self.response_textbox.value
+            self.command.response_type = self.response_type_dropdown.value
+
+        if self.action == 'create':
+            self.commands_config.custom_commands[self.command.name] = self.command
 
         self.page.close(self)
         self.on_save() if self.on_save else None

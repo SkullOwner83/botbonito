@@ -39,7 +39,7 @@ class CommandsPage(ft.View):
                                 width=32,)
                             ),
 
-                            ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.open_modal(c)),
+                            ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.modify_command(c)),
                             ft.DataCell(ft.Text(command.name if table == self.default_commands_table else command.response)),
                             ft.DataCell(ft.Text(command.user_level))
                         ]
@@ -48,7 +48,10 @@ class CommandsPage(ft.View):
 
         self.page.update()
 
-    def open_modal(self, command: CommandConfig) -> None:
+    def create_command(self, e: ft.ControlEvent) -> None:
+        self.page.open(CommandsModel(on_save=self.load_data))
+        
+    def modify_command(self, command: CommandConfig) -> None:
         self.page.open(CommandsModel(command, self.load_data))
     
     # Apply the filter and refresh the data in the corresponding table
@@ -62,11 +65,13 @@ class CommandsPage(ft.View):
         if e.control.selected == {"1"}:
             self.default_commands_table.visible = True
             self.custom_commands_table.visible = False
+            self.add_command_button.visible = False
             self.target_table = self.default_commands_table
 
         elif e.control.selected == {"2"}:
             self.custom_commands_table.visible = True
             self.default_commands_table.visible = False
+            self.add_command_button.visible = True
             self.target_table = self.custom_commands_table
 
         self.load_data(self.target_table, self.filter)
@@ -94,6 +99,14 @@ class CommandsPage(ft.View):
                 ft.DataColumn(ft.Text("Respuesta")),
                 ft.DataColumn(ft.Text("Permisos"))
             ]
+        )
+
+        self.add_command_button = Button(
+            text="+", 
+            width=32, 
+            padding=0, 
+            visible=False, 
+            on_click=self.create_command
         )
 
         self.target_table = self.default_commands_table
@@ -153,13 +166,14 @@ class CommandsPage(ft.View):
                                                         border_radius=8,
                                                         on_change=self.search_command
                                                     )
-                                                )
+                                                ),
+
+                                                self.add_command_button
                                             ]
                                         ),
 
-                                        ft.Row(
+                                        ft.Column(
                                             expand=True,
-                                            vertical_alignment=ft.CrossAxisAlignment.START,
                                             controls=[
                                                 ft.Stack(
                                                     expand=True,
