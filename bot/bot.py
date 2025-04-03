@@ -18,8 +18,6 @@ from myapp import MyApp
 from models.config import ConfigManager
 
 class Bot(commands.Bot):
-    command_registry: dict[str, Callable] = {}
-
     def __init__(self, config: dict, credentials: dict) -> None:
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self)
@@ -86,7 +84,7 @@ class Bot(commands.Bot):
 
     # Check chat messages event
     async def event_message(self, message: Message) -> None:
-        if message.author is self.name or message.author is None:
+        if not message.author or message.author.name.lower() == self.name.lower():
             return
 
         message.content = message.content.lower() # crear una variable para hacer el low del mensaje y procesar el comando. Mandar el mensaje normal, ya que youtube si difieren las mayusculas

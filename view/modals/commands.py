@@ -149,8 +149,9 @@ class CommandsModel(Modal):
         if self.action == 'create':
             self.commands_config.custom_commands[self.command.name] = self.command
 
-        self.page.close(self)
+        self.commands_config.save_commands()
         self.on_save() if self.on_save else None
+        self.page.close(self)
 
     def on_close(self, e: ft.ControlEvent) -> None:
         self.page.close(self)
