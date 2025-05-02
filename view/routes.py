@@ -5,16 +5,18 @@ from .pages.commands import CommandsPage
 from .pages.moderation import ModerationPage
 from .pages.configuration import ConfigurationPage
 
+
 class RouteHandler:
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, bot_services):
         self.page = page
+        self.bot_services = bot_services
     
     def route_change(self, e) -> None:
         self.page.views.clear()
 
         match(self.page.route):
             case "/": self.page.views.append(HomePage(self.page))
-            case "/validation": self.page.views.append(ValidationPage(self.page))
+            case "/validation": self.page.views.append(ValidationPage(self.page, self.bot_services))
             case "/commands": self.page.views.append(CommandsPage(self.page))
             case "/moderation": self.page.views.append(ModerationPage(self.page))
             case "/configuration": self.page.views.append(ConfigurationPage(self.page))

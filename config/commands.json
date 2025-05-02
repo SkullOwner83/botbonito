@@ -2,82 +2,118 @@
     "default_commands": {
         "help": {
             "name": "help",
-            "alias": ["ayuda"],
             "enable": true,
+            "alias": [
+                "ayuda"
+            ],
             "cooldown": 0,
-            "user_level": "everyone"
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "schedule": {
             "name": "horario",
-            "alias": ["schedule"],
             "enable": true,
+            "alias": [
+                "schedule"
+            ],
             "cooldown": 0,
-            "user_level": "everyone"
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "following": {
             "name": "following",
-            "alias": [],
             "enable": true,
+            "alias": [],
             "cooldown": 0,
-            "user_level": "everyone"
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "playsound": {
             "name": "play",
-            "alias": [],
             "enable": true,
+            "alias": [],
             "cooldown": 60,
-            "user_level": "everyone"
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "speak": {
             "name": "speak",
             "enable": true,
             "alias": [],
             "cooldown": 180,
-            "max_lenght": 200,
-            "user_level": "everyone"
+            "max_length": 200,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "giveaway": {
             "name": "giveaway",
             "enable": true,
-            "alias": ["rifa", "sorteo"],
+            "alias": [
+                "rifa",
+                "sorteo"
+            ],
             "cooldown": 180,
-            "max_lenght": 200,
-            "user_level": "everyone"
+            "max_length": 200,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         },
-
         "giveaway_entry": {
             "name": "entry",
             "enable": true,
-            "alias": ["leentro"],
+            "alias": [
+                "leentro"
+            ],
             "cooldown": 180,
-            "max_lenght": 200,
-            "user_level": "broadcaster"
+            "max_length": 200,
+            "user_level": "broadcaster",
+            "response": null,
+            "response_type": "say"
         },
-
         "demo": {
             "name": "demo",
             "enable": true,
             "alias": [],
             "cooldown": 180,
-            "max_lenght": 200,
-            "user_level": "everyone"
+            "max_length": 200,
+            "user_level": "everyone",
+            "response": null,
+            "response_type": "say"
         }
     },
-
     "custom_commands": {
-        "saludo": {
-            "name": "saludo",
+        "gay": {
+            "name": "gay",
             "enable": true,
-            "alias": [],
+            "alias": [
+                "joto",
+                "marica"
+            ],
             "cooldown": 180,
-            "max_lenght": 200,
+            "max_length": 200,
             "user_level": "everyone",
-            "response": "Hola, ¿Cómo estas?",
+            "response": "¿Quién? ¿El Owl?",
+            "response_type": "say"
+        },
+        "comando": {
+            "name": "comando",
+            "enable": true,
+            "alias": [
+                "command"
+            ],
+            "cooldown": 0,
+            "max_length": 0,
+            "user_level": "suscriptor",
+            "response": "respuesta del comando",
             "response_type": "say"
         }
     }

@@ -1,0 +1,33 @@
+{
+    "name": "botbonito_",
+    "prefix": "!",
+    "redirect_uri": "http://localhost:3000",
+    "channels": ["skullowner_"],
+    "scope": [
+        "chat:read",
+        "user:read:subscriptions",
+        "chat:edit",
+        "moderator:read:followers",
+        "moderator:manage:chat_messages",
+        "moderator:manage:banned_users"
+    ],
+
+    "wake_word": "chatbot",
+    "enable_word": "enable",
+    "disable_word": "disable", 
+    "help_word": "help",
+    "frequency_message_time": 1200,
+    "snd_cooldown": 60,
+    "spk_cooldown": 180,
+    "speak_max_length": 200,
+    "frecuency_messages": [
+        "¿Ya tomaste awua uwu?",
+        "Esta bonito tu stream mijito! uwu",
+        "¿Se estan pasando un buen rato? :3",
+        "Gracias a los que estan viendo el directo :D",
+        "Recuerden entrar a mi discord: {discord}",
+        "¿Ya te suscribiste a mi canal de youtube? {youtube}",
+        "¿Ya me seguiste en instagram? {instagram}",
+        "Usa !help para ver la lista de comandos disponibles. :D"
+    ]
+}

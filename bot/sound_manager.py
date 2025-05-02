@@ -27,7 +27,7 @@ class SoundManager(commands.Cog):
 
         if await self.bot.check_command_access(ctx, "playsound"):
             if parameter == self.bot.config.get('help_word', 'help'):
-                await ctx.send(f"Para reproducir un sonido, escribe el comando !{command_config['name']}, seguido del nombre de uno de los siguientes sonidos (!{command_config['name']} holi):")
+                await ctx.send(f"Para reproducir un sonido, escribe el comando !{command_config.name}, seguido del nombre de uno de los siguientes sonidos (!{command_config.name} holi):")
                 await ctx.send(f"!{', !'.join(sound_commands)}")
                 return
                 

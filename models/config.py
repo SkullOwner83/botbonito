@@ -29,6 +29,21 @@ class ConfigManager():
                 for key, value in self.custom_commands.items()
                 for alias in value.alias }
             
+    def save_commands(self) -> None:
+        self.dictionary = {
+                "default_commands": {
+                    name: data.__dict__
+                    for name, data in self.default_commands.items()
+                },
+
+                "custom_commands": {
+                    name: data.__dict__
+                    for name, data in self.custom_commands.items()
+                }
+        }
+
+        File.save(os.path.join(MyApp.config_path, "commands.json"), self.dictionary)
+            
     def __new__(cls):
         if cls._instance is None:
             with cls._lock:

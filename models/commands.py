@@ -4,7 +4,7 @@ class CommandConfig:
     def __init__(
         self,
         name: str,
-        enable: bool = True,
+        enable: Optional[bool] = True,
         alias: Optional[List[str]] = None,
         cooldown: Optional[int] = 0,
         max_length: Optional[int] = 0,
