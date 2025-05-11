@@ -3,12 +3,10 @@
         "help": {
             "name": "help",
             "enable": true,
-            "alias": [
-                "ayuda"
-            ],
+            "alias": [],
             "cooldown": 0,
             "max_length": 0,
-            "user_level": "everyone",
+            "user_level": "moderator",
             "response": null,
             "response_type": "say"
         },
@@ -70,9 +68,7 @@
         "giveaway_entry": {
             "name": "entry",
             "enable": true,
-            "alias": [
-                "leentro"
-            ],
+            "alias": [],
             "cooldown": 180,
             "max_length": 200,
             "user_level": "broadcaster",
@@ -114,6 +110,16 @@
             "max_length": 0,
             "user_level": "suscriptor",
             "response": "respuesta del comando",
+            "response_type": "say"
+        },
+        "nombre": {
+            "name": "nombre",
+            "enable": true,
+            "alias": [],
+            "cooldown": 0,
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": "",
             "response_type": "say"
         }
     }

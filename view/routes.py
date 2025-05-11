@@ -13,7 +13,7 @@ class RouteHandler:
     
     def route_change(self, e) -> None:
         self.page.views.clear()
-
+        
         match(self.page.route):
             case "/": self.page.views.append(HomePage(self.page))
             case "/validation": self.page.views.append(ValidationPage(self.page, self.bot_services))
@@ -25,6 +25,7 @@ class RouteHandler:
         self.page.update()
     
     def view_pop(self, e: ft.ViewPopEvent) -> None:
+        self.page.views[1].can_pop
         self.page.views.pop()
         top_view: ft.View = self.page.views[-1]
         self.page.route = top_view.route

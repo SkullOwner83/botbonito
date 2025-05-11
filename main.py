@@ -21,7 +21,7 @@ class BotUI:
         self.bot_services = BotServices()
         self.route_handler = RouteHandler(self.page, self.bot_services)
         self.page.on_route_change = self.route_handler.route_change
-        self.page.on_view_pop = self.route_handler.view_pop
+        #self.page.on_view_pop = self.route_handler.view_pop
         self.page.go(page.route)
 
         page.theme = Theme(
