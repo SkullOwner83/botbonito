@@ -1,6 +1,5 @@
 import flet as ft
 from .pages.home import HomePage
-from .pages.validation import ValidationPage
 from .pages.commands import CommandsPage
 from .pages.moderation import ModerationPage
 from .pages.configuration import ConfigurationPage
@@ -16,7 +15,6 @@ class RouteHandler:
         
         match(self.page.route):
             case "/": self.page.views.append(HomePage(self.page))
-            case "/validation": self.page.views.append(ValidationPage(self.page, self.bot_services))
             case "/commands": self.page.views.append(CommandsPage(self.page))
             case "/moderation": self.page.views.append(ModerationPage(self.page))
             case "/configuration": self.page.views.append(ConfigurationPage(self.page))

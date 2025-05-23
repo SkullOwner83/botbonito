@@ -1,6 +1,6 @@
 import flet as ft
 from ..controls import *
-from ..modals import CommandsModel
+from ..modals import CommandsModal
 from models.commands import CommandConfig
 from models.config import ConfigManager
 from myapp import MyApp
@@ -49,10 +49,10 @@ class CommandsPage(ft.View):
         self.page.update()
 
     def create_command(self, e: ft.ControlEvent) -> None:
-        self.page.open(CommandsModel(on_save=self.load_data))
+        self.page.open(CommandsModal(on_save=self.load_data))
         
     def modify_command(self, command: CommandConfig) -> None:
-        self.page.open(CommandsModel(command, self.load_data))
+        self.page.open(CommandsModal(command, self.load_data))
     
     # Apply the filter and refresh the data in the corresponding table
     def search_command(self, e: ft.ControlEvent) -> None:
@@ -133,10 +133,10 @@ class CommandsPage(ft.View):
                                 padding=32,
                                 alignment=ft.alignment.top_center,
                                 content=ft.Column(
-                                    spacing=32,
+                                    spacing=20,
                                     controls=[
                                         ft.Row(
-                                            spacing=32,
+                                            spacing=20,
                                             controls=[
                                                 ft.Container(
                                                     content=SegmentedButton(

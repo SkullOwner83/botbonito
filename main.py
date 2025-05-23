@@ -4,10 +4,10 @@ from flet import Page, Theme, app
 from flet import PageTransitionsTheme, PageTransitionTheme
 from view.routes import RouteHandler
 from modules.token import Token
-from bot.bot import Bot
 from myapp import MyApp
 from modules.file import File
 from services.botservices import BotServices
+from view.modals import *
 
 class BotUI:
     def __init__(self, page: Page):
@@ -16,13 +16,7 @@ class BotUI:
         self.page.title = self.title
         self.page.window.width = 800
         self.page.window.height = 600
-        self.page.window.always_on_top = False #This property is temporary, used only to maintain the app on top while it is beign designed
-
-        self.bot_services = BotServices()
-        self.route_handler = RouteHandler(self.page, self.bot_services)
-        self.page.on_route_change = self.route_handler.route_change
-        #self.page.on_view_pop = self.route_handler.view_pop
-        self.page.go(page.route)
+        self.page.window.always_on_top = False
 
         page.theme = Theme(
             page_transitions=PageTransitionsTheme(
@@ -30,10 +24,16 @@ class BotUI:
             )
         )
 
-        self.page.update()
-        self.load_page()
+        self.start_up()
     
-    def load_page(self) -> None:
+    def start_up(self) -> None:
+        self.bot_services = BotServices()
+        self.route_handler = RouteHandler(self.page, self.bot_services)
+        self.page.on_route_change = self.route_handler.route_change
+        #self.page.on_view_pop = self.route_handler.view_pop
+        self.page.go(self.page.route)
+        self.page.update()
+
         credentials = File.open(MyApp.credentials_path)
         botconfig = File.open(MyApp.botconfig_path)
         access_token = credentials.get('token')
@@ -53,11 +53,12 @@ class BotUI:
                     credentials['token'] = new_token
                     credentials['refresh_token'] = new_refresh_token
                     File.save(MyApp.credentials_path, credentials)
+                    print("Token has been refreshed.")
                     self.bot_services.start(botconfig, credentials)
                     self.page.go('/')
                     return
 
-            self.page.go('/validation')
+            self.page.open(ValidationModal(self.bot_services))
 
 if __name__ == "__main__":
     app(

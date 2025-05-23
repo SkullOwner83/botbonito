@@ -1,10 +1,10 @@
 from typing import Callable, Optional
 import flet as ft
-from ..controls import Modal, Button, TextBox, DropDown, Label, Tag
+from ..controls import *
 from models.commands import CommandConfig
 from models.config import ConfigManager
 
-class CommandsModel(Modal):
+class CommandsModal(Modal):
     def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:
         self.commands_config = ConfigManager()
 

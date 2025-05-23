@@ -3,7 +3,9 @@
         "help": {
             "name": "help",
             "enable": true,
-            "alias": [],
+            "alias": [
+                "ayuda"
+            ],
             "cooldown": 0,
             "max_length": 0,
             "user_level": "everyone",

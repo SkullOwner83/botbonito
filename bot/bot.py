@@ -3,7 +3,6 @@ import time
 import random
 import asyncio
 import threading
-from typing import Callable
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
