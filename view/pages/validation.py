@@ -31,14 +31,16 @@ class ValidationPage(ft.View):
 
         if mode == 'OPEN': webbrowser.open(auth_url)
         if mode == 'COPY': pyperclip.copy(auth_url)
-        NewToken = token.get_authorization()
+        credentials = token.get_authorization()
+        new_token = credentials.get('access_token')
+        new_refresh_token = credentials.get('refresh_token')
 
-        if token.validation(NewToken):
-            self.credentials['token'] = NewToken
+        if token.validation(new_token):
+            self.credentials['token'] = new_token
+            self.credentials['refresh_token'] = new_refresh_token
             File.save(MyApp.credentials_path, self.credentials)
             self.bot_services.start(self.botconfig, self.credentials)
             self.page.go('/')
-
         else:
             print("Token invalido")
 

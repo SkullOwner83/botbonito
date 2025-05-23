@@ -6,7 +6,7 @@
             "alias": [],
             "cooldown": 0,
             "max_length": 0,
-            "user_level": "moderator",
+            "user_level": "everyone",
             "response": null,
             "response_type": "say"
         },

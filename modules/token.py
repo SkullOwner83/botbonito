@@ -50,13 +50,39 @@ class Token:
             data = response.json()
 
             if response.status_code == 200:
-                return data['access_token']
+                return data
             else:
                 print(f"Error {data['status']}: {data['message']}")
         except requests.RequestException as error:
             print(f"Error: {error}")
 
         return None
+    
+    def refresh_access_token(self, refresh_token: str):
+        url = 'https://id.twitch.tv/oauth2/token'
+
+        params = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': 'refresh_token',
+            'refresh_token': refresh_token
+        }
+
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+
+        try:
+            response = requests.post(url, params=params, headers=headers)
+            data = response.json()
+
+            if response.status_code == 200:
+                return data
+            else:
+                print(f"Error {data['status']}: {data['message']}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+
     
     # Generate a link to user can authorise the application and get a code to generate a token
     def generate_auth_url(self) -> str:

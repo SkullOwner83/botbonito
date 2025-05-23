@@ -36,12 +36,27 @@ class BotUI:
     def load_page(self) -> None:
         credentials = File.open(MyApp.credentials_path)
         botconfig = File.open(MyApp.botconfig_path)
-        token = credentials.get('token')
+        access_token = credentials.get('token')
+        refresh_token = credentials.get('refresh_token')
 
-        if Token.validation(token):
+        if Token.validation(access_token):
             self.bot_services.start(botconfig, credentials)
             self.page.go('/')
         else:
+            if refresh_token:
+                token = Token(credentials['client_id'], credentials['client_secret'], botconfig['scope'], botconfig['redirect_uri'])
+                token_refreshed = token.refresh_access_token(credentials['refresh_token'])
+                new_token = token_refreshed.get('access_token')
+                new_refresh_token = token_refreshed.get('refresh_token')
+
+                if Token.validation(new_token):
+                    credentials['token'] = new_token
+                    credentials['refresh_token'] = new_refresh_token
+                    File.save(MyApp.credentials_path, credentials)
+                    self.bot_services.start(botconfig, credentials)
+                    self.page.go('/')
+                    return
+
             self.page.go('/validation')
 
 if __name__ == "__main__":
