@@ -31,5 +31,3 @@ class BotService():
         asyncio.set_event_loop(self._loop)
         self.bot_instance = Bot(self.botconfig, self.credentials)
         self._loop.run_until_complete(self.bot_instance.start())
-
-        MyApp.bot = self.bot_instance

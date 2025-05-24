@@ -4,11 +4,11 @@ import flet as ft
 from myapp import MyApp
 from modules.token import Token
 from modules.file import File
-from services.botservices import BotServices
+from services.botservice import BotService
 from ..controls import *
 
 class ValidationModal(Modal):
-    def __init__(self, bot_service: BotServices) -> None:
+    def __init__(self, bot_service: BotService) -> None:
         self.credentials = File.open(MyApp.credentials_path)
         self.botconfig = File.open(MyApp.botconfig_path)
         self.token = self.credentials['token']

@@ -5,14 +5,13 @@ from typing import Callable
 class MyApp:
     project_path = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(project_path, "config")
+    commands_path = os.path.join(config_path, "commands.json")
     credentials_path = os.path.join(config_path, "credentials.json")
     botconfig_path = os.path.join(config_path, "botconfig.json")
     command_registry: dict[str, Callable] = {}
 
     font_primary = 'Century Gothic'
     font_secondary = 'Arial'
-
-    bot = None
 
     link_pattern = re.compile(
         r'^(https?://)?'

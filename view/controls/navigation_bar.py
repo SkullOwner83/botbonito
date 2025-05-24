@@ -70,5 +70,5 @@ class MenuButton(ft.Container):
         )
     
     def hover_event(self, e: ft.ControlEvent) -> None:
-            self.bgcolor = self.hover_color if e.data == "true" else ft.Colors.WHITE
-            self.update()
+        self.bgcolor = self.hover_color if e.data == "true" else ft.Colors.WHITE
+        self.update()

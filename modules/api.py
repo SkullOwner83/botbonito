@@ -1,5 +1,5 @@
 import requests
-from typing import Union
+from typing import Optional, Union
 from datetime import datetime
 
 class Api():
@@ -8,7 +8,7 @@ class Api():
         self.client_id = client_id
 
     # Get information about a specific user.
-    def get_user(self, user: str) -> dict:
+    def get_user(self, user: Optional[str] = None) -> dict:
         url = 'https://api.twitch.tv/helix/users'
 
         parameters = {
@@ -21,7 +21,7 @@ class Api():
         }
 
         try:
-            response = requests.get(url, headers=headers, params=parameters)
+            response = requests.get(url, headers=headers, params=parameters if user else None)
             data = response.json()
 
             if response.status_code == 200:
