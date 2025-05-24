@@ -31,7 +31,7 @@ class SegmentedButton(ft.SegmentedButton):
                     ),
 
                     ft.ControlState.SELECTED: ft.TextStyle(
-                        foreground=ft.Paint(color=ft.Colors.WHITE),
+                        foreground=ft.Paint(color=ft.Colors.ON_PRIMARY),
                         font_family=MyApp.font_primary,
                         weight=ft.FontWeight.BOLD,
                         size=16

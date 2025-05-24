@@ -1,6 +1,6 @@
 import sys
 sys.path.append(r'D:\Desktop\Proyectos\Visual Studio Code\botbonito')
-from flet import Page, Theme, app
+import flet as ft
 from flet import PageTransitionsTheme, PageTransitionTheme
 from view.routes import RouteHandler
 from modules.token import Token
@@ -10,7 +10,7 @@ from services.botservices import BotServices
 from view.modals import *
 
 class BotUI:
-    def __init__(self, page: Page):
+    def __init__(self, page: ft.Page):
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
@@ -18,7 +18,11 @@ class BotUI:
         self.page.window.height = 600
         self.page.window.always_on_top = False
 
-        page.theme = Theme(
+        page.theme = ft.Theme(
+            color_scheme=ft.ColorScheme(
+                primary=ft.Colors.DEEP_PURPLE,
+                on_primary=ft.Colors.WHITE,
+            ),
             page_transitions=PageTransitionsTheme(
                 windows=PageTransitionTheme.NONE
             )
@@ -61,7 +65,7 @@ class BotUI:
             self.page.open(ValidationModal(self.bot_services))
 
 if __name__ == "__main__":
-    app(
+    ft.app(
         target=lambda page: BotUI(page),
         assets_dir='assets'
         #view=ft.WEB_BROWSER,

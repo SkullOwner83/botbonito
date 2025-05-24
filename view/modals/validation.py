@@ -1,11 +1,10 @@
 import webbrowser
 import pyperclip
-from typing import Callable, Optional
-from services.botservices import BotServices
 import flet as ft
+from myapp import MyApp
 from modules.token import Token
 from modules.file import File
-from myapp import MyApp
+from services.botservices import BotServices
 from ..controls import *
 
 class ValidationModal(Modal):

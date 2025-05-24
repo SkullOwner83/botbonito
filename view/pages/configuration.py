@@ -1,8 +1,5 @@
-from modules.file import File
-from modules.token import Token
-from myapp import MyApp
 import flet as ft
-from ..controls.navigation_bar import NavigationBar
+from ..controls import *
 
 class ConfigurationPage(ft.View):
     def __init__(self, page: ft.Page):
