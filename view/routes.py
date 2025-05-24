@@ -4,7 +4,6 @@ from .pages.commands import CommandsPage
 from .pages.moderation import ModerationPage
 from .pages.configuration import ConfigurationPage
 
-
 class RouteHandler:
     def __init__(self, page: ft.Page, bot_services):
         self.page = page
