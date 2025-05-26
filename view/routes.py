@@ -3,21 +3,24 @@ from .pages.home import HomePage
 from .pages.commands import CommandsPage
 from .pages.moderation import ModerationPage
 from .pages.configuration import ConfigurationPage
+from services import *
 
 class RouteHandler:
-    def __init__(self, page: ft.Page, bot_services):
+    def __init__(self, page: ft.Page, botconfig: dict, bot_services: BotService, session_service: SessionService):
         self.page = page
+        self.botconfig = botconfig
         self.bot_services = bot_services
+        self.session_service = session_service
     
     def route_change(self, e) -> None:
         self.page.views.clear()
         
         match(self.page.route):
-            case "/": self.page.views.append(HomePage(self.page))
-            case "/commands": self.page.views.append(CommandsPage(self.page))
-            case "/moderation": self.page.views.append(ModerationPage(self.page))
-            case "/configuration": self.page.views.append(ConfigurationPage(self.page))
-            case _: self.page.views.append(HomePage(self.page))
+            case "/": self.page.views.append(HomePage(self.page, self.botconfig, self.session_service))
+            case "/commands": self.page.views.append(CommandsPage(self.page, self.botconfig, self.session_service))
+            case "/moderation": self.page.views.append(ModerationPage(self.page, self.botconfig, self.session_service))
+            case "/configuration": self.page.views.append(ConfigurationPage(self.page, self.botconfig, self.session_service))
+            case _: self.page.views.append(HomePage(self.page, self.botconfig, self.session_service))
 
         self.page.update()
     

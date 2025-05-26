@@ -12,7 +12,6 @@ class CommandConfig:
         response: Optional[str] = None,
         response_type: Optional[str] = 'say'
     ):
-
         self.name = name
         self.enable = enable
         self.alias = alias or []

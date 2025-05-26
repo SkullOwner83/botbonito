@@ -8,15 +8,14 @@ from services.botservice import BotService
 from ..controls import *
 
 class ValidationModal(Modal):
-    def __init__(self, bot_service: BotService) -> None:
-        self.credentials = File.open(MyApp.credentials_path)
-        self.botconfig = File.open(MyApp.botconfig_path)
-        self.token = self.credentials['token']
-        self.client_id = self.credentials['client_id']
-        self.client_secret = self.credentials['client_secret']
+    def __init__(self, credentials: dict, botconfig: dict, bot_service: BotService) -> None:
+        self.bot_service = bot_service
+        self.credentials = credentials
+        self.botconfig = botconfig
+        self.client_id = self.botconfig['client_id']
+        self.client_secret = self.botconfig['client_secret']
         self.redirect_uri = self.botconfig['redirect_uri']
         self.scope = self.botconfig['scope']
-        self.bot_service = bot_service
 
         super().__init__(
             title="¡Token inválido!",
@@ -39,9 +38,9 @@ class ValidationModal(Modal):
         new_refresh_token = token_data.get('refresh_token')
 
         if token.validation(new_token):
-            self.credentials['token'] = new_token
+            self.credentials['access_token'] = new_token
             self.credentials['refresh_token'] = new_refresh_token
-            File.save(MyApp.credentials_path, self.credentials)
+            #File.save(MyApp.credentials_path, self.credentials)
             self.bot_service.start(self.botconfig, self.credentials)
             self.page.close(self)
             self.page.go('/')

@@ -28,9 +28,9 @@ class Bot(commands.Bot):
 
         # load variables from the config files
         self.config = config
-        self.token = credentials['token']
-        self.client_id = credentials['client_id']
-        self.client_secret = credentials['client_secret']
+        self.token = credentials['access_token']
+        self.client_id = config['client_id']
+        self.client_secret = config['client_secret']
         self.name = config['name']
         self.channels = config['channels']
         self.prefix = config['prefix']

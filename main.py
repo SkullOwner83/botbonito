@@ -1,13 +1,19 @@
 import flet as ft
 from view.main_window import MainWindow
-from services.botservice import BotService
 from view.routes import RouteHandler
+from services import *
 from view.modals import *
+from modules.file import File
+from myapp import MyApp
 
 def startup(page: ft.Page) -> None:
+    botconfig = File.open(MyApp.botconfig_path)
+    credentials = File.open(MyApp.credentials_path)
+    
     bot_services = BotService()
-    route_handler = RouteHandler(page, bot_services)
-    main_window = MainWindow(page, route_handler, bot_services)
+    session_service = SessionService()
+    route_handler = RouteHandler(page, botconfig, bot_services, session_service)
+    main_window = MainWindow(page, route_handler, botconfig, credentials, bot_services, session_service)
 
 if __name__ == "__main__":
     ft.app(

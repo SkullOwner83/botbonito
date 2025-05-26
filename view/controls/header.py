@@ -1,5 +1,6 @@
 import flet as ft
 import webbrowser
+from services.session_service import SessionService
 from modules.file import File
 from modules.token import Token
 from modules.api import Api
@@ -8,30 +9,31 @@ from myapp import MyApp
 from models.user import User
 
 class Header(ft.Container):
-    def __init__(self, tile):
+    def __init__(self, tile: str, botconfig: dict, session_service: SessionService):
         super().__init__()
         self.title = tile
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32, vertical=12)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
-        self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
-        self.session = False
+
+        self.session_service = session_service
+        self.user = session_service.user_account
+        self.profile_image = ft.Image(src=self.user.profile_image if self.user else None, fit=ft.ImageFit.COVER, visible=session_service.is_logged_in)
         self.content = self.build()
 
-        self.credentials = File.open(MyApp.credentials_path)
-        self.botconfig = File.open(MyApp.botconfig_path)
+        self.botconfig = botconfig
 
     def login(self) -> None:
-        token = Token(self.credentials['client_id'], self.credentials['client_secret'], ['user:read:email'], self.botconfig['redirect_uri'])
-        auth_url = token.generate_auth_url()
+        if self.session_service.login(self.botconfig):
+            self.user = self.session_service.user_account
+            self.profile_image.src = self.user.profile_image
+            self.profile_image.visible = True
+            self.profile_image.update()
 
-        webbrowser.open(auth_url)
-        token_data = token.get_authorization()
-        api = Api(token_data['access_token'], self.credentials['client_id'])
-        user_data= api.get_user()
-        self.profile_image.src = user_data['profile_image_url']
+    def logout(self) -> None:
+        self.session_service.logout()
+        self.profile_image.visible = False
         self.profile_image.update()
-        self.session = True
 
     def build(self) -> ft.Row:
         return ft.Row(
@@ -62,16 +64,25 @@ class Header(ft.Container):
                                 width=40,
                                 height=40,
                                 tooltip=None,
+                                bgcolor=ft.Colors.WHITE,
                                 menu_position=ft.PopupMenuPosition.UNDER,
                                 elevation=8,
                                 content=ft.Container(
                                     shape=ft.BoxShape.CIRCLE,
                                     bgcolor=ft.Colors.GREY_300,
                                     clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-                                    content=self.profile_image
+                                    content=ft.Stack(
+                                        alignment=ft.alignment.center,
+                                        controls=[
+                                            ft.Icon(name=ft.Icons.PERSON, color=ft.Colors.WHITE),
+                                            self.profile_image
+                                        ]
+                                    )
                                 ),
+                                
                                 items=[
-                                    ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login())
+                                    ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login()),
+                                    ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
                                 ]
                             )
                         ]

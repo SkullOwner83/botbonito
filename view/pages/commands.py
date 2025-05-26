@@ -1,22 +1,25 @@
 import flet as ft
 from ..controls import *
 from ..modals import CommandsModal
+from services import *
 from models.commands import CommandConfig
 from models.config import ConfigManager
 from myapp import MyApp
 
 class CommandsPage(ft.View):
-    def __init__(self, page: ft.Page):
+    def __init__(self, page: ft.Page, botconfig: dict, session_services: SessionService):
         super().__init__(
             route='/validation',
             padding=0
         )
 
         self.page = page
+        self.botconfig = botconfig
         self.filter = ''
         self.config_manager = ConfigManager()
         self.default_commands = self.config_manager.default_commands
         self.custom_commands = self.config_manager.custom_commands
+        self.session_service = session_services
         
         self.set_controls()
         self.controls.append(self.build())
@@ -126,7 +129,7 @@ class CommandsPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls = [
-                            Header("Comandos"),
+                            Header("Comandos", self.botconfig, self.session_service),
                             
                             ft.Container(
                                 expand=True,

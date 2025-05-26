@@ -58,7 +58,7 @@ class Token:
 
         return None
     
-    def refresh_access_token(self, refresh_token: str):
+    def refresh_access_token(self, refresh_token: str) -> dict:
         url = 'https://id.twitch.tv/oauth2/token'
 
         params = {
