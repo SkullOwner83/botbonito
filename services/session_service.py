@@ -1,6 +1,8 @@
 import webbrowser
 import flet as ft
 from typing import Callable, Optional
+
+from sympy import true
 from modules.file import File
 from models.credentials import Credentials
 from models.user import User
@@ -16,9 +18,7 @@ class SessionService:
 
     def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         if Token.validation(credentials['access_token']):        
-            self.load_account(credentials, botconfig, account_type)
-            self.is_logged_in = True if account_type == 'USER' else self.is_logged_in
-            return True
+            if self.load_account(credentials, botconfig, account_type): return True
         else:
             if credentials['refresh_token']:
                 token = Token(botconfig['client_id'], botconfig['client_secret'], botconfig['scope'], botconfig['redirect_uri'])
@@ -32,34 +32,28 @@ class SessionService:
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
                         self.load_account(credentials, botconfig, account_type)
-                        self.is_logged_in = True if account_type == 'USER' else self.is_logged_in
                         print("Token has been refreshed.")
                         return True
-            
+
         return False
 
-    def login(self, botconfig: dict) -> bool:
-        token = Token(botconfig['client_id'], botconfig['client_secret'], ['user:read:email'], botconfig['redirect_uri'])
+    def login(self, botconfig: dict, account_type: str) -> bool:
+        scope: str = ['user:read:email'] if account_type == 'USER' else botconfig['scope']
+        token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
         token_data = token.get_authorization()
-        credentials = {
-            'access_token': token_data['access_token'],
-            'refresh_token': token_data['refresh_token']
-        }
+
+        if token_data:
+            credentials = {
+                'access_token': token_data['access_token'],
+                'refresh_token': token_data['refresh_token']
+            }
         
-        if self.load_account(credentials, botconfig, 'USER'):
-            self.is_logged_in = True
-            return True
+            if self.load_account(credentials, botconfig, account_type):
+                return True
     
         return False
-    
-    def logout(self, account_type: str):
-        if account_type == 'USER':
-            self.user_account = None
-            self.is_logged_in = False
-        elif account_type == 'BOT':
-            self.bot_account = None
 
     def load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         api = Api(credentials['access_token'], botconfig['client_id'])
@@ -75,11 +69,20 @@ class SessionService:
                 credentials=credentials
             )
 
-            if account_type == 'USER': self.user_account = account
+            if account_type == 'USER': 
+                self.user_account = account 
+                self.is_logged_in = True
             elif account_type == 'BOT': self.bot_account = account
             return True
 
         return False
+    
+    def logout(self, account_type: str) -> None:
+        if account_type == 'USER':
+            self.user_account = None
+            self.is_logged_in = False
+        elif account_type == 'BOT':
+            self.bot_account = None
 
     def serialize(self) -> dict:
         dictionary = {

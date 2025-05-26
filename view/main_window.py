@@ -39,9 +39,9 @@ class MainWindow:
         bot_credentials = self.credentials.get("bot")
         user_credentials = self.credentials.get("user")
 
-        self.session_service.validation(user_credentials, self.botconfig, 'user')
+        self.session_service.validation(user_credentials, self.botconfig, 'USER')
 
-        if self.session_service.validation(bot_credentials, self.botconfig, 'bot'):
+        if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
         else:

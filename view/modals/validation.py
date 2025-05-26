@@ -12,10 +12,6 @@ class ValidationModal(Modal):
         self.bot_service = bot_service
         self.credentials = credentials
         self.botconfig = botconfig
-        self.client_id = self.botconfig['client_id']
-        self.client_secret = self.botconfig['client_secret']
-        self.redirect_uri = self.botconfig['redirect_uri']
-        self.scope = self.botconfig['scope']
 
         super().__init__(
             title="¡Token inválido!",
@@ -28,7 +24,7 @@ class ValidationModal(Modal):
         )
 
     def token_validation(self, mode: str):
-        token = Token(self.client_id, self.client_secret, self.scope, self.redirect_uri)
+        token = Token(self.botconfig['client_id'], self.botconfig['client_secret'], self.botconfig['scope'], self.botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
 
         if mode == 'OPEN': webbrowser.open(auth_url)
@@ -41,7 +37,7 @@ class ValidationModal(Modal):
             self.credentials['access_token'] = new_token
             self.credentials['refresh_token'] = new_refresh_token
             #File.save(MyApp.credentials_path, self.credentials)
-            self.bot_service.start(self.botconfig, self.credentials)
+            self.bot_service.start(self.credentials, self.botconfig)
             self.page.close(self)
             self.page.go('/')
         else:

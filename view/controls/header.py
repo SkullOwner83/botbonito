@@ -22,7 +22,7 @@ class Header(ft.Container):
         self.content = self.build()
 
     def login(self) -> None:
-        if self.session_service.login(self.botconfig):
+        if self.session_service.login(self.botconfig, 'USER'):
             self.user = self.session_service.user_account
             self.profile_image.src = self.user.profile_image
             self.profile_image.visible = True
