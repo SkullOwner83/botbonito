@@ -1,5 +1,6 @@
-from typing import Optional
 import webbrowser
+import flet as ft
+from typing import Callable, Optional
 from modules.file import File
 from models.credentials import Credentials
 from models.user import User
@@ -7,14 +8,16 @@ from modules.api import Api
 from modules.token import Token
 
 class SessionService:
-    def __init__(self):
+    def __init__(self, page: ft.Page):
         self.user_account = None
         self.bot_account = None
         self.is_logged_in = False
+        self.page = page
 
-    def validation(self, credentials: dict, botconfig: dict) -> bool:
-        if Token.validation(credentials['access_token']):
-            self.load_account(credentials, botconfig, 'bot')
+    def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
+        if Token.validation(credentials['access_token']):        
+            self.load_account(credentials, botconfig, account_type)
+            self.is_logged_in = True if account_type == 'USER' else self.is_logged_in
             return True
         else:
             if credentials['refresh_token']:
@@ -28,7 +31,8 @@ class SessionService:
                     if Token.validation(new_token):
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
-                        self.load_account(credentials, botconfig, 'bot')
+                        self.load_account(credentials, botconfig, account_type)
+                        self.is_logged_in = True if account_type == 'USER' else self.is_logged_in
                         print("Token has been refreshed.")
                         return True
             
@@ -44,17 +48,20 @@ class SessionService:
             'refresh_token': token_data['refresh_token']
         }
         
-        if self.load_account(credentials, botconfig, 'user'):
+        if self.load_account(credentials, botconfig, 'USER'):
             self.is_logged_in = True
             return True
     
         return False
     
-    def logout(self):
-        self.user_account = None
-        self.is_logged_in = False
+    def logout(self, account_type: str):
+        if account_type == 'USER':
+            self.user_account = None
+            self.is_logged_in = False
+        elif account_type == 'BOT':
+            self.bot_account = None
 
-    def load_account(self, credentials, botconfig, account_type) -> bool:
+    def load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         api = Api(credentials['access_token'], botconfig['client_id'])
         account_data= api.get_user()
 
@@ -68,8 +75,8 @@ class SessionService:
                 credentials=credentials
             )
 
-            if account_type == 'user': self.user_account = account
-            elif account_type == 'bot': self.bot_account = account
+            if account_type == 'USER': self.user_account = account
+            elif account_type == 'BOT': self.bot_account = account
             return True
 
         return False

@@ -1,5 +1,4 @@
 import flet as ft
-import webbrowser
 from services.session_service import SessionService
 from modules.file import File
 from modules.token import Token
@@ -16,12 +15,11 @@ class Header(ft.Container):
         self.padding = ft.padding.symmetric(horizontal=32, vertical=12)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
 
+        self.botconfig = botconfig
         self.session_service = session_service
         self.user = session_service.user_account
         self.profile_image = ft.Image(src=self.user.profile_image if self.user else None, fit=ft.ImageFit.COVER, visible=session_service.is_logged_in)
         self.content = self.build()
-
-        self.botconfig = botconfig
 
     def login(self) -> None:
         if self.session_service.login(self.botconfig):
@@ -29,11 +27,13 @@ class Header(ft.Container):
             self.profile_image.src = self.user.profile_image
             self.profile_image.visible = True
             self.profile_image.update()
+            File.save(MyApp.credentials_path, self.session_service.serialize())
 
     def logout(self) -> None:
-        self.session_service.logout()
+        self.session_service.logout('USER')
         self.profile_image.visible = False
         self.profile_image.update()
+        File.save(MyApp.credentials_path, self.session_service.serialize())
 
     def build(self) -> ft.Row:
         return ft.Row(

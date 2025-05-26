@@ -11,7 +11,7 @@ def startup(page: ft.Page) -> None:
     credentials = File.open(MyApp.credentials_path)
     
     bot_services = BotService()
-    session_service = SessionService()
+    session_service = SessionService(page)
     route_handler = RouteHandler(page, botconfig, bot_services, session_service)
     main_window = MainWindow(page, route_handler, botconfig, credentials, bot_services, session_service)
 

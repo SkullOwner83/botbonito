@@ -13,7 +13,12 @@ class HomePage(ft.View):
         self.page = page
         self.botconfig = botconfig
         self.session_service = session_service
+        self.session_service.on_login = self.on_login
         self.controls.append(self.build())
+
+    def on_login(self):
+        self.page.update()
+        print("Actualizado")
 
     def build(self) -> ft.Container:
         return ft.Container(
