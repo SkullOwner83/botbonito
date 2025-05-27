@@ -2,7 +2,7 @@ import os
 import re
 from twitchio.ext import commands
 from twitchio.ext.commands import Context, Cog
-from modules.file import File
+from utilities.file import File
 from myapp import MyApp
 from models.protection import Protection
 

@@ -1,20 +1,15 @@
 import webbrowser
 import flet as ft
-from typing import Callable, Optional
-
-from sympy import true
-from modules.file import File
-from models.credentials import Credentials
 from models.user import User
-from modules.api import Api
-from modules.token import Token
+from utilities.api import Api
+from utilities.token import Token
 
 class SessionService:
-    def __init__(self, page: ft.Page):
+    def __init__(self):
         self.user_account = None
         self.bot_account = None
         self.is_logged_in = False
-        self.page = page
+        self.on_login = None
 
     def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         if Token.validation(credentials['access_token']):        
@@ -33,24 +28,26 @@ class SessionService:
                         credentials['refresh_token'] = new_refresh_token
                         self.load_account(credentials, botconfig, account_type)
                         print("Token has been refreshed.")
+                        self.on_login()
                         return True
 
         return False
 
     def login(self, botconfig: dict, account_type: str) -> bool:
-        scope: str = ['user:read:email'] if account_type == 'USER' else botconfig['scope']
+        scope = ['user:read:email'] if account_type == 'USER' else botconfig['scope']
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
         token_data = token.get_authorization()
 
-        if token_data:
+        if token_data and token.validation(token_data.get('access_token')):
             credentials = {
                 'access_token': token_data['access_token'],
                 'refresh_token': token_data['refresh_token']
             }
         
             if self.load_account(credentials, botconfig, account_type):
+                self.on_login()
                 return True
     
         return False

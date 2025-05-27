@@ -2,15 +2,16 @@ import webbrowser
 import pyperclip
 import flet as ft
 from myapp import MyApp
-from modules.token import Token
-from modules.file import File
-from services.botservice import BotService
+from utilities.token import Token
+from utilities.file import File
+from services import *
 from ..controls import *
 
 class ValidationModal(Modal):
-    def __init__(self, credentials: dict, botconfig: dict, bot_service: BotService) -> None:
+    def __init__(self, bot_credentials: dict, botconfig: dict, bot_service: BotService, session_service: SessionService) -> None:
         self.bot_service = bot_service
-        self.credentials = credentials
+        self.session_service = session_service
+        self.bot_credentials = bot_credentials
         self.botconfig = botconfig
 
         super().__init__(
@@ -34,10 +35,11 @@ class ValidationModal(Modal):
         new_refresh_token = token_data.get('refresh_token')
 
         if token.validation(new_token):
-            self.credentials['access_token'] = new_token
-            self.credentials['refresh_token'] = new_refresh_token
-            #File.save(MyApp.credentials_path, self.credentials)
-            self.bot_service.start(self.credentials, self.botconfig)
+            self.bot_credentials['access_token'] = new_token
+            self.bot_credentials['refresh_token'] = new_refresh_token
+            self.session_service.load_account(self.bot_credentials, self.botconfig, 'BOT')
+            File.save(MyApp.credentials_path, self.session_service.serialize())
+            self.bot_service.start(self.bot_credentials, self.botconfig)
             self.page.close(self)
             self.page.go('/')
         else:

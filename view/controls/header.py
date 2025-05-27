@@ -1,11 +1,8 @@
+from pydoc import text
 import flet as ft
 from services.session_service import SessionService
-from modules.file import File
-from modules.token import Token
-from modules.api import Api
+from utilities.file import File
 from myapp import MyApp
-
-from models.user import User
 
 class Header(ft.Container):
     def __init__(self, tile: str, botconfig: dict, session_service: SessionService):
@@ -14,26 +11,61 @@ class Header(ft.Container):
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32, vertical=12)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
-
         self.botconfig = botconfig
         self.session_service = session_service
         self.user = session_service.user_account
-        self.profile_image = ft.Image(src=self.user.profile_image if self.user else None, fit=ft.ImageFit.COVER, visible=session_service.is_logged_in)
+        
+        self.set_controls()
         self.content = self.build()
+        self.update_controls()
 
     def login(self) -> None:
         if self.session_service.login(self.botconfig, 'USER'):
             self.user = self.session_service.user_account
-            self.profile_image.src = self.user.profile_image
-            self.profile_image.visible = True
-            self.profile_image.update()
+            self.update_controls()
+            self.update()
             File.save(MyApp.credentials_path, self.session_service.serialize())
 
     def logout(self) -> None:
         self.session_service.logout('USER')
-        self.profile_image.visible = False
-        self.profile_image.update()
+        self.update_controls()
+        self.update()
         File.save(MyApp.credentials_path, self.session_service.serialize())
+
+    def set_controls(self):
+        self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
+
+        self.menu_button = ft.PopupMenuButton(
+            width=40,
+            height=40,
+            tooltip=None,
+            bgcolor=ft.Colors.WHITE,
+            menu_position=ft.PopupMenuPosition.UNDER,
+            elevation=8,
+            content=ft.Container(
+                shape=ft.BoxShape.CIRCLE,
+                bgcolor=ft.Colors.GREY_300,
+                clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
+                content=ft.Stack(
+                    alignment=ft.alignment.center,
+                    controls=[
+                        ft.Icon(name=ft.Icons.PERSON, color=ft.Colors.WHITE),
+                        self.profile_image
+                    ]
+                )
+            ),
+        )
+    
+    def update_controls(self):
+        self.profile_image.src = self.user.profile_image if self.user else None
+        self.profile_image.visible = self.session_service.is_logged_in
+
+        self.menu_button.items = [
+            ft.PopupMenuItem(text=self.user.name),
+            ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
+        ] if self.session_service.is_logged_in else [
+            ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login())
+        ]
 
     def build(self) -> ft.Row:
         return ft.Row(
@@ -60,31 +92,7 @@ class Header(ft.Container):
                                 icon=ft.Icons.NOTIFICATIONS,
                             ),
 
-                            ft.PopupMenuButton(
-                                width=40,
-                                height=40,
-                                tooltip=None,
-                                bgcolor=ft.Colors.WHITE,
-                                menu_position=ft.PopupMenuPosition.UNDER,
-                                elevation=8,
-                                content=ft.Container(
-                                    shape=ft.BoxShape.CIRCLE,
-                                    bgcolor=ft.Colors.GREY_300,
-                                    clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
-                                    content=ft.Stack(
-                                        alignment=ft.alignment.center,
-                                        controls=[
-                                            ft.Icon(name=ft.Icons.PERSON, color=ft.Colors.WHITE),
-                                            self.profile_image
-                                        ]
-                                    )
-                                ),
-                                
-                                items=[
-                                    ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login()),
-                                    ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
-                                ]
-                            )
+                            self.menu_button
                         ]
                     )
                 )

@@ -16,7 +16,7 @@ class RouteHandler:
         self.page.views.clear()
         
         match(self.page.route):
-            case "/": self.page.views.append(HomePage(self.page, self.botconfig, self.session_service))
+            case "/home": self.page.views.append(HomePage(self.page, self.botconfig, self.session_service))
             case "/commands": self.page.views.append(CommandsPage(self.page, self.botconfig, self.session_service))
             case "/moderation": self.page.views.append(ModerationPage(self.page, self.botconfig, self.session_service))
             case "/configuration": self.page.views.append(ConfigurationPage(self.page, self.botconfig, self.session_service))

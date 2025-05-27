@@ -2,7 +2,7 @@ from typing import Optional, List
 from twitchio import Message
 from twitchio.ext.commands import Bot, Cog
 from twitchio.ext import commands
-from modules.api import Api
+from utilities.api import Api
 
 class Protection:
     def __init__(self,

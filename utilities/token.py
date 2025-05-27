@@ -58,6 +58,7 @@ class Token:
 
         return None
     
+    # Refresh an expired token to get a new one 
     def refresh_access_token(self, refresh_token: str) -> dict:
         url = 'https://id.twitch.tv/oauth2/token'
 

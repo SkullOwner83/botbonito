@@ -1,7 +1,7 @@
 import flet as ft
 from view.routes import RouteHandler
-from modules.file import File
-from modules.token import Token
+from utilities.file import File
+from utilities.token import Token
 from services import *
 from view.modals.validation import ValidationModal
 from myapp import MyApp
@@ -40,9 +40,10 @@ class MainWindow:
         user_credentials = self.credentials.get("user")
 
         self.session_service.validation(user_credentials, self.botconfig, 'USER')
+        self.page.go('/home')
 
         if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
         else:
-            self.page.open(ValidationModal(bot_credentials, self.botconfig, self.bot_services))
+            self.page.open(ValidationModal(bot_credentials, self.botconfig, self.bot_services, self.session_service))

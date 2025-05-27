@@ -3,7 +3,7 @@ import asyncio
 from twitchio.ext import commands
 from twitchio import Message
 import speech_recognition as sr
-from modules.file import File
+from utilities.file import File
 from myapp import MyApp
 
 class VoiceRecognition(commands.Cog):

@@ -1,5 +1,5 @@
 import os
-from modules.file import File
+from utilities.file import File
 from models.commands import CommandConfig
 from myapp import MyApp
 

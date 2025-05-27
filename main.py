@@ -3,7 +3,7 @@ from view.main_window import MainWindow
 from view.routes import RouteHandler
 from services import *
 from view.modals import *
-from modules.file import File
+from utilities.file import File
 from myapp import MyApp
 
 def startup(page: ft.Page) -> None:
@@ -11,7 +11,7 @@ def startup(page: ft.Page) -> None:
     credentials = File.open(MyApp.credentials_path)
     
     bot_services = BotService()
-    session_service = SessionService(page)
+    session_service = SessionService()
     route_handler = RouteHandler(page, botconfig, bot_services, session_service)
     main_window = MainWindow(page, route_handler, botconfig, credentials, bot_services, session_service)
 

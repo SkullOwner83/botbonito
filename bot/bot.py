@@ -6,8 +6,8 @@ import threading
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
-from modules.file import File
-from modules.api import Api
+from utilities.file import File
+from utilities.api import Api
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager

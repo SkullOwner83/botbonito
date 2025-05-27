@@ -1,6 +1,6 @@
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
-from modules.api import Api
+from utilities.api import Api
 from myapp import MyApp
 
 class CommandManager(commands.Cog):
