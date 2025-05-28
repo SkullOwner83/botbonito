@@ -77,8 +77,18 @@
             "response": null,
             "response_type": "say"
         },
-        "demo": {
-            "name": "demo",
+        "feedback": {
+            "name": "feedback",
+            "enable": true,
+            "alias": [],
+            "cooldown": 180,
+            "max_length": 200,
+            "user_level": "broadcaster",
+            "response": null,
+            "response_type": "say"
+        },
+        "send": {
+            "name": "send",
             "enable": true,
             "alias": [],
             "cooldown": 180,
@@ -123,6 +133,16 @@
             "user_level": "everyone",
             "response": "",
             "response_type": "say"
+        },
+        "prueba": {
+            "name": "prueba",
+            "enable": true,
+            "alias": [],
+            "cooldown": 0,
+            "max_length": 0,
+            "user_level": "everyone",
+            "response": "callate por favor",
+            "response_type": "mention"
         }
     }
 }
