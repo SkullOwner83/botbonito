@@ -5,8 +5,9 @@ class User:
     def __init__(
         self,
         id: int,
-        name: str,
         email: str,
+        username: str,
+        display_name: str,
         profile_image: str,
         broadcaster_type: str,
         credentials: Credentials,
@@ -14,8 +15,9 @@ class User:
         created_at: Optional[str] = ''
     ):
         self.id = id
-        self.name = name
         self.email = email
+        self.username = username
+        self.display_name = display_name
         self.profile_image = profile_image
         self.broadcaster_type = broadcaster_type
         self.credentials = credentials

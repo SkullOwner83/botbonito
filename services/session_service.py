@@ -59,15 +59,16 @@ class SessionService:
         if account_data:
             account = User(
                 id=account_data.get('id'), 
-                name=account_data.get('display_name'),
                 email=account_data.get('email'),
+                username=account_data.get('login'),
+                display_name=account_data.get('display_name'),
                 broadcaster_type=account_data.get('broadcaster_type'),
                 profile_image=account_data.get('profile_image_url'),
                 credentials=credentials
             )
 
             if account_type == 'USER': 
-                self.user_account = account 
+                self.user_account = account
                 self.is_logged_in = True
             elif account_type == 'BOT': self.bot_account = account
             return True

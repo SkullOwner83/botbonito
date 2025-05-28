@@ -61,7 +61,7 @@ class Header(ft.Container):
         self.profile_image.visible = self.session_service.is_logged_in
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text=self.user.name),
+            ft.PopupMenuItem(text=self.user.username),
             ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
         ] if self.session_service.is_logged_in else [
             ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login())
