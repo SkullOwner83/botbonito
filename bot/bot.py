@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import random
 import asyncio
@@ -47,7 +48,7 @@ class Bot(commands.Bot):
         # Get the config manager instance to load the commands
         self.config_manager = ConfigManager()
         self.default_commands = self.config_manager.default_commands
-        self.custom_commands = self.config_manager.custom_alias
+        self.custom_commands = self.config_manager.custom_commands
         self.custom_alias = self.config_manager.custom_alias
 
         # Initialize the bot with the received config
@@ -85,8 +86,7 @@ class Bot(commands.Bot):
     async def event_message(self, message: Message) -> None:
         if not message.author or message.author.name.lower() == self.name.lower():
             return
-
-        message.content = message.content.lower() # crear una variable para hacer el low del mensaje y procesar el comando. Mandar el mensaje normal, ya que youtube si difieren las mayusculas
+        
         context = Context(bot=self, message=message, prefix=self.prefix, command=None)
         await self.moderation_cog.message_filter(context)
         
@@ -94,6 +94,8 @@ class Bot(commands.Bot):
         if message.content.startswith(self.prefix):  
             parts = message.content[1:].split()
             command = parts[0]
+            message.content = re.sub(r'^(\s*\S+)', lambda m: m.group(0).lower(), message.content, count=1)
+
 
             if command in self.social_media:
                 await message.channel.send(f"{self.social_media[command]}")
