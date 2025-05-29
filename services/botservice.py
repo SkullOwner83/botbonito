@@ -21,9 +21,20 @@ class BotService():
             self._thread.daemon = True
             self._thread.start()
 
+    # Stop the bot excecution and their thread and event loop
+    def stop(self):
+        if self._thread and self._loop and self.bot_instance:
+            asyncio.run_coroutine_threadsafe(self.bot_instance.close(), self._loop)
+            self._loop.call_soon_threadsafe(self._loop.stop)
+            self.bot_instance = None
+            self._loop = None
+            self._thread = None
+            print("bot has been stopped")
+
     # Create a event loop in the new thread and instance the bot into this loop
     def _create_bot(self) -> None:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
         self.bot_instance = Bot(self.botconfig, self.bot_credentials)
-        self._loop.run_until_complete(self.bot_instance.start())
+        self._loop.create_task(self.bot_instance.start())
+        self._loop.run_forever()
