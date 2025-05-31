@@ -1,3 +1,4 @@
+from typing import Optional
 import requests
 import http.server
 import threading
@@ -34,7 +35,7 @@ class Token:
         return False
     
     # Switch a authorization code for an access token
-    def get_access_token(self, auth_code: str) -> str:
+    def get_access_token(self, auth_code: str) -> Optional[str]:
         url = 'https://id.twitch.tv/oauth2/token'
 
         parameters = {
@@ -59,7 +60,7 @@ class Token:
         return None
     
     # Refresh an expired token to get a new one 
-    def refresh_access_token(self, refresh_token: str) -> dict:
+    def refresh_access_token(self, refresh_token: str) -> Optional[dict]:
         url = 'https://id.twitch.tv/oauth2/token'
 
         params = {

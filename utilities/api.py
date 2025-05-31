@@ -1,14 +1,14 @@
 import requests
 from typing import Optional, Union
-from datetime import datetime
+from datetime import datetime   
 
 class Api():
     def __init__(self, token: str, client_id: str) -> None:
         self.token = token
         self.client_id = client_id
 
-    # Get information about a specific user.
-    def get_user(self, user: Optional[str] = None) -> dict:
+    # Get general information about a specific user.
+    def get_user(self, user: Optional[str] = None) -> Optional[dict]:
         url = 'https://api.twitch.tv/helix/users'
 
         parameters = {
@@ -36,8 +36,34 @@ class Api():
 
         return None
     
+    # Get goals from a specific user
+    def get_goals(self, user_id: Union[int, str]) -> Optional[dict]:
+        url = 'https://api.twitch.tv/helix/goals'
+
+        params = {
+            'broadcaster_id': user_id,
+        }
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Client-ID': self.client_id
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            data = response.json()
+
+            if response.status_code == 200:
+                return data['data']
+            else:
+                print(f"Error {data['status']}: {data['message']}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+        
+        return None
+
     # Check if the user follows the channel and return since when
-    def check_follow(self, user_id: Union[int, str], broadcaster_id: Union[int, str]) -> dict:
+    def check_follow(self, user_id: Union[int, str], broadcaster_id: Union[int, str]) -> Optional[str]:
         url = 'https://api.twitch.tv/helix/channels/followers'
 
         parameters = {
@@ -68,6 +94,7 @@ class Api():
 
         return None
     
+    # Send a request to delete a specific message from the chat
     def delete_message(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], message_id: Union[int, str]) -> bool:
         url = 'https://api.twitch.tv/helix/moderation/chat'
 
@@ -95,10 +122,10 @@ class Api():
         return False
     
     def set_ban(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], reason: str = None) -> bool:
-        self._penalty_request(broadcaster_id, moderator_id, user_id, reason=reason)
+        return self._penalty_request(broadcaster_id, moderator_id, user_id, reason=reason)
 
     def set_timeout(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], duration: int = 300, reason: str = None) -> bool:
-        self._penalty_request(broadcaster_id, moderator_id, user_id, duration=duration, reason=reason)
+        return self._penalty_request(broadcaster_id, moderator_id, user_id, duration=duration, reason=reason)
     
     def _penalty_request(self, broadcaster_id: Union[int, str], moderator_id: Union[int, str], user_id: Union[int, str], *, duration: int = 0, reason: str = None) -> bool:
         url = 'https://api.twitch.tv/helix/moderation/bans'
