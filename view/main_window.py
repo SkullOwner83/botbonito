@@ -1,4 +1,6 @@
+from exceptiongroup import catch
 import flet as ft
+import requests
 from view.routes import RouteHandler
 from utilities.file import File
 from utilities.token import Token
@@ -7,7 +9,7 @@ from view.modals.validation import ValidationModal
 from myapp import MyApp
 
 class MainWindow:
-    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict, bot_service: BotService, session_service: SessionService):
+    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict, bot_service: BotService, session_service: SessionService, websocket_service: WebsocketService):
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
@@ -32,6 +34,7 @@ class MainWindow:
         self.botconfig = botconfig
         self.credentials = credentials
         self.bot_services = bot_service
+        self.websocket_service = websocket_service
         self.session_service = session_service
         self.load()
     
@@ -41,6 +44,9 @@ class MainWindow:
 
         self.session_service.validation(user_credentials, self.botconfig, 'USER')
         self.page.go('/home')
+
+        import asyncio
+        asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))
 
         if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
             self.bot_services.start(bot_credentials, self.botconfig,)

@@ -22,9 +22,10 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=parameters if user else None)
-            data = response.json()
 
             if response.status_code == 200:
+                data = response.json()
+
                 if len(data['data']) > 0:
                     return data['data'][0]
                 else:
@@ -51,9 +52,9 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=params)
-            data = response.json()
 
             if response.status_code == 200:
+                data = response.json()
                 return data['data']
             else:
                 print(f"Error {data['status']}: {data['message']}")
@@ -78,9 +79,10 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=parameters)
-            data = response.json()
 
             if response.status_code == 200:
+                data = response.json()
+
                 if len(data['data']) > 0:
                     date_object = datetime.strptime(data["data"][0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
                     date = date_object.strftime("%d de %B de %Y")
@@ -160,3 +162,36 @@ class Api():
                 print(f"Error {response.status_code}: {response.content}")
         except requests.RequestException as error:
             print(f"Error: {error}")
+
+    def get_subscription(self, broadcaster_id: str, session_id: str, subscription_type: str) -> bool:
+        url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+
+        headers = {
+            'Authorization' : f'Bearer {self.token}',
+            'Client-ID' : self.client_id,
+            'Content-Type': 'application/json'
+        }
+
+        payload = {
+            'type': subscription_type,
+            'version': '1',
+            'condition': {
+                'broadcaster_user_id': broadcaster_id,
+            },
+            'transport': {
+                'method': 'websocket',
+                'session_id': session_id
+            }
+        }
+
+        try:
+            response = requests.post(url, headers=headers, json=payload)
+            
+            if response.status_code == 201:
+                return True
+            else:
+                print(f"Error {response.status_code}: {response.content}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+        
+        return False

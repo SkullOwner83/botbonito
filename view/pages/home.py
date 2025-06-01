@@ -1,7 +1,7 @@
 from click import option
 import flet as ft
 from ..controls import *
-from services.session_service import SessionService
+from services import *
 
 
 class HomePage(ft.View):

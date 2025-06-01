@@ -34,7 +34,7 @@ class SessionService:
         return False
 
     def login(self, botconfig: dict, account_type: str) -> bool:
-        scope = ['user:read:email'] if account_type == 'USER' else botconfig['scope']
+        scope = ['user:read:email', 'channel:read:goals'] if account_type == 'USER' else botconfig['scope']
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
