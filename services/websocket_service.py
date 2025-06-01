@@ -21,7 +21,7 @@ class WebsocketService:
                 self.is_connected = True
 
             await self.get_subscriptions(token, client_id, broadcaster_id)
-            await self.event_handler()
+            await self.event_handler(websocket)
 
     # handler the messages received from the twitch websocket
     async def event_handler(self, websocket):
@@ -29,10 +29,10 @@ class WebsocketService:
             try:
                 message = await websocket.recv()
                 event_data = json.loads(message)
-                event_type = event_data.get('meta-data')['message_type']
-                
-                if event_type == 'notification':
-                    print("notification received")
+                meta_data = event_data.get('metadata')
+
+                if meta_data.get('message_type') == 'notification':
+                    print(event_data)
 
             except websockets.ConnectionClosed as e:
                 print(f"Conexión cerrada: {e}")
@@ -43,3 +43,4 @@ class WebsocketService:
 
         api = Api(token, client_id)
         api.get_subscription(broadcaster_id, self.session_id, 'stream.online')
+        api.get_subscription(broadcaster_id, self.session_id, 'stream.offline')
