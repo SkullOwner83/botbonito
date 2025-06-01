@@ -28,7 +28,7 @@ class SessionService:
                         credentials['refresh_token'] = new_refresh_token
                         self.load_account(credentials, botconfig, account_type)
                         print("Token has been refreshed.")
-                        self.on_login()
+                        self.on_login() if self.on_login else None
                         return True
 
         return False

@@ -6,6 +6,8 @@ class WebsocketService:
     def __init__(self):
         self.is_connected = False
         self.session_id = None
+        self.stream_online_callback = []
+        self.stream_offline_callback = []
 
     # Connect with the twitch websocket
     async def connect(self, token, client_id, broadcaster_id):
@@ -32,6 +34,9 @@ class WebsocketService:
                 meta_data = event_data.get('metadata')
 
                 if meta_data.get('message_type') == 'notification':
+                    if meta_data.get('subscription_type') == 'stream.online': self.on_stream_online(event_data['payload'])
+                    if meta_data.get('subscription_type') == 'stream.offlice': self.on_stream_offline(event_data['payload'])
+
                     print(event_data)
 
             except websockets.ConnectionClosed as e:
@@ -44,3 +49,11 @@ class WebsocketService:
         api = Api(token, client_id)
         api.get_subscription(broadcaster_id, self.session_id, 'stream.online')
         api.get_subscription(broadcaster_id, self.session_id, 'stream.offline')
+
+    def on_stream_online(self, payload):
+        for callback in self.stream_online_callback:
+            callback(payload)
+    
+    def on_stream_offline(self, payload):
+        for callback in self.stream_offline_callback:
+            callback(payload)
