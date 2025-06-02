@@ -163,7 +163,28 @@ class Api():
         except requests.RequestException as error:
             print(f"Error: {error}")
 
-    def get_subscription(self, broadcaster_id: str, session_id: str, subscription_type: str) -> bool:
+    def get_subscriptions(self) -> Optional[dict]:
+        url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Client-ID': self.client_id
+        }
+
+        try:
+            response = requests.get(url, headers=headers)
+
+            if response.status_code == 200:
+                data = response.json()
+                return data['data']
+            else:
+                print(f"Error {response.status_code}: {response.content}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+        
+        return None
+
+    def create_subscription(self, broadcaster_id: str, session_id: str, subscription_type: str, *, version: Optional[int] = 1 ) -> bool:
         url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
 
         headers = {
@@ -174,7 +195,7 @@ class Api():
 
         payload = {
             'type': subscription_type,
-            'version': '1',
+            'version': version,
             'condition': {
                 'broadcaster_user_id': broadcaster_id,
             },
@@ -183,6 +204,9 @@ class Api():
                 'session_id': session_id
             }
         }
+
+        if subscription_type in ['channel.follow']:
+            payload['condition']['moderator_user_id'] = broadcaster_id
 
         try:
             response = requests.post(url, headers=headers, json=payload)
@@ -194,4 +218,24 @@ class Api():
         except requests.RequestException as error:
             print(f"Error: {error}")
         
+        return False
+    
+    def delete_subscription(self) -> bool:
+        url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Client-ID': self.client_id
+        }
+
+        try:
+            response = requests.delete(url, headers=headers)
+
+            if response.status_code == 204:
+                return True
+            else:
+                print(f"Error {response.status_code}: {response.content}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+
         return False
