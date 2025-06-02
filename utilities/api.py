@@ -36,32 +36,6 @@ class Api():
             print(f"Error: {error}")
 
         return None
-    
-    # Get goals from a specific user
-    def get_goals(self, user_id: Union[int, str]) -> Optional[dict]:
-        url = 'https://api.twitch.tv/helix/goals'
-
-        params = {
-            'broadcaster_id': user_id,
-        }
-
-        headers = {
-            'Authorization': f'Bearer {self.token}',
-            'Client-ID': self.client_id
-        }
-
-        try:
-            response = requests.get(url, headers=headers, params=params)
-
-            if response.status_code == 200:
-                data = response.json()
-                return data['data']
-            else:
-                print(f"Error {data['status']}: {data['message']}")
-        except requests.RequestException as error:
-            print(f"Error: {error}")
-        
-        return None
 
     # Check if the user follows the channel and return since when
     def check_follow(self, user_id: Union[int, str], broadcaster_id: Union[int, str]) -> Optional[str]:
@@ -94,6 +68,32 @@ class Api():
         except requests.RequestException as error:
             print(f"Error: {error}")
 
+        return None
+    
+    # Get goals from a specific user
+    def get_goals(self, user_id: Union[int, str]) -> Optional[dict]:
+        url = 'https://api.twitch.tv/helix/goals'
+
+        params = {
+            'broadcaster_id': user_id,
+        }
+
+        headers = {
+            'Authorization': f'Bearer {self.token}',
+            'Client-ID': self.client_id
+        }
+
+        try:
+            response = requests.get(url, headers=headers, params=params)
+
+            if response.status_code == 200:
+                data = response.json()
+                return data['data']
+            else:
+                print(f"Error {data['status']}: {data['message']}")
+        except requests.RequestException as error:
+            print(f"Error: {error}")
+        
         return None
     
     # Send a request to delete a specific message from the chat
@@ -220,8 +220,12 @@ class Api():
         
         return False
     
-    def delete_subscription(self) -> bool:
+    def delete_subscription(self, subscription_id) -> bool:
         url = 'https://api.twitch.tv/helix/eventsub/subscriptions'
+
+        paramas = {
+            'id': subscription_id
+        }
 
         headers = {
             'Authorization': f'Bearer {self.token}',
@@ -229,7 +233,7 @@ class Api():
         }
 
         try:
-            response = requests.delete(url, headers=headers)
+            response = requests.delete(url, headers=headers, params=paramas)
 
             if response.status_code == 204:
                 return True
