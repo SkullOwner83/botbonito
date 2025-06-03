@@ -5,7 +5,7 @@ from services import *
 
 
 class HomePage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService):
+    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
         super().__init__(
             route='/',
             padding=0
@@ -14,12 +14,8 @@ class HomePage(ft.View):
         self.page = page
         self.botconfig = botconfig
         self.session_service = session_service
-        self.session_service.on_login = self.on_login
+        self.websocket_service = websocket_service
         self.controls.append(self.build())
-
-    def on_login(self):
-        self.page.update()
-        print("Actualizado")
 
     def build(self) -> ft.Container:
         return ft.Container(
@@ -35,11 +31,7 @@ class HomePage(ft.View):
                         expand=True,
                         spacing=0,
                         controls=[
-                            Header(
-                                F"Hola, {self.session_service.user_account.display_name}" if self.session_service.user_account else "Dashboard", 
-                                self.botconfig, 
-                                self.session_service
-                            ),
+                            Header("Dashboard", self.botconfig, self.session_service, self.websocket_service),
 
                             ft.Container(
                                 padding=32,

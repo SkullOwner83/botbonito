@@ -9,7 +9,8 @@ class SessionService:
         self.user_account = None
         self.bot_account = None
         self.is_logged_in = False
-        self.on_login = None
+        self.on_login_callback = []
+        self.on_logout_callback = []
 
     def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         if Token.validation(credentials['access_token']):        
@@ -28,13 +29,13 @@ class SessionService:
                         credentials['refresh_token'] = new_refresh_token
                         self.load_account(credentials, botconfig, account_type)
                         print("Token has been refreshed.")
-                        self.on_login() if self.on_login else None
+                        self.on_login()
                         return True
 
         return False
 
     def login(self, botconfig: dict, account_type: str) -> bool:
-        scope = ['user:read:email', 'channel:read:goals'] if account_type == 'USER' else botconfig['scope']
+        scope = ['user:read:email', 'channel:read:goals', 'moderator:read:followers', 'channel:read:subscriptions'] if account_type == 'USER' else botconfig['scope']
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
@@ -95,3 +96,11 @@ class SessionService:
         }
 
         return dictionary
+    
+    def on_login(self):
+        for callback in self.on_login_callback:
+            callback()
+    
+    def on_logout(self):
+        for callback in self.on_logout_callback:
+            callback()

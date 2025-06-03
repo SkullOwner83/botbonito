@@ -1,23 +1,36 @@
-from pydoc import text
 import flet as ft
-from services.session_service import SessionService
+from services import *
 from utilities.file import File
 from myapp import MyApp
 
 class Header(ft.Container):
-    def __init__(self, tile: str, botconfig: dict, session_service: SessionService):
+    def __init__(self, tile: str, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
         super().__init__()
         self.title = tile
         self.height = 64
-        self.padding = ft.padding.symmetric(horizontal=32, vertical=12)
+        self.padding = ft.padding.symmetric(horizontal=32)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
         self.botconfig = botconfig
         self.session_service = session_service
+        self.websocket_service = websocket_service
         self.user = session_service.user_account
+
+        self.websocket_service.stream_online_callback.append(self.on_stream_online)
+        self.websocket_service.stream_offline_callback.append(self.on_stream_offline)
         
         self.set_controls()
         self.content = self.build()
         self.update_controls()
+
+    def on_stream_online(self, payload):
+        self.stream_status_text.value = 'Online'
+        self.status_dot.bgcolor = ft.Colors.GREEN
+        if self.page: self.update()
+
+    def on_stream_offline(self, payload):
+        self.stream_status_text.value = 'Offline'
+        self.status_dot.bgcolor = ft.Colors.RED
+        if self.page: self.update()
 
     def login(self) -> None:
         if self.session_service.login(self.botconfig, 'USER'):
@@ -34,6 +47,9 @@ class Header(ft.Container):
 
     def set_controls(self):
         self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
+        self.username_text = ft.Text(value='Usuario', font_family=MyApp.font_primary, size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.PRIMARY, selectable=True)
+        self.stream_status_text = ft.Text(value='Offline', font_family=MyApp.font_secondary, size=16, weight=ft.FontWeight.BOLD)
+        self.status_dot = ft.Container(width=12, shape=ft.BoxShape.CIRCLE, bgcolor=ft.Colors.RED, content=ft.Text(''))
 
         self.menu_button = ft.PopupMenuButton(
             width=40,
@@ -59,9 +75,9 @@ class Header(ft.Container):
     def update_controls(self):
         self.profile_image.src = self.user.profile_image if self.user else None
         self.profile_image.visible = self.session_service.is_logged_in
+        self.username_text.value = self.user.display_name if self.user else None
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text=self.user.username),
             ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
         ] if self.session_service.is_logged_in else [
             ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login())
@@ -72,7 +88,8 @@ class Header(ft.Container):
             spacing=0,
             controls= [
                 ft.Container(
-                    ft.Text(
+                    expand=True,
+                    content=ft.Text(
                         value=self.title,
                         font_family=MyApp.font_primary,
                         weight=ft.FontWeight.BOLD,
@@ -81,18 +98,31 @@ class Header(ft.Container):
                 ),
 
                 ft.Container(
-                    expand=True,
                     alignment=ft.alignment.center_right,
                     content=ft.Row(
                         alignment= ft.MainAxisAlignment.END,
                         controls=[
-                            ft.IconButton(
-                                width=40,
-                                height=40,
-                                icon=ft.Icons.NOTIFICATIONS,
+                            # ft.IconButton(
+                            #     width=40,
+                            #     height=40,
+                            #     icon=ft.Icons.NOTIFICATIONS,
+                            # ),
+                            ft.Column(
+                                spacing=-4,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                controls=[
+                                    self.username_text,
+                                    ft.Row(
+                                        spacing=4,
+                                        controls=[
+                                            self.status_dot,
+                                            self.stream_status_text
+                                        ]
+                                    )
+                                ]
                             ),
 
-                            self.menu_button
+                            self.menu_button,
                         ]
                     )
                 )

@@ -13,7 +13,7 @@ def startup(page: ft.Page) -> None:
     bot_services = BotService()
     session_service = SessionService()
     websocket_service = WebsocketService()
-    route_handler = RouteHandler(page, botconfig, bot_services, session_service)
+    route_handler = RouteHandler(page, botconfig, bot_services, session_service, websocket_service)
     main_window = MainWindow(page, route_handler, botconfig, credentials, bot_services, session_service, websocket_service)
 
 if __name__ == "__main__":

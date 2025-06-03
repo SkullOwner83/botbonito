@@ -45,11 +45,12 @@ class MainWindow:
         self.session_service.validation(user_credentials, self.botconfig, 'USER')
         self.page.go('/home')
 
-        import asyncio
-        asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))
 
         if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
         else:
             self.page.open(ValidationModal(bot_credentials, self.botconfig, self.bot_services, self.session_service))
+
+        import asyncio
+        asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))

@@ -211,7 +211,7 @@ class Api():
         try:
             response = requests.post(url, headers=headers, json=payload)
             
-            if response.status_code == 201:
+            if response.status_code == 202:
                 return True
             else:
                 print(f"Error {response.status_code}: {response.content}")

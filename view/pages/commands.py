@@ -7,7 +7,7 @@ from models.config import ConfigManager
 from myapp import MyApp
 
 class CommandsPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_services: SessionService):
+    def __init__(self, page: ft.Page, botconfig: dict, session_services: SessionService, websocket_service: WebsocketService):
         super().__init__(
             route='/validation',
             padding=0
@@ -20,6 +20,7 @@ class CommandsPage(ft.View):
         self.default_commands = self.config_manager.default_commands
         self.custom_commands = self.config_manager.custom_commands
         self.session_service = session_services
+        self.websocket_service = websocket_service
         
         self.set_controls()
         self.controls.append(self.build())
@@ -129,7 +130,7 @@ class CommandsPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls = [
-                            Header("Comandos", self.botconfig, self.session_service),
+                            Header("Comandos", self.botconfig, self.session_service, self.websocket_service),
                             
                             ft.Container(
                                 expand=True,

@@ -1,9 +1,9 @@
 import flet as ft
 from ..controls import *
-from services.session_service import SessionService
+from services import *
 
 class ConfigurationPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService):
+    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
         super().__init__(
             route='/validation',
             padding=0,
@@ -12,6 +12,7 @@ class ConfigurationPage(ft.View):
         self.page = page
         self.botconfig = botconfig
         self.session_service = session_service
+        self.websocket_service = websocket_service
         self.controls.append(self.build())
 
     def build(self) -> ft.Container:
@@ -28,7 +29,7 @@ class ConfigurationPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls=[
-                            Header("Configuración", self.botconfig, self.session_service),
+                            Header("Configuración", self.botconfig, self.session_service, self.websocket_service),
 
                             ft.Container(
                                 expand=True,
