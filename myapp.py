@@ -3,8 +3,8 @@ import re
 from typing import Callable
 
 class MyApp:
-    project_path = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(project_path, "config")
+    appdata_path = os.getenv('LOCALAPPDATA')
+    config_path = os.path.join(appdata_path, 'Bot Bonito')
     commands_path = os.path.join(config_path, "commands.json")
     credentials_path = os.path.join(config_path, "credentials.json")
     botconfig_path = os.path.join(config_path, "botconfig.json")

@@ -1,3 +1,4 @@
+import os
 import flet as ft
 from view.main_window import MainWindow
 from view.routes import RouteHandler
@@ -7,8 +8,11 @@ from utilities.file import File
 from myapp import MyApp
 
 def startup(page: ft.Page) -> None:
-    botconfig = File.open(MyApp.botconfig_path)
-    credentials = File.open(MyApp.credentials_path)
+    if os.path.exists(MyApp.config_path):
+        botconfig = File.open(MyApp.botconfig_path)
+        credentials = File.open(MyApp.credentials_path)
+    else:
+        os.makedirs(MyApp.config_path)
     
     bot_services = BotService()
     session_service = SessionService()
