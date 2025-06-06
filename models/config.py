@@ -1,9 +1,8 @@
 import os
+from threading import Lock
 from utilities.file import File
 from models.commands import CommandConfig
 from myapp import MyApp
-
-from threading import Lock
 
 class ConfigManager():
     _instance = None
