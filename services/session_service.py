@@ -12,9 +12,10 @@ class SessionService:
         self.on_login_callback = []
         self.on_logout_callback = []
 
+    # Validate if the token is valid or refresh it if it's expired
     def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         if Token.validation(credentials['access_token']):        
-            if self.load_account(credentials, botconfig, account_type): return True
+            if self._load_account(credentials, botconfig, account_type): return True
         else:
             if credentials['refresh_token']:
                 token = Token(botconfig['client_id'], botconfig['client_secret'], botconfig['scope'], botconfig['redirect_uri'])
@@ -27,13 +28,13 @@ class SessionService:
                     if Token.validation(new_token):
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
-                        self.load_account(credentials, botconfig, account_type)
+                        self._load_account(credentials, botconfig, account_type)
                         print("Token has been refreshed.")
-                        self.on_login()
                         return True
 
         return False
 
+    # Login the twitch account using the credentials
     def login(self, botconfig: dict, account_type: str) -> bool:
         scope = ['user:read:email', 'channel:read:goals', 'moderator:read:followers', 'channel:read:subscriptions'] if account_type == 'USER' else botconfig['scope']
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
@@ -47,13 +48,22 @@ class SessionService:
                 'refresh_token': token_data['refresh_token']
             }
         
-            if self.load_account(credentials, botconfig, account_type):
-                self.on_login()
+            if self._load_account(credentials, botconfig, account_type):
+                self.on_login(self.user_account if account_type == 'USER' else self.bot_account)
                 return True
     
         return False
+    
+    # Logout the specified account
+    def logout(self, account_type: str) -> None:
+        if account_type == 'USER':
+            self.user_account = None
+            self.is_logged_in = False
+        elif account_type == 'BOT':
+            self.bot_account = None
 
-    def load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
+    # Fetch the account data from the twitch API to load the account
+    def _load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         api = Api(credentials['access_token'], botconfig['client_id'])
         account_data= api.get_user()
 
@@ -75,14 +85,8 @@ class SessionService:
             return True
 
         return False
-    
-    def logout(self, account_type: str) -> None:
-        if account_type == 'USER':
-            self.user_account = None
-            self.is_logged_in = False
-        elif account_type == 'BOT':
-            self.bot_account = None
 
+    # Create a dictionary of the accounts to can be saved to a json file
     def serialize(self) -> dict:
         dictionary = {
             "bot": {
@@ -96,11 +100,11 @@ class SessionService:
         }
 
         return dictionary
-    
-    def on_login(self):
+
+    def on_login(self, account: User) -> None:
         for callback in self.on_login_callback:
-            callback()
+            callback(account)
     
-    def on_logout(self):
+    def on_logout(self) -> None:
         for callback in self.on_logout_callback:
             callback()
