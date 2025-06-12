@@ -15,7 +15,7 @@ class SessionService:
     # Validate if the token is valid or refresh it if it's expired
     def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         if Token.validation(credentials['access_token']):        
-            if self._load_account(credentials, botconfig, account_type): return True
+            if self.load_account(credentials, botconfig, account_type): return True
         else:
             if credentials['refresh_token']:
                 token = Token(botconfig['client_id'], botconfig['client_secret'], botconfig['scope'], botconfig['redirect_uri'])
@@ -28,7 +28,7 @@ class SessionService:
                     if Token.validation(new_token):
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
-                        self._load_account(credentials, botconfig, account_type)
+                        self.load_account(credentials, botconfig, account_type)
                         print("Token has been refreshed.")
                         return True
 
@@ -48,7 +48,7 @@ class SessionService:
                 'refresh_token': token_data['refresh_token']
             }
         
-            if self._load_account(credentials, botconfig, account_type):
+            if self.load_account(credentials, botconfig, account_type):
                 self.on_login(self.user_account if account_type == 'USER' else self.bot_account)
                 return True
     
@@ -63,7 +63,7 @@ class SessionService:
             self.bot_account = None
 
     # Fetch the account data from the twitch API to load the account
-    def _load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
+    def load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
         api = Api(credentials['access_token'], botconfig['client_id'])
         account_data= api.get_user()
 

@@ -1,5 +1,5 @@
 import flet as ft
-from typing import Callable
+from typing import Callable, Optional
 from myapp import MyApp
 
 class NavigationBar(ft.Container):
@@ -35,7 +35,7 @@ class NavigationBar(ft.Container):
 
 
 class MenuButton(ft.Container):
-    def __init__(self, text: str, icon: str, onclick: Callable = None) -> None:
+    def __init__(self, text: str, icon: str, onclick: Optional[Callable] = None) -> None:
         super().__init__(
             height=32,
             bgcolor=ft.Colors.WHITE,

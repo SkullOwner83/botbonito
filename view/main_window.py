@@ -9,7 +9,7 @@ from view.modals.validation import ValidationModal
 from myapp import MyApp
 
 class MainWindow:
-    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict, bot_service: BotService, session_service: SessionService, websocket_service: WebsocketService):
+    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict):
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
@@ -33,9 +33,10 @@ class MainWindow:
 
         self.botconfig = botconfig
         self.credentials = credentials
-        self.bot_services = bot_service
-        self.websocket_service = websocket_service
-        self.session_service = session_service
+        _service_locator = ServiceLocator()
+        self.bot_services = _service_locator.get('bot')
+        self.websocket_service = _service_locator.get('websocket')
+        self.session_service = _service_locator.get('session')
         self.load()
     
     def load(self) -> None:
@@ -50,7 +51,7 @@ class MainWindow:
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
         else:
-            self.page.open(ValidationModal(bot_credentials, self.botconfig, self.bot_services, self.session_service))
+            self.page.open(ValidationModal(bot_credentials, self.botconfig))
 
         import asyncio
         asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))

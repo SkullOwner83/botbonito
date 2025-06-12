@@ -8,9 +8,11 @@ from services import *
 from ..controls import *
 
 class ValidationModal(Modal):
-    def __init__(self, bot_credentials: dict, botconfig: dict, bot_service: BotService, session_service: SessionService) -> None:
-        self.bot_service = bot_service
-        self.session_service = session_service
+    def __init__(self, bot_credentials: dict, botconfig: dict) -> None:
+        _service_locator = ServiceLocator()
+        self.bot_service = _service_locator.get('bot')
+        self.session_service = _service_locator.get('session')
+        self.websocket_service = _service_locator.get('websocket')
         self.bot_credentials = bot_credentials
         self.botconfig = botconfig
 

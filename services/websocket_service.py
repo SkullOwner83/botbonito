@@ -44,7 +44,6 @@ class WebsocketService:
                     print(event_data)
 
             except websockets.ConnectionClosed as e:
-                websocket.close()
                 print(f"Conexión cerrada: {e}")
 
     # Create a event subscriptions from twich

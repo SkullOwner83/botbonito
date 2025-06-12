@@ -3,7 +3,7 @@ from typing import List, Optional
 
 @dataclass
 class AppConfig:
-    name: Optional[str] = 'botbonito_',
+    name: Optional[str] = 'BotBonito',
     prefix: Optional[str] = '!',
     redirect_uri: Optional[str] = 'https://localhost:300',
     help_word: Optional[str] = 'help',

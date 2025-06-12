@@ -1,11 +1,10 @@
-from click import option
 import flet as ft
 from ..controls import *
 from services import *
 
 
 class HomePage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
+    def __init__(self, page: ft.Page, botconfig: dict):
         super().__init__(
             route='/',
             padding=0
@@ -13,8 +12,9 @@ class HomePage(ft.View):
 
         self.page = page
         self.botconfig = botconfig
-        self.session_service = session_service
-        self.websocket_service = websocket_service
+        _service_locator = ServiceLocator()
+        self.session_service = _service_locator.get('session')
+        self.websocket_service = _service_locator.get('websocket')
         self.controls.append(self.build())
 
     def build(self) -> ft.Container:

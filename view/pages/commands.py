@@ -7,20 +7,22 @@ from models.config import ConfigManager
 from myapp import MyApp
 
 class CommandsPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_services: SessionService, websocket_service: WebsocketService):
+    def __init__(self, page: ft.Page, botconfig: dict):
         super().__init__(
             route='/validation',
             padding=0
         )
 
         self.page = page
-        self.botconfig = botconfig
         self.filter = ''
+        self.botconfig = botconfig
         self.config_manager = ConfigManager()
         self.default_commands = self.config_manager.default_commands
         self.custom_commands = self.config_manager.custom_commands
-        self.session_service = session_services
-        self.websocket_service = websocket_service
+
+        _service_locator = ServiceLocator()
+        self.session_service = _service_locator.get('session')
+        self.websocket_service = _service_locator.get('websocket')
         
         self.set_controls()
         self.controls.append(self.build())

@@ -26,9 +26,6 @@ class Protection:
         self.max_length = max_length
         self.duration = duration
         self.strikes = strikes
-
-    def __repr__(self):
-        return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'
     
     async def apply_penalty(self, ctx: Message, cog: Cog) -> None:
         user = ctx.author.name
@@ -55,3 +52,6 @@ class Protection:
                 
                 case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
                 case 'ban_user': api.set_ban(broadcaster_id, moderator_id, user_id, self.reason)
+
+    def __repr__(self):
+        return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'
