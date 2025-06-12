@@ -33,9 +33,9 @@ class MainWindow:
         self.botconfig = botconfig
         self.credentials = credentials
         _service_locator = ServiceLocator()
-        self.bot_services = _service_locator.get('bot')
-        self.websocket_service = _service_locator.get('websocket')
-        self.session_service = _service_locator.get('session')
+        self.bot_services: BotService = _service_locator.get('bot')
+        self.websocket_service: WebsocketService = _service_locator.get('websocket')
+        self.session_service: SessionService = _service_locator.get('session')
         self.load()
     
     def load(self) -> None:

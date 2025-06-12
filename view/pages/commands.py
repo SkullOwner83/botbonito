@@ -19,10 +19,6 @@ class CommandsPage(ft.View):
         self.config_manager = ConfigManager()
         self.default_commands = self.config_manager.default_commands
         self.custom_commands = self.config_manager.custom_commands
-
-        _service_locator = ServiceLocator()
-        self.session_service = _service_locator.get('session')
-        self.websocket_service = _service_locator.get('websocket')
         
         self.set_controls()
         self.controls.append(self.build())
@@ -132,7 +128,7 @@ class CommandsPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls = [
-                            Header("Comandos", self.botconfig, self.session_service, self.websocket_service),
+                            Header("Comandos", self.botconfig),
                             
                             ft.Container(
                                 expand=True,

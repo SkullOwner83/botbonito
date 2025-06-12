@@ -11,9 +11,6 @@ class ConfigurationPage(ft.View):
 
         self.page = page
         self.botconfig = botconfig
-        _service_locator = ServiceLocator()
-        self.session_service = _service_locator.get('session')
-        self.websocket_service = _service_locator.get('websocket')
         self.controls.append(self.build())
 
     def build(self) -> ft.Container:
@@ -30,7 +27,7 @@ class ConfigurationPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls=[
-                            Header("Configuración", self.botconfig, self.session_service, self.websocket_service),
+                            Header("Configuración", self.botconfig),
 
                             ft.Container(
                                 expand=True,

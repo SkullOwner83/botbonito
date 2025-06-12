@@ -11,9 +11,6 @@ class ModerationPage(ft.View):
 
         self.page = page
         self.botconfig = botconfig
-        _service_locator = ServiceLocator()
-        self.session_service = _service_locator.get('session')
-        self.websocket_service = _service_locator.get('websocket')
         self.controls.append(self.build())
 
     def change_tab(self, e: ft.ControlEvent):
@@ -33,7 +30,7 @@ class ModerationPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls=[
-                            Header("Moderación", self.botconfig, self.session_service, self.websocket_service),
+                            Header("Moderación", self.botconfig),
 
                             ft.Container(
                                 expand=True,

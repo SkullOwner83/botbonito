@@ -4,16 +4,18 @@ from utilities.file import File
 from myapp import MyApp
 
 class Header(ft.Container):
-    def __init__(self, tile: str, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
+    def __init__(self, tile: str, botconfig: dict):
         super().__init__()
         self.title = tile
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
         self.botconfig = botconfig
-        self.session_service = session_service
-        self.websocket_service = websocket_service
-        self.user = session_service.user_account
+
+        _service_locator = ServiceLocator()
+        self.session_service: SessionService = _service_locator.get('session')
+        self.websocket_service: WebsocketService = _service_locator.get('websocket')
+        self.user = self.session_service.user_account
 
         self.websocket_service.stream_online_callback.append(self.on_stream_online)
         self.websocket_service.stream_offline_callback.append(self.on_stream_offline)
