@@ -1,9 +1,8 @@
-from exceptiongroup import catch
+import asyncio
+from typing import cast
 import flet as ft
-import requests
 from view.routes import RouteHandler
 from utilities.file import File
-from utilities.token import Token
 from services import *
 from view.modals.validation import ValidationModal
 from myapp import MyApp
@@ -42,16 +41,14 @@ class MainWindow:
     def load(self) -> None:
         bot_credentials = self.credentials.get("bot")
         user_credentials = self.credentials.get("user")
-
         self.session_service.validation(user_credentials, self.botconfig, 'USER')
         self.page.go('/home')
-
 
         if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
+            
+            if self.session_service.is_logged_in:
+                asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))
         else:
             self.page.open(ValidationModal(bot_credentials, self.botconfig))
-
-        import asyncio
-        asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))

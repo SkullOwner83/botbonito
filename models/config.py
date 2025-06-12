@@ -27,7 +27,7 @@ class ConfigManager():
                 alias: key 
                 for key, value in self.custom_commands.items()
                 for alias in value.alias }
-            
+
     def save_commands(self) -> None:
         self.dictionary = {
                 "default_commands": {

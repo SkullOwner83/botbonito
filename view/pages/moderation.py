@@ -3,17 +3,21 @@ from ..controls import *
 from services import *
 
 class ModerationPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict, session_service: SessionService, websocket_service: WebsocketService):
+    def __init__(self, page: ft.Page, botconfig: dict):
         super().__init__(
-            route='/validation',
+            route='/moderation',
             padding=0
         )
 
         self.page = page
         self.botconfig = botconfig
-        self.session_service = session_service
-        self.websocket_service = websocket_service
+        _service_locator = ServiceLocator()
+        self.session_service = _service_locator.get('session')
+        self.websocket_service = _service_locator.get('websocket')
         self.controls.append(self.build())
+
+    def change_tab(self, e: ft.ControlEvent):
+        pass
 
     def build(self) -> ft.Container:
         return ft.Container(
@@ -33,9 +37,27 @@ class ModerationPage(ft.View):
 
                             ft.Container(
                                 expand=True,
-                                bgcolor=ft.Colors.GREY_100,
-                                alignment=ft.alignment.center,
-                                content=ft.Text(value="Página de moderación.")
+                                padding=32,
+                                content=ft.Column(
+                                    spacing=20,
+                                    controls=[
+                                        SegmentedButton(
+                                            on_change=self.change_tab,
+                                            segments=[
+                                                ft.Segment(value='1', label=ft.Text('Protecciones')),
+                                                ft.Segment(value='2', label=ft.Text('Palabras prohibidas'))
+                                            ]
+                                        ),
+
+                                        ft.ResponsiveRow(
+                                            controls=[
+                                                Card(),
+                                                Card(),
+                                                Card()
+                                            ]
+                                        )
+                                    ]
+                                )
                             )
                         ]
                     )

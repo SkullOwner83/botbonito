@@ -16,9 +16,6 @@ def startup(page: ft.Page) -> None:
         os.makedirs(MyApp.config_path)
     
     service_handler()
-    bot_services = BotService()
-    session_service = SessionService()
-    websocket_service = WebsocketService()
     route_handler = RouteHandler(page, botconfig)
     main_window = MainWindow(page, route_handler, botconfig, credentials)
 
