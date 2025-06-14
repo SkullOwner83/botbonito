@@ -11,22 +11,28 @@ class ConfigManager():
     def __init__(self):
         if not hasattr(self, '_initialized'):
             self._initialized = True
-            self.__commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
-
-            self.default_commands = { 
-                name: CommandConfig(**data) 
-                for name, data in self.__commands_config.get("default_commands", {}).items() 
-            }
-
-            self.custom_commands = { 
-                name: CommandConfig(**data) 
-                for name, data in self.__commands_config.get("custom_commands", {}).items() 
-            }
+            self.default_commands: dict[str, CommandConfig] = {}
+            self.custom_commands: dict[str, CommandConfig] = {}
+            self.load_commands()
 
             self.custom_alias = { 
                 alias: key 
                 for key, value in self.custom_commands.items()
-                for alias in value.alias }
+                for alias in value.alias 
+            }
+
+    def load_commands(self) -> None:
+        _commands_config = File.open(os.path.join(MyApp.config_path, "commands.json"))
+
+        self.default_commands = { 
+            name: CommandConfig(**data) 
+            for name, data in _commands_config.get("default_commands", {}).items() 
+        }
+
+        self.custom_commands = { 
+            name: CommandConfig(**data) 
+            for name, data in _commands_config.get("custom_commands", {}).items() 
+        }
 
     def save_commands(self) -> None:
         self.dictionary = {
