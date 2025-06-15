@@ -4,8 +4,9 @@ class CommandConfig:
     def __init__(
         self,
         name: str,
+        description: Optional[str] = None,
         enable: Optional[bool] = True,
-        alias: Optional[List[str]] = None,
+        alias: Optional[List[str]] = [],
         cooldown: Optional[int] = 0,
         max_length: Optional[int] = 0,
         user_level: Optional[str] = 'everyone',
@@ -13,8 +14,9 @@ class CommandConfig:
         response_type: Optional[str] = 'say'
     ):
         self.name = name
+        self.description = description
         self.enable = enable
-        self.alias = alias or []
+        self.alias = alias
         self.cooldown = cooldown
         self.max_length = max_length
         self.user_level = user_level

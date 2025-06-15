@@ -32,7 +32,10 @@ class ConfigManager():
 
             for name, data in laoded_default_commands.items():
                 if name in self.default_commands:
-                    self.default_commands[name] = CommandConfig(**data)
+                    cmd = self.default_commands[name]
+                    
+                    for attr, val in data.items():
+                        setattr(cmd, attr, val)
 
             self.custom_commands = { 
                 name: CommandConfig(**data) 
