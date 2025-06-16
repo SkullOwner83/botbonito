@@ -3,6 +3,7 @@ import flet as ft
 from ..controls import *
 from models.commands import CommandConfig
 from models.config import ConfigManager
+from models.enums import UserLevel
 
 class CommandsModal(Modal):
     def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:
@@ -40,10 +41,11 @@ class CommandsModal(Modal):
         self.user_level_dropdown = DropDown(
             value=self.command.user_level or "everyone",
             options=[
-                ft.DropdownOption(key="everyone", content=ft.Text("Everyone")),
-                ft.DropdownOption(key="moderator", content=ft.Text("Moderator")),
-                ft.DropdownOption(key="suscriptor", content=ft.Text("Suscriptor")),
-                ft.DropdownOption(key="broadcaster", content=ft.Text("Broadcaster")),
+                ft.DropdownOption(key=UserLevel.EVERYONE, content=ft.Text("Everyone")),
+                ft.DropdownOption(key=UserLevel.MODERATOR, content=ft.Text("Moderator")),
+                ft.DropdownOption(key=UserLevel.SUSCRIPTOR, content=ft.Text("Suscriptor")),
+                ft.DropdownOption(key=UserLevel.BROADCASTER, content=ft.Text("Broadcaster")),
+                ft.DropdownOption(key=UserLevel.VIP, content=ft.Text("VIP"))
             ]
         )
 

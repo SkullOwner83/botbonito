@@ -4,11 +4,11 @@ import time
 import random
 import asyncio
 import threading
+
 from twitchio import Message
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
-from utilities.file import File
-from utilities.api import Api
+
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
@@ -16,6 +16,8 @@ from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
 from myapp import MyApp
 from models.config import ConfigManager
+from models.enums import UserLevel
+from utilities import *
 
 class Bot(commands.Bot):
     def __init__(self, config: dict, credentials: dict) -> None:
@@ -150,7 +152,7 @@ class Bot(commands.Bot):
         disable_word = self.config.get('disable_word', 'disable')
         
         if value == enable_word or value == disable_word:
-            if self.level_check(ctx, 'broadcaster'):
+            if self.level_check(ctx, UserLevel.BROADCASTER):
                 if value == enable_word:
                     if target_command.enable == False:
                         target_command.enable = True

@@ -23,11 +23,12 @@ class DataTable(ft.Container):
                     controls=[
                         ft.DataTable(
                             expand=True,
-                            column_spacing=32,
+                            column_spacing=20,
                             columns=self.columns,
                             rows=self.rows,
                             heading_row_height=32,
-                            data_row_max_height=48,
+                            data_row_min_height=32,
+                            data_row_max_height=64,
 
                             heading_text_style=ft.TextStyle(
                                 font_family=MyApp.font_primary,

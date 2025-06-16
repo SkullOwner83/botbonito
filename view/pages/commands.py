@@ -42,7 +42,7 @@ class CommandsPage(ft.View):
                             ),
 
                             ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.modify_command(c)),
-                            ft.DataCell(ft.Text(command.name if table == self.default_commands_table else command.response)),
+                            ft.DataCell(ft.Text(value=command.name if table == self.default_commands_table else command.response)),
                             ft.DataCell(ft.Text(command.user_level))
                         ]
                     )
