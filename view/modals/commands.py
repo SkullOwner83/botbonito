@@ -3,7 +3,7 @@ import flet as ft
 from ..controls import *
 from models.commands import CommandConfig
 from models.config import ConfigManager
-from models.enums import UserLevel
+from models.enums import UserLevel, ResponseType
 
 class CommandsModal(Modal):
     def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:
@@ -55,9 +55,9 @@ class CommandsModal(Modal):
             self.response_type_dropdown = DropDown(
                 value=self.command.response_type or "say",
                 options=[
-                    ft.DropdownOption(key="say", content=ft.Text("Decir")),
-                    ft.DropdownOption(key="mention", content=ft.Text("Mencionar")),
-                    ft.DropdownOption(key="reply", content=ft.Text("Responder")),
+                    ft.DropdownOption(key=ResponseType.SAY, content=ft.Text("Decir")),
+                    ft.DropdownOption(key=ResponseType.REPLY, content=ft.Text("Responder"))
+                    ft.DropdownOption(key=ResponseType.MENTION, content=ft.Text("Mencionar")),
                 ]
             )
 

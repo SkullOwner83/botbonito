@@ -1,6 +1,7 @@
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from utilities.api import Api
+from models.enums import Enum, ResponseType
 from myapp import MyApp
 
 class CommandManager(commands.Cog):
@@ -57,8 +58,8 @@ class CommandManager(commands.Cog):
 
         if await self.bot.check_command_access(ctx, command_config.name) and response:
             match response_type:
-                case 'say': await ctx.send(response)
-                case 'repy': await ctx.reply(response)
-                case 'mention':
+                case ResponseType.SAY: await ctx.send(response)
+                case ResponseType.REPLY: await ctx.reply(response)
+                case ResponseType.MENTION:
                     response = response.replace('@', f' @{user} ') if '@' in response else f'@{user} {response}'
                     await ctx.send(response)

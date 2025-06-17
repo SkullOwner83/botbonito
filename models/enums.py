@@ -7,3 +7,8 @@ class UserLevel(str, Enum):
     SUSCRIPTOR = 'suscriptor'
     BROADCASTER = 'broadcaster'
     VIP = 'vip'
+
+class ResponseType(str, Enum):
+    SAY = 'say'
+    REPLY = 'reply'
+    MENTION = 'mention'
