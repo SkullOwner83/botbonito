@@ -1,8 +1,8 @@
 from typing import Optional, List
-from twitchio import Message
-from twitchio.ext.commands import Bot, Cog
-from twitchio.ext import commands
+
+from twitchio.ext.commands import Bot, Cog, Context
 from utilities.api import Api
+from models.enums import PenaltyType
 
 class Protection:
     def __init__(self,
@@ -27,7 +27,7 @@ class Protection:
         self.duration = duration
         self.strikes = strikes
     
-    async def apply_penalty(self, ctx: Message, cog: Cog) -> None:
+    async def apply_penalty(self, ctx: Context, cog: Cog) -> None:
         user = ctx.author.name
         message = ctx.message
         penalty = self.penalty 
@@ -40,18 +40,18 @@ class Protection:
             message_id = message.tags.get('id')
 
             # Change the penalty if the user exceed the allowed strikes
-            if self.penalty != 'ban_user' and self.strikes > 0:
+            if self.penalty != PenaltyType.BAN_USER and self.strikes > 0:
                 for filter_strikes in cog.user_strikes.values():
                     if filter_strikes.get(user, 0) >= self.strikes:
-                        penalty = 'ban_user'
+                        penalty = PenaltyType.BAN_USER
 
             match(penalty):
-                case 'delete_message': 
+                case PenaltyType.DELETE_MESSAGE: 
                     api.delete_message(broadcaster_id, moderator_id, message_id)
                     if self.reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {self.reason}")
                 
-                case 'timeout': api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
-                case 'ban_user': api.set_ban(broadcaster_id, moderator_id, user_id, self.reason)
+                case PenaltyType.TIME_OUT: api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
+                case PenaltyType.BAN_USER: api.set_ban(broadcaster_id, moderator_id, user_id, self.reason)
 
     def __repr__(self):
         return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'

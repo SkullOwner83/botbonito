@@ -1,6 +1,6 @@
 from copy import deepcopy
 from models.protection import Protection
-from models.enums import UserLevel
+from models.enums import UserLevel, PenaltyType
 
 @staticmethod
 def get_protections():
@@ -9,7 +9,7 @@ def get_protections():
 _PROTECTION = {
     'links': Protection(
         name='links',
-        penalty='delete_message',
+        penalty=PenaltyType.DELETE_MESSAGE,
         reason='Por seguridad, no esta permitido enviar links.',
         exclude=UserLevel.MODERATOR,
         duration=0,
@@ -18,18 +18,18 @@ _PROTECTION = {
 
     'repeated_messages': Protection(
         name='repeated_messages',
-        penalty='timeout',
+        penalty=PenaltyType.TIME_OUT,
         reason='Spam: Envío repetitivo de mensajes idénticos.',
-        exclude='no_one',
+        exclude=UserLevel.MODERATOR,
         duration=0,
         strikes=3
     ),
 
     'long_messages': Protection(
         name='long_messages',
-        penalty='delete_message',
+        penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envió de mensaje demasiado largo.',
-        exclude='no_one',
+        exclude=UserLevel.MODERATOR,
         max_length=300,
         duration=0,
         strikes=0
