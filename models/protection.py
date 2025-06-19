@@ -7,7 +7,7 @@ from utilities.api import Api
 class Protection:
     def __init__(self,
         name: str = None,
-        enable: bool = False,
+        enable: bool = True,
         penalty: Optional[str] = None,
         reason: Optional[str] = None,
         exclude: Optional[str] = 'no_one',

@@ -39,7 +39,7 @@ class CommandsModal(Modal):
         self.load_alias()
        
         self.user_level_dropdown = DropDown(
-            value=self.command.user_level or "everyone",
+            value=self.command.user_level or UserLevel.EVERYONE,
             options=[
                 ft.DropdownOption(key=UserLevel.EVERYONE, content=ft.Text("Everyone")),
                 ft.DropdownOption(key=UserLevel.MODERATOR, content=ft.Text("Moderator")),
@@ -53,10 +53,10 @@ class CommandsModal(Modal):
             self.response_textbox = TextBox(value=self.command.response)
 
             self.response_type_dropdown = DropDown(
-                value=self.command.response_type or "say",
+                value=self.command.response_type or ResponseType.SAY,
                 options=[
                     ft.DropdownOption(key=ResponseType.SAY, content=ft.Text("Decir")),
-                    ft.DropdownOption(key=ResponseType.REPLY, content=ft.Text("Responder"))
+                    ft.DropdownOption(key=ResponseType.REPLY, content=ft.Text("Responder")),
                     ft.DropdownOption(key=ResponseType.MENTION, content=ft.Text("Mencionar")),
                 ]
             )

@@ -127,11 +127,11 @@ class Bot(commands.Bot):
                 await channel.send(message)
 
     # Check if the user has a specific role in the channel
-    def level_check(self, ctx: Context, role: str) -> bool:
+    def level_check(self, ctx: Context, level: str) -> bool:
         user = ctx.author
         user_badges = list(user.badges.keys())
 
-        if role == "follower":
+        if level == UserLevel.FOLLOWER:
             api = Api(self.token, self.client_id)
             user_id = (api.get_user(user.name) or {}).get('id')
             broadcaster_id = (api.get_user(ctx.channel.name) or {}).get('id')
@@ -140,7 +140,7 @@ class Bot(commands.Bot):
                 if api.check_follow(user_id, broadcaster_id): 
                     return True
 
-        if role in user_badges or role == "everyone":
+        if level in user_badges or level == UserLevel.EVERYONE:
             return True
     
         return False

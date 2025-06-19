@@ -4,9 +4,9 @@ from models.enums import UserLevel
 
 @staticmethod
 def get_default_commands():
-    return deepcopy(__DEFAULT_COMMANDS)
+    return deepcopy(_DEFAULT_COMMANDS)
 
-__DEFAULT_COMMANDS = {
+_DEFAULT_COMMANDS = {
     'help': CommandConfig(
         name='help',
         description='Muestra la lista de comandos disponibles que el usuario puede usar.',
