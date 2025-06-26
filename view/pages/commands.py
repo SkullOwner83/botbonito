@@ -35,14 +35,33 @@ class CommandsPage(ft.View):
                 table.rows.append(
                     ft.DataRow(
                         cells=[
-                            ft.DataCell(ft.Switch(
-                                on_change=lambda e, c=command: self.disable_command(e, c),
-                                value=command.enable, 
-                                width=32,)
+                            ft.DataCell(
+                                ft.Switch(
+                                    on_change=lambda e, c=command: self.disable_command(e, c),
+                                    value=command.enable, 
+                                    width=32,
+                                )
                             ),
 
-                            ft.DataCell(ft.Text(f"!{command.name}"), on_tap=lambda e, c=command: self.modify_command(c)),
-                            ft.DataCell(ft.Text(value=command.name if table == self.default_commands_table else command.response)),
+                            ft.DataCell(
+                                on_tap=lambda e, c=command: self.modify_command(c),
+                                content=ft.Container(
+                                    padding=8,
+                                    clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                    content=ft.Column(
+                                        spacing=0,
+                                        controls=[
+                                            ft.Text(value=f"!{command.name}", weight=ft.FontWeight.BOLD),
+                                            ft.Text(
+                                                value=command.description if table is self.default_commands_table else command.response,
+                                                color=ft.Colors.GREY_700,
+                                                style=ft.TextStyle(height=0)
+                                            )
+                                        ]
+                                    )
+                                )
+                            ),
+
                             ft.DataCell(ft.Text(command.user_level))
                         ]
                     )
@@ -88,7 +107,6 @@ class CommandsPage(ft.View):
             columns=[
                 ft.DataColumn(ft.Text("Activo")),
                 ft.DataColumn(ft.Text("Comando")),
-                ft.DataColumn(ft.Text("Decripción")),
                 ft.DataColumn(ft.Text("Permisos"))
             ]
         )
@@ -98,7 +116,6 @@ class CommandsPage(ft.View):
             columns=[
                 ft.DataColumn(ft.Text("Activo")),
                 ft.DataColumn(ft.Text("Comando")),
-                ft.DataColumn(ft.Text("Respuesta")),
                 ft.DataColumn(ft.Text("Permisos"))
             ]
         )
