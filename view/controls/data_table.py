@@ -27,7 +27,8 @@ class DataTable(ft.Container):
                             columns=self.columns,
                             rows=self.rows,
                             heading_row_height=32,
-                            data_row_max_height=72,
+                            data_row_max_height=float("inf"),
+                            show_checkbox_column=False,
 
                             heading_text_style=ft.TextStyle(
                                 font_family=MyApp.font_primary,

@@ -9,3 +9,4 @@ from .navigation_bar import NavigationBar
 from .segmented_button import SegmentedButton
 from .tag import Tag
 from .textbox import TextBox
+from .badge import Badge

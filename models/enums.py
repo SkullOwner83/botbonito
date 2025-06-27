@@ -4,7 +4,7 @@ class UserLevel(str, Enum):
     EVERYONE = 'everyone'
     FOLLOWER = 'follower'
     MODERATOR = 'moderator'
-    SUSCRIPTOR = 'suscriptor'
+    SUBSCRIBER = 'subscriber'
     BROADCASTER = 'broadcaster'
     VIP = 'vip'
 
