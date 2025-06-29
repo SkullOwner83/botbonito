@@ -34,6 +34,7 @@ class CommandsPage(ft.View):
             if filter == '' or filter in command.name.lower():
                 table.rows.append(
                     ft.DataRow(
+                        on_select_changed=lambda e, c=command: self.modify_command(c),
                         cells=[
                             ft.DataCell(
                                 ft.Switch(
@@ -44,7 +45,7 @@ class CommandsPage(ft.View):
                             ),
 
                             ft.DataCell(
-                                on_tap=lambda e, c=command: self.modify_command(c),
+                                #on_tap=lambda e, c=command: self.modify_command(c),
                                 content=ft.Container(
                                     padding=8,
                                     clip_behavior=ft.ClipBehavior.HARD_EDGE,
@@ -62,7 +63,7 @@ class CommandsPage(ft.View):
                                 )
                             ),
 
-                            ft.DataCell(ft.Text(command.user_level))
+                            ft.DataCell(Badge(command.user_level))
                         ]
                     )
                 )
@@ -106,7 +107,7 @@ class CommandsPage(ft.View):
             visible=True,
             columns=[
                 ft.DataColumn(ft.Text("Activo")),
-                ft.DataColumn(ft.Text("Comando")),
+                ft.DataColumn(label=ft.Text("Comando"), heading_row_alignment=ft.MainAxisAlignment.CENTER),
                 ft.DataColumn(ft.Text("Permisos"))
             ]
         )
