@@ -26,8 +26,18 @@ class CommandsModal(Modal):
             title="Editar comando" if self.action == 'edit' else "Nuevo comando",
             content=self.build(),
             actions=[
-                Button(text="Cancelar", style="Outlined", on_click=self.on_close),
-                Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command(e))
+                ft.Row(
+                    controls=[
+                        ft.IconButton(icon=ft.Icons.DELETE),
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.END,
+                            controls=[
+                                Button(text="Cancelar", style="Outlined", on_click=self.on_close),
+                                Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command(e))
+                            ]
+                        )
+                    ]
+                )
             ]
         )
 

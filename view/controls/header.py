@@ -104,11 +104,6 @@ class Header(ft.Container):
                     content=ft.Row(
                         alignment= ft.MainAxisAlignment.END,
                         controls=[
-                            # ft.IconButton(
-                            #     width=40,
-                            #     height=40,
-                            #     icon=ft.Icons.NOTIFICATIONS,
-                            # ),
                             ft.Column(
                                 spacing=-4,
                                 alignment=ft.MainAxisAlignment.CENTER,

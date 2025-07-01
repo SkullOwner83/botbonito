@@ -22,7 +22,7 @@ class BotService():
             self._thread.start()
 
     # Stop the bot excecution and their thread and event loop
-    def stop(self):
+    def stop(self) -> None:
         if self._thread and self._loop and self.bot_instance:
             asyncio.run_coroutine_threadsafe(self.bot_instance.close(), self._loop)
             self._loop.call_soon_threadsafe(self._loop.stop)
@@ -30,6 +30,10 @@ class BotService():
             self._loop = None
             self._thread = None
             print("bot has been stopped")
+
+    def delete_command(self, command_name) -> bool:
+        if self.bot_instance:
+            self.bot_instance.remove_command(command_name)
 
     # Create a event loop in the new thread and instance the bot into this loop
     def _create_bot(self) -> None:
