@@ -1,5 +1,7 @@
 from typing import Callable, Optional
 import flet as ft
+
+from services import *
 from ..controls import *
 from models.commands import CommandConfig
 from models.config import ConfigManager
@@ -28,13 +30,17 @@ class CommandsModal(Modal):
             actions=[
                 ft.Row(
                     controls=[
-                        ft.IconButton(icon=ft.Icons.DELETE),
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.END,
-                            controls=[
-                                Button(text="Cancelar", style="Outlined", on_click=self.on_close),
-                                Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command(e))
-                            ]
+                        *self.delete_button,
+                        ft.Container(
+                            expand=True,
+                            alignment=ft.alignment.center_right,
+                            content=ft.Row(
+                                alignment= ft.MainAxisAlignment.END,
+                                controls=[
+                                    Button(text="Cancelar", style="Outlined", on_click=lambda e: self.on_close()),
+                                    Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command())
+                                ]
+                            )
                         )
                     ]
                 )
@@ -46,6 +52,7 @@ class CommandsModal(Modal):
         self.alias_textbox = TextBox(on_submit=self.add_alias)
         self.alias_container = ft.Row(wrap=True)
         self.customs_controls = []
+        self.delete_button = []
         self.load_alias()
        
         self.user_level_dropdown = DropDown(
@@ -62,6 +69,7 @@ class CommandsModal(Modal):
 
         if self.command_type == 'custom':
             self.response_textbox = TextBox(value=self.command.response)
+            self.delete_button.append(ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=lambda e: self.delete_command()))
 
             self.response_type_dropdown = DropDown(
                 value=self.command.response_type or ResponseType.SAY,
@@ -130,7 +138,7 @@ class CommandsModal(Modal):
 
         for alias in self.alias:
             self.alias_container.controls.append(
-                Tag(alias, lambda e, a=alias: self.remove_alias(e, a))
+                Tag(alias, lambda e, a=alias: self.remove_alias(a))
             )
 
     def add_alias(self, e: ft.ControlEvent) -> None:
@@ -144,13 +152,13 @@ class CommandsModal(Modal):
             self.load_alias()
             self.page.update()
     
-    def remove_alias(self, e: ft.ControlEvent, alias: str) -> None:
+    def remove_alias(self, alias: str) -> None:
         if alias in self.alias:
             self.alias.remove(alias)
             self.load_alias()
             self.page.update()
 
-    def save_command(self, e: ft.ControlEvent) -> None:
+    def save_command(self) -> None:
         self.command.name = self.name_textbox.value
         self.command.user_level = self.user_level_dropdown.value
         self.command.alias = self.alias.copy()
@@ -166,6 +174,9 @@ class CommandsModal(Modal):
         self.on_save() if self.on_save else None
         self.page.close(self)
 
-    def on_close(self, e: ft.ControlEvent) -> None:
+    def delete_command(self) -> None:
+        pass
+
+    def on_close(self) -> None:
         self.page.close(self)
         self.page.update()

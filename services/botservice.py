@@ -5,9 +5,9 @@ from bot.bot import Bot
 
 class BotService():
     def __init__(self):
-        self.bot_instance = None
-        self.bot_credentials = {}
-        self.botconfig = {}
+        self.bot_instance: Bot = None
+        self.bot_credentials: dict = {}
+        self.botconfig: dict = {}
         self._thread = None
         self._loop = None
 
@@ -29,11 +29,21 @@ class BotService():
             self.bot_instance = None
             self._loop = None
             self._thread = None
-            print("bot has been stopped")
+            print("bot has been stopped.")
 
     def delete_command(self, command_name) -> bool:
         if self.bot_instance:
-            self.bot_instance.remove_command(command_name)
+            try:
+                self.bot_instance.remove_command(command_name)
+                return True
+            except Exception as e:
+                pass
+            
+        return False
+    
+    # def modify_command(self, command_name):
+    #     if self.bot_instance:
+
 
     # Create a event loop in the new thread and instance the bot into this loop
     def _create_bot(self) -> None:
