@@ -3,7 +3,7 @@ from ..controls import *
 from services import *
 
 class ConfigurationPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict):
+    def __init__(self, page: ft.Page, botconfig: dict) -> None:
         super().__init__(
             route='/configuration',
             padding=0,

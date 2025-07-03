@@ -9,10 +9,9 @@ from ..controls import *
 
 class ValidationModal(Modal):
     def __init__(self, bot_credentials: dict, botconfig: dict) -> None:
-        _service_locator = ServiceLocator()
-        self.bot_service = _service_locator.get('bot')
-        self.session_service = _service_locator.get('session')
-        self.websocket_service = _service_locator.get('websocket')
+        self.bot_service = ServiceLocator.get('bot')
+        self.session_service = ServiceLocator.get('session')
+        self.websocket_service = ServiceLocator.get('websocket')
         self.bot_credentials = bot_credentials
         self.botconfig = botconfig
 

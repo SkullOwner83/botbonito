@@ -9,7 +9,7 @@ class Card(ft.Container):
         icon: Optional[ft.IconValue] = None,
         value: Optional[int] = 0,
         **kwargs
-    ):
+    ) -> None:
         self.text = text
         self.icon = icon
         self.value = value

@@ -2,7 +2,7 @@ import flet as ft
 from myapp import MyApp
 
 class Label(ft.Text):
-    def __init__(self, text:str):
+    def __init__(self, text:str) -> None:
         super().__init__(
             value=text,
             font_family=MyApp.font_primary,

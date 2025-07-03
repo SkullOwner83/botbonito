@@ -7,7 +7,7 @@ from models.config import ConfigManager
 from myapp import MyApp
 
 class CommandsPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict):
+    def __init__(self, page: ft.Page, botconfig: dict) -> None:
         super().__init__(
             route='/validation',
             padding=0

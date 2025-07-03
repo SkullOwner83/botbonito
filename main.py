@@ -21,10 +21,9 @@ def startup(page: ft.Page) -> None:
 
 # Create the service locator instance and register the services
 def service_handler():
-    service_locator = ServiceLocator()
-    service_locator.register('session', SessionService())
-    service_locator.register('bot', BotService())
-    service_locator.register('websocket', WebsocketService())
+    ServiceLocator.register('session', SessionService())
+    ServiceLocator.register('bot', BotService())
+    ServiceLocator.register('websocket', WebsocketService())
 
 if __name__ == "__main__":
     ft.app(

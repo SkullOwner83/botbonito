@@ -8,7 +8,7 @@ from view.modals.validation import ValidationModal
 from myapp import MyApp
 
 class MainWindow:
-    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict):
+    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict) -> None:
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
@@ -32,10 +32,9 @@ class MainWindow:
 
         self.botconfig = botconfig
         self.credentials = credentials
-        _service_locator = ServiceLocator()
-        self.bot_services: BotService = _service_locator.get('bot')
-        self.websocket_service: WebsocketService = _service_locator.get('websocket')
-        self.session_service: SessionService = _service_locator.get('session')
+        self.bot_services: BotService = ServiceLocator.get('bot')
+        self.websocket_service: WebsocketService = ServiceLocator.get('websocket')
+        self.session_service: SessionService = ServiceLocator.get('session')
         self.load()
     
     def load(self) -> None:

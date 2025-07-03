@@ -4,7 +4,7 @@ from utilities.file import File
 from myapp import MyApp
 
 class Header(ft.Container):
-    def __init__(self, tile: str, botconfig: dict):
+    def __init__(self, tile: str, botconfig: dict) -> None:
         super().__init__()
         self.title = tile
         self.height = 64
@@ -12,9 +12,8 @@ class Header(ft.Container):
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
         self.botconfig = botconfig
 
-        _service_locator = ServiceLocator()
-        self.session_service: SessionService = _service_locator.get('session')
-        self.websocket_service: WebsocketService = _service_locator.get('websocket')
+        self.session_service: SessionService = ServiceLocator.get('session')
+        self.websocket_service: WebsocketService = ServiceLocator.get('websocket')
         self.user = self.session_service.user_account
 
         self.websocket_service.stream_online_callback.append(self.on_stream_online)

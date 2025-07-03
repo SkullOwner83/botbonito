@@ -33,7 +33,6 @@ class NavigationBar(ft.Container):
             ]
         )
 
-
 class MenuButton(ft.Container):
     def __init__(self, text: str, icon: str, onclick: Optional[Callable] = None) -> None:
         super().__init__(

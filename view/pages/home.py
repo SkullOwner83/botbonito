@@ -4,7 +4,7 @@ from services import *
 
 
 class HomePage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict):
+    def __init__(self, page: ft.Page, botconfig: dict) -> None:
         super().__init__(
             route='/',
             padding=0

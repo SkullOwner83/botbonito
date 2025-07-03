@@ -3,7 +3,7 @@ from models.enums import UserLevel
 from myapp import MyApp
 
 class Badge(ft.Container):
-    def __init__(self, name: UserLevel):
+    def __init__(self, name: UserLevel) -> None:
         super().__init__(
             content=ft.Row(
                 spacing=4,
