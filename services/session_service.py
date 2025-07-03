@@ -1,5 +1,6 @@
 import webbrowser
 import flet as ft
+from models.enums import AccountType
 from models.user import User
 from utilities.api import Api
 from utilities.token import Token
@@ -13,7 +14,7 @@ class SessionService:
         self.on_logout_callback = []
 
     # Validate if the token is valid or refresh it if it's expired
-    def validation(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
+    def validation(self, credentials: dict, botconfig: dict, account_type: AccountType) -> bool:
         if Token.validation(credentials['access_token']):        
             if self.load_account(credentials, botconfig, account_type): return True
         else:
@@ -36,7 +37,7 @@ class SessionService:
 
     # Login the twitch account using the credentials
     def login(self, botconfig: dict, account_type: str) -> bool:
-        scope = ['user:read:email', 'channel:read:goals', 'moderator:read:followers', 'channel:read:subscriptions'] if account_type == 'USER' else botconfig['scope']
+        scope = ['user:read:email', 'channel:read:goals', 'moderator:read:followers', 'channel:read:subscriptions'] if account_type == AccountType.USER else botconfig['scope']
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
@@ -49,17 +50,17 @@ class SessionService:
             }
         
             if self.load_account(credentials, botconfig, account_type):
-                self.on_login(self.user_account if account_type == 'USER' else self.bot_account)
+                self.on_login(self.user_account if account_type == AccountType.USER else self.bot_account)
                 return True
     
         return False
     
     # Logout the specified account
     def logout(self, account_type: str) -> None:
-        if account_type == 'USER':
+        if account_type == AccountType.USER:
             self.user_account = None
             self.is_logged_in = False
-        elif account_type == 'BOT':
+        elif account_type == AccountType.BOT:
             self.bot_account = None
 
     # Fetch the account data from the twitch API to load the account
@@ -78,10 +79,10 @@ class SessionService:
                 credentials=credentials
             )
 
-            if account_type == 'USER': 
+            if account_type == AccountType.USER: 
                 self.user_account = account
                 self.is_logged_in = True
-            elif account_type == 'BOT': self.bot_account = account
+            elif account_type == AccountType.BOT: self.bot_account = account
             return True
 
         return False

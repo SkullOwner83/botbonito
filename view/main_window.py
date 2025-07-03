@@ -1,6 +1,6 @@
 import asyncio
-from typing import cast
 import flet as ft
+from models.enums import AccountType
 from view.routes import RouteHandler
 from utilities.file import File
 from services import *
@@ -41,10 +41,10 @@ class MainWindow:
     def load(self) -> None:
         bot_credentials = self.credentials.get("bot")
         user_credentials = self.credentials.get("user")
-        self.session_service.validation(user_credentials, self.botconfig, 'USER')
+        self.session_service.validation(user_credentials, self.botconfig, AccountType.USER)
         self.page.go('/home')
 
-        if self.session_service.validation(bot_credentials, self.botconfig, 'BOT'):
+        if self.session_service.validation(bot_credentials, self.botconfig, AccountType.BOT):
             self.bot_services.start(bot_credentials, self.botconfig,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
             

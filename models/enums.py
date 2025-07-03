@@ -8,6 +8,10 @@ class UserLevel(str, Enum):
     BROADCASTER = 'broadcaster'
     VIP = 'vip'
 
+class AccountType(str, Enum):
+    BOT = 'bot'
+    USER = 'user'
+
 class ResponseType(str, Enum):
     SAY = 'say'
     REPLY = 'reply'
