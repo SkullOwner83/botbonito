@@ -4,12 +4,11 @@ import flet as ft
 from services import *
 from ..controls import *
 from models.commands import CommandConfig
-from models.config import ConfigManager
 from models.enums import UserLevel, ResponseType
 
 class CommandsModal(Modal):
     def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:
-        self.commands_config = ConfigManager()
+        self.commands_manager: CommandsManager = ServiceLocator.get('commands')
 
         if command is None:
             self.action = 'create'
@@ -18,7 +17,7 @@ class CommandsModal(Modal):
         else:
             self.action = 'edit'
             self.command = command
-            self.command_type = 'default' if command in self.commands_config.default_commands.values() else 'custom'
+            self.command_type = 'default' if command in self.commands_manager.default_commands.values() else 'custom'
 
         self.alias = self.command.alias.copy()
         self.on_save = on_save
@@ -168,9 +167,9 @@ class CommandsModal(Modal):
             self.command.response_type = self.response_type_dropdown.value
 
         if self.action == 'create':
-            self.commands_config.custom_commands[self.command.name] = self.command
+            self.commands_manager.custom_commands[self.command.name] = self.command
 
-        self.commands_config.save_commands()
+        self.commands_manager.save_commands()
         self.on_save() if self.on_save else None
         self.page.close(self)
 

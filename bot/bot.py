@@ -14,10 +14,11 @@ from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
-from myapp import MyApp
-from models.config import ConfigManager
 from models.enums import UserLevel
+from services.service_locator import ServiceLocator
+from services.commands_manager import CommandsManager
 from utilities import *
+from myapp import MyApp
 
 class Bot(commands.Bot):
     def __init__(self, config: dict, credentials: dict) -> None:
@@ -48,10 +49,10 @@ class Bot(commands.Bot):
         ]
 
         # Get the config manager instance to load the commands
-        self.config_manager = ConfigManager()
-        self.default_commands = self.config_manager.default_commands
-        self.custom_commands = self.config_manager.custom_commands
-        self.custom_alias = self.config_manager.custom_alias
+        self.commands_manager: CommandsManager = ServiceLocator.get('commands')
+        self.default_commands = self.commands_manager.default_commands
+        self.custom_commands = self.commands_manager.custom_commands
+        self.custom_alias = self.commands_manager.custom_alias
 
         # Initialize the bot with the received config
         super().__init__( 

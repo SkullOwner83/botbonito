@@ -3,7 +3,6 @@ from ..controls import *
 from ..modals import CommandsModal
 from services import *
 from models.commands import CommandConfig
-from models.config import ConfigManager
 from myapp import MyApp
 
 class CommandsPage(ft.View):
@@ -16,9 +15,9 @@ class CommandsPage(ft.View):
         self.page = page
         self.filter = ''
         self.botconfig = botconfig
-        self.config_manager = ConfigManager()
-        self.default_commands = self.config_manager.default_commands
-        self.custom_commands = self.config_manager.custom_commands
+        self.commands_manager: CommandsManager = ServiceLocator.get('commands')
+        self.default_commands = self.commands_manager.default_commands
+        self.custom_commands = self.commands_manager.custom_commands
         
         self.set_controls()
         self.controls.append(self.build())
