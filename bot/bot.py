@@ -49,10 +49,10 @@ class Bot(commands.Bot):
         ]
 
         # Get the config manager instance to load the commands
-        self.commands_manager: CommandsManager = ServiceLocator.get('commands')
-        self.default_commands = self.commands_manager.default_commands
-        self.custom_commands = self.commands_manager.custom_commands
-        self.custom_alias = self.commands_manager.custom_alias
+        commands_manager: CommandsManager = ServiceLocator.get('commands')
+        self.default_commands = commands_manager.default_commands
+        self.custom_commands = commands_manager.custom_commands
+        self.custom_alias = commands_manager.custom_alias
 
         # Initialize the bot with the received config
         super().__init__( 

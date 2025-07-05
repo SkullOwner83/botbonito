@@ -1,4 +1,7 @@
 import flet as ft
+
+from models.protection import Protection
+from services.moderation_manager import ModerationManager
 from ..controls import *
 from services import *
 
@@ -9,9 +12,22 @@ class ModerationPage(ft.View):
             padding=0
         )
 
+        moderation_manager: ModerationManager = ServiceLocator.get('moderation')
+        self.protections: dict[str, Protection] = moderation_manager.protections
+
         self.page = page
         self.botconfig = botconfig
+        self.set_controls()
         self.controls.append(self.build())
+
+    def set_controls(self):
+        self.row = ft.ResponsiveRow(controls=[])
+
+        for protection in self.protections.values():
+            self.row.controls.append(
+                Card(protection.name)
+            )
+
 
     def change_tab(self, e: ft.ControlEvent):
         pass
@@ -46,13 +62,7 @@ class ModerationPage(ft.View):
                                             ]
                                         ),
 
-                                        ft.ResponsiveRow(
-                                            controls=[
-                                                Card(),
-                                                Card(),
-                                                Card()
-                                            ]
-                                        )
+                                        self.row
                                     ]
                                 )
                             )

@@ -4,9 +4,9 @@ from models.enums import UserLevel, PenaltyType
 
 @staticmethod
 def get_protections():
-    return deepcopy(_PROTECTION)
+    return deepcopy(_PROTECTIONS)
 
-_PROTECTION = {
+_PROTECTIONS = {
     'links': Protection(
         name='links',
         penalty=PenaltyType.DELETE_MESSAGE,

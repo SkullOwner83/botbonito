@@ -2,6 +2,8 @@ import os
 import re
 from twitchio.ext import commands
 from twitchio.ext.commands import Context, Cog
+from services.moderation_manager import ModerationManager
+from services.service_locator import ServiceLocator
 from models.enums import UserLevel
 from utilities.file import File
 from myapp import MyApp
@@ -11,9 +13,11 @@ class Moderation(Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         MyApp.bind_commands(self)
-        self.moderation_config = File.open(os.path.join(MyApp.config_path, 'moderation.json'))  
-        self.protection = { name: Protection(**data) for name, data in self.moderation_config.get('protection', {}).items() }
-        self.banned_words = { name: Protection(**data) for name, data in self.moderation_config.get('banned_words', {}).items() }
+
+        moderation_manager: ModerationManager = ServiceLocator.get('moderation')
+        self.protection = moderation_manager.protections
+        self.banned_words = moderation_manager.banned_words
+
         self.repeated_messages = self.protection.get('repeated_messages')
         self.long_messages = self.protection.get('long_messages')
         self.links_protection = self.protection.get('links')

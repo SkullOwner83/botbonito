@@ -5,8 +5,9 @@ from typing import Callable
 class MyApp:
     appdata_path = os.getenv('LOCALAPPDATA')
     config_path = os.path.join(appdata_path, 'Bot Bonito')
-    commands_path = os.path.join(config_path, "commands.json")
-    credentials_path = os.path.join(config_path, "credentials.json")
+    commands_path = os.path.join(config_path, 'commands.json')
+    moderation_path = os.path.join(config_path, 'moderation.json')
+    credentials_path = os.path.join(config_path, 'credentials.json')
     botconfig_path = os.path.join(config_path, "botconfig.json")
     command_registry: dict[str, Callable] = {}
 

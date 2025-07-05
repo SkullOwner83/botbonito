@@ -1,5 +1,6 @@
 import os
 import flet as ft
+from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
 from view.main_window import MainWindow
 from view.routes import RouteHandler
@@ -21,10 +22,11 @@ def startup(page: ft.Page) -> None:
 
 # Create the service locator instance and register the services
 def service_handler():
-    ServiceLocator.register('commands', CommandsManager())
     ServiceLocator.register('session', SessionService())
     ServiceLocator.register('bot', BotService())
     ServiceLocator.register('websocket', WebsocketService())
+    ServiceLocator.register('commands', CommandsManager())
+    ServiceLocator.register('moderation', ModerationManager())
 
 if __name__ == "__main__":
     ft.app(

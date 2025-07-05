@@ -8,7 +8,6 @@ from myapp import MyApp
 class CommandsManager():
     def __init__(self):
         self._lock = Lock()
-        self._initialized = True
         self.default_commands: dict[str, CommandConfig] = {}
         self.custom_commands: dict[str, CommandConfig] = {}
         self.load_commands()
@@ -22,37 +21,37 @@ class CommandsManager():
     # Read the stored file and load them into the dictionary of commands
     def load_commands(self) -> None:
         with self._lock:
-            _commands_config = File.open(os.path.join(MyApp.commands_path))
+            commands_config: dict = File.open(os.path.join(MyApp.commands_path))
             self.default_commands = get_default_commands()
 
-            if _commands_config:
-                laoded_default_commands = _commands_config.get("default_commands", {})
+            if commands_config:
+                loaded_default_commands: dict = commands_config.get('default_commands', {})
 
-                for name, data in laoded_default_commands.items():
+                for name, data in loaded_default_commands.items():
                     if name in self.default_commands:
-                        cmd = self.default_commands[name]
+                        command = self.default_commands[name]
                         
                         for attr, val in data.items():
-                            setattr(cmd, attr, val)
+                            setattr(command, attr, val)
 
                 self.custom_commands = { 
                     name: CommandConfig(**data) 
-                    for name, data in _commands_config.get("custom_commands", {}).items() 
+                    for name, data in commands_config.get('custom_commands', {}).items() 
                 }
 
     # Convert the commands to a dictionary and save them to the file
     def save_commands(self) -> None:
         with self._lock:
-            self.dictionary = {
-                    "default_commands": {
+            dictionary = {
+                    'default_commands': {
                         name: data.__dict__
                         for name, data in self.default_commands.items()
                     },
 
-                    "custom_commands": {
+                    'custom_commands': {
                         name: data.__dict__
                         for name, data in self.custom_commands.items()
                     }
             }
 
-            File.save(os.path.join(MyApp.config_path, "commands.json"), self.dictionary)
+            File.save(os.path.join(MyApp.config_path, 'commands.json'), dictionary)
