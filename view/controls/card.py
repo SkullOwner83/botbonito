@@ -5,12 +5,16 @@ from myapp import MyApp
 class Card(ft.Container):
     def __init__(
         self, 
-        text: Optional[str] = None, 
+        title: Optional[str] = None,
+        title_alignment: Optional[ft.TextAlign] = ft.TextAlign.CENTER,
+        description: Optional[str] = None,
         icon: Optional[ft.IconValue] = None,
         value: Optional[int] = 0,
         **kwargs
     ) -> None:
-        self.text = text
+        self.title = title
+        self.text_alignment = title_alignment
+        self.description = description
         self.icon = icon
         self.value = value
 
@@ -38,10 +42,17 @@ class Card(ft.Container):
                 ),
 
                 ft.Text(
-                    value=self.text, 
+                    value=self.title,
                     font_family=MyApp.font_secondary,
                     weight=ft.FontWeight.BOLD,
-                    text_align=ft.TextAlign.CENTER,
+                    text_align=self.text_alignment,
                     size=16),
+                
+                ft.Text(
+                    value=self.description,
+                    color=ft.Colors.GREY_700,
+                    font_family=MyApp.font_secondary,
+                    size=16
+                )
             ]
         )

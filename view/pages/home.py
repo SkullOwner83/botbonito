@@ -62,10 +62,10 @@ class HomePage(ft.View):
                                             spacing=20,
                                             run_spacing=20,
                                             controls=[
-                                                Card(text="Seguidores", icon=ft.Icons.FAVORITE, col={ "xs": 4, "sm": 2, "md": 1 }),
-                                                Card(text="Suscriptores", icon=ft.Icons.STAR, col={ "xs": 4, "sm": 2, "md": 1 }),
-                                                Card(text="Vistas", icon=ft.Icons.REMOVE_RED_EYE, col={ "xs": 4, "sm": 2, "md": 1 }),
-                                                Card(text="Bits", icon=ft.Icons.PAYMENTS, col={ "xs": 4, "sm": 2, "md": 1 })
+                                                Card(title="Seguidores", icon=ft.Icons.FAVORITE, col={ "xs": 4, "sm": 2, "md": 1 }),
+                                                Card(title="Suscriptores", icon=ft.Icons.STAR, col={ "xs": 4, "sm": 2, "md": 1 }),
+                                                Card(title="Vistas", icon=ft.Icons.REMOVE_RED_EYE, col={ "xs": 4, "sm": 2, "md": 1 }),
+                                                Card(title="Bits", icon=ft.Icons.PAYMENTS, col={ "xs": 4, "sm": 2, "md": 1 })
                                             ]
                                         )
                                     ]

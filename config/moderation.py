@@ -9,15 +9,17 @@ def get_protections():
 _PROTECTIONS = {
     'links': Protection(
         name='links',
+        description='Elimina los mensajes que puedan contener enlaces hacia otros sitios.',
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Por seguridad, no esta permitido enviar links.',
         exclude=UserLevel.MODERATOR,
         duration=0,
-        strikes=0,
+        strikes=0
     ),
 
     'repeated_messages': Protection(
-        name='repeated_messages',
+        name='repeated messages',
+        description='Detecta si un usuario ha enviado el mismo mensaje insistentemente.',
         penalty=PenaltyType.TIME_OUT,
         reason='Spam: Envío repetitivo de mensajes idénticos.',
         exclude=UserLevel.MODERATOR,
@@ -26,7 +28,8 @@ _PROTECTIONS = {
     ),
 
     'long_messages': Protection(
-        name='long_messages',
+        name='long messages',
+        description='Elimina los mensajes que son demasiado extensos.',
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envió de mensaje demasiado largo.',
         exclude=UserLevel.MODERATOR,

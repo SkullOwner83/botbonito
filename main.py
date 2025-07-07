@@ -22,8 +22,8 @@ def startup(page: ft.Page) -> None:
 
 # Create the service locator instance and register the services
 def service_handler():
-    ServiceLocator.register('session', SessionService())
     ServiceLocator.register('bot', BotService())
+    ServiceLocator.register('session', SessionService())
     ServiceLocator.register('websocket', WebsocketService())
     ServiceLocator.register('commands', CommandsManager())
     ServiceLocator.register('moderation', ModerationManager())

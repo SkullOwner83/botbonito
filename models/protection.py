@@ -7,6 +7,7 @@ from models.enums import PenaltyType
 class Protection:
     def __init__(self,
         name: str = None,
+        description: str = None,
         enable: bool = True,
         penalty: Optional[str] = None,
         reason: Optional[str] = None,
@@ -18,6 +19,7 @@ class Protection:
     ):
 
         self.name = name
+        self.description = description
         self.enable = enable
         self.penalty = penalty
         self.reason = reason
