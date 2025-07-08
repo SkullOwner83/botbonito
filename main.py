@@ -19,7 +19,7 @@ def startup(page: ft.Page) -> None:
     service_handler()
     route_handler = RouteHandler(page, botconfig)
     main_window = MainWindow(page, route_handler, botconfig, credentials)
-
+        
 # Create the service locator instance and register the services
 def service_handler():
     ServiceLocator.register('bot', BotService())

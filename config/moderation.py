@@ -18,7 +18,7 @@ _PROTECTIONS = {
     ),
 
     'repeated_messages': Protection(
-        name='repeated messages',
+        name='repeated_messages',
         description='Detecta si un usuario ha enviado el mismo mensaje insistentemente.',
         penalty=PenaltyType.TIME_OUT,
         reason='Spam: Envío repetitivo de mensajes idénticos.',
@@ -28,10 +28,43 @@ _PROTECTIONS = {
     ),
 
     'long_messages': Protection(
-        name='long messages',
+        name='long_messages',
         description='Elimina los mensajes que son demasiado extensos.',
         penalty=PenaltyType.DELETE_MESSAGE,
-        reason='Envió de mensaje demasiado largo.',
+        reason='Envío de mensaje demasiado largo.',
+        exclude=UserLevel.MODERATOR,
+        max_length=300,
+        duration=0,
+        strikes=0
+    ),
+
+    'excess_caps': Protection(
+        name='excess_caps',
+        description='Elimina los mensajes escritos con exceso de mayusculas.',
+        penalty=PenaltyType.DELETE_MESSAGE,
+        reason='Envio de mensaje con uso excesivo de mayusculas.',
+        exclude=UserLevel.MODERATOR,
+        max_length=300,
+        duration=0,
+        strikes=0
+    ),
+
+    'excess_emotes': Protection(
+        name='excess_emotes',
+        description='Limita el número de emotes por mensaje para evitar spam.',
+        penalty=PenaltyType.DELETE_MESSAGE,
+        reason='Envio de mensaje con uso excesivo de emotes.',
+        exclude=UserLevel.MODERATOR,
+        max_length=300,
+        duration=0,
+        strikes=0
+    ),
+
+    'excess_symbols': Protection(
+        name='excess_symbols',
+        description='Limita el número de simbolos o caracteres especiales permitidos por mensaje.',
+        penalty=PenaltyType.DELETE_MESSAGE,
+        reason='Envio de mensaje con uso excesivo de simbolos.',
         exclude=UserLevel.MODERATOR,
         max_length=300,
         duration=0,

@@ -11,7 +11,7 @@ class Card(ft.Container):
         header: Optional[ft.Control] = None,
         footer: Optional[ft.Control] = None,
         icon: Optional[ft.IconValue] = None,
-        value: Optional[int] = 0,
+        value: Optional[int] = None,
         padding: Optional[int] = 8,
         **kwargs
     ) -> None:
@@ -22,6 +22,7 @@ class Card(ft.Container):
         self.footer = footer
         self.icon = icon
         self.value = value
+        self.set_controls()
 
         super().__init__(
             expand=True,
@@ -32,21 +33,25 @@ class Card(ft.Container):
             **kwargs
         )
 
+    def set_controls(self):
+        self.icon_control = [ft.Icon(name=self.icon)] if self.icon else []
+        self.value_control = [
+            ft.Text(
+                value=self.value,
+                font_family=MyApp.font_secondary,
+                weight=ft.FontWeight.BOLD,
+                size=24
+            )
+        ] if self.value else []
+
     def build(self):
         return ft.Column(
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=0,
             controls=[
-                ft.Icon(name=self.icon),
-
+                *self.icon_control,
                 ft.Container(self.header),
-
-                ft.Text(
-                    value=self.value,
-                    font_family=MyApp.font_secondary,
-                    weight=ft.FontWeight.BOLD,
-                    size=24
-                ),
+                *self.value_control,
 
                 ft.Text(
                     value=self.title,

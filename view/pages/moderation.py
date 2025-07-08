@@ -33,6 +33,7 @@ class ModerationPage(ft.View):
                     title=protection.name, 
                     description=protection.description,
                     padding=16,
+                    icon=_PROTECTION_ICONS.get(protection.name),
                     footer=ft.Container(
                         padding=ft.padding.only(top=8),
                         alignment=ft.alignment.center_left,
@@ -81,13 +82,13 @@ class ModerationPage(ft.View):
                                 content=ft.Column(
                                     spacing=20,
                                     controls=[
-                                        SegmentedButton(
-                                            on_change=self.change_tab,
-                                            segments=[
-                                                ft.Segment(value='1', label=ft.Text('Protecciones')),
-                                                ft.Segment(value='2', label=ft.Text('Palabras prohibidas'))
-                                            ]
-                                        ),
+                                        # SegmentedButton(
+                                        #     on_change=self.change_tab,
+                                        #     segments=[
+                                        #         ft.Segment(value='1', label=ft.Text('Protecciones')),
+                                        #         ft.Segment(value='2', label=ft.Text('Palabras prohibidas'))
+                                        #     ]
+                                        # ),
 
                                         ft.Column(
                                             expand=True,
@@ -102,3 +103,12 @@ class ModerationPage(ft.View):
                 ]
             )
         )
+    
+_PROTECTION_ICONS = {
+    'links': ft.Icons.ATTACHMENT,
+    'repeated_messages': ft.Icons.REPEAT,
+    'long_messages': ft.Icons.MESSAGE,
+    'excess_caps': ft.Icons.TITLE_ROUNDED,
+    'excess_emotes': ft.Icons.EMOJI_EMOTIONS,
+    'excess_symbols': ft.Icons.EMOJI_SYMBOLS
+}
