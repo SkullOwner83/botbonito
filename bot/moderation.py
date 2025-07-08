@@ -22,6 +22,7 @@ class Moderation(Cog):
         self.long_messages: Protection = self.protections.get('long_messages')
         self.links_protection: Protection = self.protections.get('links')
         self.caps_protection: Protection = self.protections.get('excess_caps')
+        self.symbols_protection: Protection = self.protections.get('excess_symbols')
 
         self.user_messages: dict[str, str] = {}
         self.user_strikes: dict[str, dict] = {
@@ -29,7 +30,8 @@ class Moderation(Cog):
             'repeated_messages': {},
             'long_message': {},
             'banned_words': {},
-            'excess_caps': {}
+            'excess_caps': {},
+            'excess_symbols': {}
         }
 
     # Remove strikes from the specified user
@@ -46,6 +48,7 @@ class Moderation(Cog):
             await self._links_filter(ctx)
             await self._words_filter(ctx)
             await self._caps_filter(ctx)
+            await self._symbols_filter(ctx)
             await self._long_message_filter(ctx)
 
     # Save the user messages and check if it is a repeated message to detect spam
@@ -100,6 +103,22 @@ class Moderation(Cog):
                 if caps_ratio >= self.caps_protection.threshold:
                     self.user_strikes['excess_caps'][user] = self.user_strikes['excess_caps'].get(user, 0) + 1
                     await self.caps_protection.apply_penalty(ctx, self)
+
+    # Check if the message contains excess of symbols or special characters
+    async def _symbols_filter(self, ctx: Context) -> None:
+        message: str = ctx.message.content
+        user: str = ctx.message.author.name
+
+        if self.symbols_protection.enable:
+            total_letters = len(message)
+            symbols_count = sum(1 for c in message if not c.isalnum())
+
+            if total_letters > 5 and symbols_count > 0:
+                caps_ratio = symbols_count / total_letters
+
+                if caps_ratio >= self.symbols_protection.threshold:
+                    self.user_strikes['excess_symbols'][user] = self.user_strikes['excess_symbols'].get(user, 0) + 1
+                    await self.symbols_protection.apply_penalty(ctx, self)
 
     # Check if the group is enable and is not a excluded user for each group
     async def _words_filter(self, ctx: Context) -> None:
