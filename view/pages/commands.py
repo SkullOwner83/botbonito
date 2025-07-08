@@ -37,7 +37,7 @@ class CommandsPage(ft.View):
                         cells=[
                             ft.DataCell(
                                 ft.Switch(
-                                    on_change=lambda e, c=command: self.disable_command(e, c),
+                                    on_change=lambda e, c=command: self.toggle_command(e, c),
                                     value=command.enable, 
                                     width=32,
                                 )
@@ -98,7 +98,7 @@ class CommandsPage(ft.View):
         self.load_data(self.target_table, self.filter)
         self.page.update()
     
-    def disable_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
+    def toggle_command(self, e: ft.ControlEvent, command: CommandConfig) -> None:
         command.enable = e.control.value
 
     def set_controls(self) -> None:

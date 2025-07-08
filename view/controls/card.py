@@ -8,13 +8,18 @@ class Card(ft.Container):
         title: Optional[str] = None,
         title_alignment: Optional[ft.TextAlign] = ft.TextAlign.CENTER,
         description: Optional[str] = None,
+        header: Optional[ft.Control] = None,
+        footer: Optional[ft.Control] = None,
         icon: Optional[ft.IconValue] = None,
         value: Optional[int] = 0,
+        padding: Optional[int] = 8,
         **kwargs
     ) -> None:
         self.title = title
         self.text_alignment = title_alignment
         self.description = description
+        self.header = header
+        self.footer = footer
         self.icon = icon
         self.value = value
 
@@ -22,7 +27,7 @@ class Card(ft.Container):
             expand=True,
             bgcolor=ft.Colors.WHITE,
             border_radius=8,
-            padding=8,
+            padding=padding,
             content=self.build(),
             **kwargs
         )
@@ -33,6 +38,8 @@ class Card(ft.Container):
             spacing=0,
             controls=[
                 ft.Icon(name=self.icon),
+
+                ft.Container(self.header),
 
                 ft.Text(
                     value=self.value,
@@ -53,6 +60,8 @@ class Card(ft.Container):
                     color=ft.Colors.GREY_700,
                     font_family=MyApp.font_secondary,
                     size=16
-                )
+                ),
+
+                ft.Container(self.footer)
             ]
         )

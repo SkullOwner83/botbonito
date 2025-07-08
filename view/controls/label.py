@@ -1,12 +1,13 @@
+from typing import Optional
 import flet as ft
 from myapp import MyApp
 
 class Label(ft.Text):
-    def __init__(self, text:str) -> None:
+    def __init__(self, text:str, color: Optional[ft.Colors] = ft.Colors.BLACK) -> None:
         super().__init__(
             value=text,
             font_family=MyApp.font_primary,
             weight=ft.FontWeight.BOLD,
-            color=ft.Colors.BLACK,
+            color=color,
             size=16,
         )
