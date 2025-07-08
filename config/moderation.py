@@ -33,7 +33,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envío de mensaje demasiado largo.',
         exclude=UserLevel.MODERATOR,
-        max_length=300,
+        threshold=300,
         duration=0,
         strikes=0
     ),
@@ -44,7 +44,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envio de mensaje con uso excesivo de mayusculas.',
         exclude=UserLevel.MODERATOR,
-        max_length=300,
+        threshold=0.8,
         duration=0,
         strikes=0
     ),
@@ -55,7 +55,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envio de mensaje con uso excesivo de emotes.',
         exclude=UserLevel.MODERATOR,
-        max_length=300,
+        threshold=0.8,
         duration=0,
         strikes=0
     ),
@@ -66,7 +66,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE,
         reason='Envio de mensaje con uso excesivo de simbolos.',
         exclude=UserLevel.MODERATOR,
-        max_length=300,
+        threshold=0.8,
         duration=0,
         strikes=0
     )
