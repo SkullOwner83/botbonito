@@ -23,6 +23,7 @@ class Moderation(Cog):
         self.links_protection: Protection = self.protections.get('links')
         self.caps_protection: Protection = self.protections.get('excess_caps')
         self.symbols_protection: Protection = self.protections.get('excess_symbols')
+        self.emotes_protection: Protection = self.protections.get('excess_emotes')
 
         self.user_messages: dict[str, str] = {}
         self.user_strikes: dict[str, dict] = {
@@ -31,7 +32,8 @@ class Moderation(Cog):
             'long_message': {},
             'banned_words': {},
             'excess_caps': {},
-            'excess_symbols': {}
+            'excess_symbols': {},
+            'excess_emotes': {}
         }
 
     # Remove strikes from the specified user
@@ -49,6 +51,7 @@ class Moderation(Cog):
             await self._words_filter(ctx)
             await self._caps_filter(ctx)
             await self._symbols_filter(ctx)
+            await self._emotes_filter(ctx)
             await self._long_message_filter(ctx)
 
     # Save the user messages and check if it is a repeated message to detect spam
@@ -118,6 +121,27 @@ class Moderation(Cog):
 
                 if caps_ratio >= self.symbols_protection.threshold:
                     self.user_strikes['excess_symbols'][user] = self.user_strikes['excess_symbols'].get(user, 0) + 1
+                    await self.symbols_protection.apply_penalty(ctx, self)
+
+    # Check if the message contains excess of twitch emotes
+    async def _emotes_filter(self, ctx: Context) -> None:
+        message = ctx.message
+        user: str = ctx.message.author.name
+
+        if self.emotes_protection.enable:
+            emotes_tag: str = message.tags.get('emotes')
+            emote_count = 0
+
+            if emotes_tag:
+                parts = emotes_tag.split('/')
+
+                for part in parts:
+                    if ':' in part:
+                        emote_range = part.split(':')[1]
+                        emote_count += len(emote_range.split(','))
+
+                if emote_count > self.emotes_protection.threshold:
+                    self.user_strikes['excess_emotes'][user] = self.user_strikes['excess_emotes'].get(user, 0) + 1
                     await self.symbols_protection.apply_penalty(ctx, self)
 
     # Check if the group is enable and is not a excluded user for each group

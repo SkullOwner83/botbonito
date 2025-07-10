@@ -49,17 +49,6 @@ _PROTECTIONS = {
         strikes=0
     ),
 
-    'excess_emotes': Protection(
-        name='excess_emotes',
-        description='Limita el número de emotes por mensaje para evitar spam.',
-        penalty=PenaltyType.DELETE_MESSAGE,
-        reason='Envio de mensaje con uso excesivo de emotes.',
-        exclude=UserLevel.MODERATOR,
-        threshold=0.8,
-        duration=0,
-        strikes=0
-    ),
-
     'excess_symbols': Protection(
         name='excess_symbols',
         description='Limita el número de simbolos o caracteres especiales permitidos por mensaje.',
@@ -69,5 +58,16 @@ _PROTECTIONS = {
         threshold=0.8,
         duration=0,
         strikes=0
-    )
+    ),
+
+    'excess_emotes': Protection(
+        name='excess_emotes',
+        description='Limita el número de emotes por mensaje para evitar spam.',
+        penalty=PenaltyType.DELETE_MESSAGE,
+        reason='Envio de mensaje con uso excesivo de emotes.',
+        exclude=UserLevel.MODERATOR,
+        threshold=30,
+        duration=0,
+        strikes=0
+    ),
 }
