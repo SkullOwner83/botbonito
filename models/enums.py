@@ -1,6 +1,7 @@
 from enum import Enum
 
 class UserLevel(str, Enum):
+    NO_ONE = 'no_one'
     EVERYONE = 'everyone'
     FOLLOWER = 'follower'
     MODERATOR = 'moderator'

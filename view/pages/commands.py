@@ -44,7 +44,6 @@ class CommandsPage(ft.View):
                             ),
 
                             ft.DataCell(
-                                #on_tap=lambda e, c=command: self.modify_command(c),
                                 content=ft.Container(
                                     padding=8,
                                     clip_behavior=ft.ClipBehavior.HARD_EDGE,

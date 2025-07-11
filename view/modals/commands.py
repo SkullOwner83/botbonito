@@ -36,8 +36,8 @@ class CommandsModal(Modal):
                             content=ft.Row(
                                 alignment= ft.MainAxisAlignment.END,
                                 controls=[
-                                    Button(text="Cancelar", style="Outlined", on_click=lambda e: self.on_close()),
-                                    Button(text="Guardar", style="Filled", on_click=lambda e: self.save_command())
+                                    Button(text="Cancelar", on_click=lambda e: self.on_close(), outlined=True),
+                                    Button(text="Guardar", on_click=lambda e: self.save_changes())
                                 ]
                             )
                         )
@@ -57,12 +57,12 @@ class CommandsModal(Modal):
         self.user_level_dropdown = DropDown(
             value=self.command.user_level or UserLevel.EVERYONE,
             options=[
-                ft.DropdownOption(key=UserLevel.EVERYONE.value, content=ft.Text("Everyone")),
-                ft.DropdownOption(key=UserLevel.FOLLOWER.value, content=ft.Text("Follower")),
-                ft.DropdownOption(key=UserLevel.MODERATOR.value, content=ft.Text("Moderator")),
-                ft.DropdownOption(key=UserLevel.SUBSCRIBER.value, content=ft.Text("Subscriber")),
-                ft.DropdownOption(key=UserLevel.BROADCASTER.value, content=ft.Text("Broadcaster")),
-                ft.DropdownOption(key=UserLevel.VIP.value, content=ft.Text("VIP"))
+                ft.DropdownOption(key=UserLevel.EVERYONE.value, content=ft.Text('Everyone')),
+                ft.DropdownOption(key=UserLevel.FOLLOWER.value, content=ft.Text('Follower')),
+                ft.DropdownOption(key=UserLevel.MODERATOR.value, content=ft.Text('Moderator')),
+                ft.DropdownOption(key=UserLevel.SUBSCRIBER.value, content=ft.Text('Subscriber')),
+                ft.DropdownOption(key=UserLevel.BROADCASTER.value, content=ft.Text('Broadcaster')),
+                ft.DropdownOption(key=UserLevel.VIP.value, content=ft.Text('VIP'))
             ]
         )
 
@@ -157,7 +157,7 @@ class CommandsModal(Modal):
             self.load_alias()
             self.page.update()
 
-    def save_command(self) -> None:
+    def save_changes(self) -> None:
         self.command.name = self.name_textbox.value
         self.command.user_level = self.user_level_dropdown.value
         self.command.alias = self.alias.copy()
