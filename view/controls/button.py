@@ -1,8 +1,15 @@
+from typing import Optional
 import flet as ft
 from myapp import MyApp
 
 class Button(ft.FilledButton):
-    def __init__(self, text: str, style: str = 'Filled', padding: ft.PaddingValue = None, **kwargs) -> None:
+    def __init__(
+            self, 
+            text: str, 
+            outlined: Optional[bool] = False, 
+            padding: Optional[ft.PaddingValue] = None, 
+            **kwargs
+    ) -> None:
         super().__init__(
             text=text,
             height=32,
@@ -17,11 +24,12 @@ class Button(ft.FilledButton):
                     size=16
                 )
             ) 
-            if style == 'Filled' else 
+            if not outlined else 
             ft.ButtonStyle(
                 bgcolor=ft.Colors.TRANSPARENT,
                 side=ft.BorderSide(width=1, color=ft.Colors.GREY_800),
                 shape=ft.RoundedRectangleBorder(radius=8),
+                padding=ft.padding.symmetric(horizontal=16) if padding is None else padding,
                 text_style=ft.TextStyle(
                     foreground=ft.Paint(color=ft.Colors.GREY_800),
                     font_family=MyApp.font_primary,
