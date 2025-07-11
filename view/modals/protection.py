@@ -1,4 +1,6 @@
 import flet as ft
+from services.moderation_manager import ModerationManager
+from services.service_locator import ServiceLocator
 from models.enums import PenaltyType, UserLevel
 from models.protection import Protection
 from view.controls import *
@@ -6,6 +8,7 @@ from view.controls import *
 class ProtectionModal(Modal):
     def __init__(self, protection: Protection):
         self.protection = protection
+        self.moderation_manager: ModerationManager = ServiceLocator.get('moderation')
         self.set_controls()
 
         super().__init__(
@@ -17,7 +20,9 @@ class ProtectionModal(Modal):
             ]
         )
 
-    def set_controls(self):
+    def set_controls(self) -> None:
+        self.reason_textbox = TextBox(value=self.protection.reason)
+
         self.penalty_dropdown = DropDown(
             value=self.protection.penalty or PenaltyType.DELETE_MESSAGE.value,
             options=[
@@ -38,7 +43,7 @@ class ProtectionModal(Modal):
             ]
         )
 
-    def build(self):
+    def build(self) -> ft.Column:
         return ft.Column(
             spacing=16,
             scroll=ft.ScrollMode.ADAPTIVE,
@@ -47,7 +52,7 @@ class ProtectionModal(Modal):
                     spacing=0,
                     controls=[
                         Label('Razón de penalización:'),
-                        TextBox(value=self.protection.reason)
+                        self.reason_textbox
                     ]
                 ),
                 
@@ -69,9 +74,13 @@ class ProtectionModal(Modal):
             ]
         )
     
-    def save_changes(self):
-        pass
+    def save_changes(self) -> None:
+        self.protection.reason = self.reason_textbox.value
+        self.protection.penalty = self.penalty_dropdown.value
+        self.protection.exclude = self.exclude_dropdown.value
+        self.moderation_manager.save_protections()
+        self.on_close()
     
-    def on_close(self):
+    def on_close(self) -> None:
         self.page.close(self)
         self.page.update()

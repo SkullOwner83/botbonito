@@ -171,7 +171,7 @@ class CommandsModal(Modal):
 
         self.commands_manager.save_commands()
         self.on_save() if self.on_save else None
-        self.page.close(self)
+        self.on_close()
 
     def delete_command(self) -> None:
         pass

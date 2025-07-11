@@ -34,7 +34,7 @@ class ModerationManager():
                 }
 
     # Convert the commands to a dictionary and save them to the file
-    def save_commands(self) -> None:
+    def save_protections(self) -> None:
         with self._lock:
             self.dictionary = {
                     'protection': {
