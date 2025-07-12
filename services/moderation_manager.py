@@ -48,4 +48,4 @@ class ModerationManager():
                     }
             }
 
-            File.save(os.path.join(MyApp.config_path, "commands.json"), self.dictionary)
+            File.save(os.path.join(MyApp.moderation_path), self.dictionary)
