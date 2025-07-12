@@ -1,7 +1,7 @@
 from enum import Enum
 
 class UserLevel(str, Enum):
-    NO_ONE = 'no_one'
+    NO_ONE = 'no one'
     EVERYONE = 'everyone'
     FOLLOWER = 'follower'
     MODERATOR = 'moderator'
@@ -19,6 +19,6 @@ class ResponseType(str, Enum):
     MENTION = 'mention'
 
 class PenaltyType(str, Enum):
-    DELETE_MESSAGE = 'delete_message'
-    TIME_OUT = 'time_out'
-    BAN_USER = 'ban_user'
+    DELETE_MESSAGE = 'delete message'
+    TIME_OUT = 'time out'
+    BAN_USER = 'ban user'

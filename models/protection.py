@@ -10,6 +10,7 @@ class Protection:
         description: str = None,
         enable: bool = True,
         penalty: Optional[str] = None,
+        announce_penalty: Optional[bool] = True,
         reason: Optional[str] = None,
         exclude: Optional[str] = 'no_one',
         words: Optional[List[str]] = None,
@@ -22,6 +23,7 @@ class Protection:
         self.description = description
         self.enable = enable
         self.penalty = penalty
+        self.announce_penalty = announce_penalty
         self.reason = reason
         self.exclude = exclude
         self.words = words
@@ -48,12 +50,12 @@ class Protection:
                         penalty = PenaltyType.BAN_USER
 
             match(penalty):
-                case PenaltyType.DELETE_MESSAGE: 
-                    api.delete_message(broadcaster_id, moderator_id, message_id)
-                    if self.reason: await ctx.send(f"Se ha eliminado el mensaje de @{user}. {self.reason}")
-                
+                case PenaltyType.DELETE_MESSAGE: api.delete_message(broadcaster_id, moderator_id, message_id)
                 case PenaltyType.TIME_OUT: api.set_timeout(broadcaster_id, moderator_id, user_id, self.duration, self.reason)
                 case PenaltyType.BAN_USER: api.set_ban(broadcaster_id, moderator_id, user_id, self.reason)
+            
+            if self.announce_penalty: 
+                await ctx.send(self.reason)
 
     def __repr__(self):
         return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'
