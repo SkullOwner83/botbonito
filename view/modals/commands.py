@@ -57,12 +57,8 @@ class CommandsModal(Modal):
         self.user_level_dropdown = DropDown(
             value=self.command.user_level or UserLevel.EVERYONE,
             options=[
-                ft.DropdownOption(key=UserLevel.EVERYONE.value, content=ft.Text('Everyone')),
-                ft.DropdownOption(key=UserLevel.FOLLOWER.value, content=ft.Text('Follower')),
-                ft.DropdownOption(key=UserLevel.MODERATOR.value, content=ft.Text('Moderator')),
-                ft.DropdownOption(key=UserLevel.SUBSCRIBER.value, content=ft.Text('Subscriber')),
-                ft.DropdownOption(key=UserLevel.BROADCASTER.value, content=ft.Text('Broadcaster')),
-                ft.DropdownOption(key=UserLevel.VIP.value, content=ft.Text('VIP'))
+                ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value)) 
+                for user_level in UserLevel if user_level != UserLevel.NO_ONE
             ]
         )
 
@@ -73,9 +69,8 @@ class CommandsModal(Modal):
             self.response_type_dropdown = DropDown(
                 value=self.command.response_type or ResponseType.SAY,
                 options=[
-                    ft.DropdownOption(key=ResponseType.SAY.value, content=ft.Text("Decir")),
-                    ft.DropdownOption(key=ResponseType.REPLY.value, content=ft.Text("Responder")),
-                    ft.DropdownOption(key=ResponseType.MENTION.value, content=ft.Text("Mencionar")),
+                    ft.DropdownOption(key=response_type.value, text=str.capitalize(response_type.value))
+                    for response_type in ResponseType
                 ]
             )
 

@@ -22,24 +22,23 @@ class ProtectionModal(Modal):
 
     def set_controls(self) -> None:
         self.reason_textbox = TextBox(value=self.protection.reason)
+        self.duration_textbox = TextBox(value=self.protection.duration)
+        self.strikes_textbox = TextBox(value=self.protection.strikes)
+        self.announce_checkbox = CheckBox(text='Anunciar penalización', checked=self.protection.announce_penalty)
 
         self.penalty_dropdown = DropDown(
             value=self.protection.penalty or PenaltyType.DELETE_MESSAGE.value,
             options=[
-                ft.DropdownOption(key=PenaltyType.DELETE_MESSAGE.value, text='Delete message'),
-                ft.DropdownOption(key=PenaltyType.TIME_OUT.value, text='Time out'),
-                ft.DropdownOption(key=PenaltyType.BAN_USER.value, text='Ban user')
+                ft.DropdownOption(key=penalty_type.value, text=str.capitalize(penalty_type.value))
+                for penalty_type in PenaltyType
             ]
         )
 
         self.exclude_dropdown = DropDown(
             value=self.protection.exclude or PenaltyType.DELETE_MESSAGE.value,
             options=[
-                ft.DropdownOption(key=UserLevel.NO_ONE.value, text='No one'),
-                ft.DropdownOption(key=UserLevel.FOLLOWER.value, text='Follower'),
-                ft.DropdownOption(key=UserLevel.MODERATOR.value, text='Moderator'),
-                ft.DropdownOption(key=UserLevel.SUBSCRIBER.value, text='Admin'),
-                ft.DropdownOption(key=UserLevel.VIP.value, text='VIP')
+                ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value))
+                for user_level in UserLevel if not user_level in [UserLevel.EVERYONE, UserLevel.BROADCASTER]
             ]
         )
 
@@ -51,16 +50,28 @@ class ProtectionModal(Modal):
                 ft.Column(
                     spacing=0,
                     controls=[
-                        Label('Razón de penalización:'),
-                        self.reason_textbox
-                    ]
-                ),
-                
-                ft.Column(
-                    spacing=0,
-                    controls=[
                         Label('Penalización:'),
                         self.penalty_dropdown
+                    ]
+                ),
+
+                ft.Row(
+                    spacing=16,
+                    controls=[
+                        ft.Column(
+                            expand=1,
+                            controls=[
+                                Label('Duración:'),
+                                self.duration_textbox
+                            ]
+                        ),
+                        ft.Column(
+                            expand=1,
+                            controls=[
+                                Label('Strikes:'),
+                                self.strikes_textbox
+                            ]
+                        )
                     ]
                 ),
 
@@ -70,7 +81,17 @@ class ProtectionModal(Modal):
                         Label('Excluir:'),
                         self.exclude_dropdown
                     ]
-                )
+                ),
+
+                ft.Column(
+                    spacing=0,
+                    controls=[
+                        Label('Razón de penalización:'),
+                        self.reason_textbox
+                    ]
+                ),
+
+                self.announce_checkbox
             ]
         )
     
@@ -78,6 +99,9 @@ class ProtectionModal(Modal):
         self.protection.reason = self.reason_textbox.value
         self.protection.penalty = self.penalty_dropdown.value
         self.protection.exclude = self.exclude_dropdown.value
+        self.protection.duration = self.duration_textbox.value
+        self.protection.strikes = self.strikes_textbox.value
+        self.protection.announce_penalty = self.announce_checkbox.value
         self.moderation_manager.save_protections()
         self.on_close()
     
