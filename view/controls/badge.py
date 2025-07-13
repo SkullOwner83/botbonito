@@ -3,7 +3,7 @@ from models.enums import UserLevel
 from myapp import MyApp
 
 class Badge(ft.Container):
-    def __init__(self, name: UserLevel) -> None:
+    def __init__(self, name: str) -> None:
         super().__init__(
             content=ft.Row(
                 spacing=4,
@@ -17,8 +17,7 @@ class Badge(ft.Container):
                     ft.Text(
                         value=name,
                         font_family=MyApp.font_secondary,
-                        weight=ft.FontWeight.BOLD,
-                        #color=TEXT_COLOR.get(name)
+                        weight=ft.FontWeight.BOLD
                     )
                 ]
             )
@@ -31,13 +30,4 @@ BADGE_IMAGES = {
     UserLevel.SUBSCRIBER: "assets/icons/subscriber.png",
     UserLevel.BROADCASTER: "assets/icons/broadcaster.png",
     UserLevel.VIP: "assets/icons/vip.png",
-}
-
-TEXT_COLOR = {
-    UserLevel.EVERYONE: ft.Colors.BLUE,
-    UserLevel.FOLLOWER: ft.Colors.ORANGE,
-    UserLevel.MODERATOR: ft.Colors.GREEN,
-    UserLevel.SUBSCRIBER: ft.Colors.PURPLE,
-    UserLevel.BROADCASTER: ft.Colors.RED,
-    UserLevel.VIP: ft.Colors.PINK,
 }

@@ -10,3 +10,4 @@ from .segmented_button import SegmentedButton
 from .tag import Tag
 from .textbox import TextBox
 from .badge import Badge
+from .checkbox import CheckBox

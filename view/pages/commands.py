@@ -169,19 +169,12 @@ class CommandsPage(ft.View):
                                                 ft.Container(
                                                     expand=True,
                                                     alignment=ft.alignment.center_right,
-                                                    content=ft.TextField(
+                                                    content=TextBox(
                                                         width=350,
                                                         height=32,
-                                                        text_style=ft.TextStyle(font_family=MyApp.font_secondary, size=16),
-                                                        text_vertical_align=ft.VerticalAlignment.CENTER,
-                                                        hint_text="Buscar comando...",
-                                                        bgcolor=ft.Colors.WHITE,
-                                                        hover_color=ft.Colors.TRANSPARENT,
-                                                        selection_color=ft.Colors.LIGHT_BLUE_100,
+                                                        border=0,
                                                         prefix_icon=ft.Icons.SEARCH,
-                                                        content_padding=ft.padding.symmetric(horizontal=16),
-                                                        border_width=0,
-                                                        border_radius=8,
+                                                        place_holder='Buscar comando...',
                                                         on_change=self.search_command
                                                     )
                                                 ),
