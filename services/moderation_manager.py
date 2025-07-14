@@ -15,28 +15,28 @@ class ModerationManager():
     # Read the stored file and load them into the dictionary of protections
     def load_protections(self) -> None:
         with self._lock:
-            moderation_config = File.open(os.path.join(MyApp.moderation_path))
             self.protections = get_protections()
+            stored_config = File.open(os.path.join(MyApp.moderation_path))
 
-            if moderation_config:
-                loaded_protections: dict = moderation_config.get('protection', {})
+            if stored_config:
+                loaded_protections: dict = stored_config.get('protection', {})
 
                 for name, data in loaded_protections.items():
-                    if name in self.protections:
-                        protection = self.protections[name]
-                        
-                        for attr, val in data.items():
+                    protection = self.protections.get(name)
+
+                    for attr, val in data.items():
+                        if hasattr(protection, attr):
                             setattr(protection, attr, val)
 
                 self.banned_words = { 
                     name: Protection(**data) 
-                    for name, data in moderation_config.get('banned_words', {}).items() 
+                    for name, data in stored_config.get('banned_words', {}).items() 
                 }
 
     # Convert the commands to a dictionary and save them to the file
     def save_protections(self) -> None:
         with self._lock:
-            self.dictionary = {
+            dictionary = {
                     'protection': {
                         name: data.__dict__
                         for name, data in self.protections.items()
@@ -48,4 +48,4 @@ class ModerationManager():
                     }
             }
 
-            File.save(os.path.join(MyApp.moderation_path), self.dictionary)
+            File.save(os.path.join(MyApp.moderation_path), dictionary)

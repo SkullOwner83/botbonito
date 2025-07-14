@@ -1,9 +1,7 @@
 import webbrowser
-import flet as ft
-from models.enums import AccountType
+from utilities.enums import AccountType
 from models.user import User
-from utilities.api import Api
-from utilities.token import Token
+from utilities import *
 
 class SessionService:
     def __init__(self):
@@ -19,7 +17,7 @@ class SessionService:
             if self.load_account(credentials, botconfig, account_type): return True
         else:
             if credentials['refresh_token']:
-                token = Token(botconfig['client_id'], botconfig['client_secret'], botconfig['scope'], botconfig['redirect_uri'])
+                token = Token(botconfig['client_id'], botconfig['client_secret'], Constants.BOT_SCOPES, botconfig['redirect_uri'])
                 token_refreshed = token.refresh_access_token(credentials['refresh_token'])
                 
                 if token_refreshed:
@@ -37,7 +35,7 @@ class SessionService:
 
     # Login the twitch account using the credentials
     def login(self, botconfig: dict, account_type: str) -> bool:
-        scope = ['user:read:email', 'channel:read:goals', 'moderator:read:followers', 'channel:read:subscriptions'] if account_type == AccountType.USER else botconfig['scope']
+        scope = Constants.USER_SCOPES if account_type == AccountType.USER else Constants.BOT_SCOPES
         token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)

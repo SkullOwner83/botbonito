@@ -21,22 +21,22 @@ class CommandsManager():
     # Read the stored file and load them into the dictionary of commands
     def load_commands(self) -> None:
         with self._lock:
-            commands_config: dict = File.open(os.path.join(MyApp.commands_path))
             self.default_commands = get_default_commands()
+            stored_config: dict = File.open(os.path.join(MyApp.commands_path))
 
-            if commands_config:
-                loaded_default_commands: dict = commands_config.get('default_commands', {})
+            if stored_config:
+                loaded_default_commands: dict = stored_config.get('default_commands', {})
 
                 for name, data in loaded_default_commands.items():
-                    if name in self.default_commands:
-                        command = self.default_commands[name]
+                    command = self.default_commands[name]
                         
-                        for attr, val in data.items():
+                    for attr, val in data.items():
+                        if hasattr(command, attr):
                             setattr(command, attr, val)
 
                 self.custom_commands = { 
                     name: CommandConfig(**data) 
-                    for name, data in commands_config.get('custom_commands', {}).items() 
+                    for name, data in stored_config.get('custom_commands', {}).items() 
                 }
 
     # Convert the commands to a dictionary and save them to the file
