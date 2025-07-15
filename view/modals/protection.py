@@ -1,7 +1,7 @@
 import flet as ft
 from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
-from models.enums import PenaltyType, UserLevel
+from utilities.enums import PenaltyType, UserLevel
 from models.protection import Protection
 from view.controls import *
 

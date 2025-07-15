@@ -4,7 +4,7 @@ import flet as ft
 from services import *
 from ..controls import *
 from models.commands import CommandConfig
-from models.enums import UserLevel, ResponseType
+from utilities.enums import UserLevel, ResponseType
 
 class CommandsModal(Modal):
     def __init__(self, command: Optional[CommandConfig] = None, on_save: Optional[Callable] = None) -> None:

@@ -1,5 +1,5 @@
 import flet as ft
-from models.enums import UserLevel
+from utilities.enums import UserLevel
 from myapp import MyApp
 
 class Badge(ft.Container):

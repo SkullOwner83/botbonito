@@ -1,6 +1,6 @@
 from copy import deepcopy
 from models.protection import Protection
-from models.enums import UserLevel, PenaltyType
+from utilities.enums import UserLevel, PenaltyType
 
 @staticmethod
 def get_protections():

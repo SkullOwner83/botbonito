@@ -1,7 +1,7 @@
 from twitchio.ext import commands
 from twitchio.ext.commands import Context
 from utilities.api import Api
-from models.enums import Enum, ResponseType
+from utilities.enums import ResponseType
 from myapp import MyApp
 
 class CommandManager(commands.Cog):

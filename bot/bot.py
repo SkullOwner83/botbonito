@@ -14,39 +14,40 @@ from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
 from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
-from models.enums import UserLevel
+from models.appconfig import AppConfig
+from utilities.enums import UserLevel
 from services.service_locator import ServiceLocator
 from services.commands_manager import CommandsManager
 from utilities import *
 from myapp import MyApp
 
 class Bot(commands.Bot):
-    def __init__(self, config: dict, credentials: dict) -> None:
+    def __init__(self, app_config: AppConfig, credentials: dict) -> None:
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self)
         self.dynamics_commands_cog = DynamicsCommands(self)
         self.sound_manager_cog = SoundManager(self)
-        self.voice_recognition_cog = VoiceRecognition(self, config)
+        self.voice_recognition_cog = VoiceRecognition(self, app_config)
         self.moderation_cog = Moderation(self)
         self.recognition_thread = threading.Thread(target=self.voice_recognition_cog.capture_voice_commands)
 
         # load variables from the config files
-        self.config = config
+        self.app_config = app_config
         self.token = credentials['access_token']
-        self.client_id = config['client_id']
-        self.client_secret = config['client_secret']
-        self.name = config['name']
-        self.channels = config['channels']
-        self.prefix = config['prefix']
-        self.frequency_message_time = config['frequency_message_time']
-        self.__frequency_messages = config['frecuency_messages']
+        self.client_id = app_config.client_id
+        self.client_secret = app_config.client_secret
+        self.name = app_config.name
+        self.channels = app_config.channels
+        self.prefix = app_config.prefix
+        # self.frequency_message_time = config['frequency_message_time']
+        # self.__frequency_messages = config['frecuency_messages']
 
         # Load social media links, replace the '@' character to make links accessible in twitch, and insert them into frequency messages
-        self.social_media = File.open(os.path.join(MyApp.config_path, "socialmedia.json"))
-        self.social_media = { key: url.replace('@', '%40') for key, url in self.social_media.items( )}
-        self.frequency_messages = [
-            message.format(**self.social_media) for message in self.__frequency_messages
-        ]
+        # self.social_media = File.open(os.path.join(MyApp.config_path, "socialmedia.json"))
+        # self.social_media = { key: url.replace('@', '%40') for key, url in self.social_media.items( )}
+        # self.frequency_messages = [
+        #     message.format(**self.social_media) for message in self.__frequency_messages
+        # ]
 
         # Get the config manager instance to load the commands
         commands_manager: CommandsManager = ServiceLocator.get('commands')
@@ -82,7 +83,8 @@ class Bot(commands.Bot):
     async def event_ready(self) -> None:
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
-        asyncio.create_task(self.send_frequent_messages())
+        
+        #asyncio.create_task(self.send_frequent_messages())
         #self.recognition_thread.start()
 
     # Check chat messages event
@@ -100,9 +102,9 @@ class Bot(commands.Bot):
             message.content = re.sub(r'^(\s*\S+)', lambda m: m.group(0).lower(), message.content, count=1)
 
 
-            if command in self.social_media:
-                await message.channel.send(f"{self.social_media[command]}")
-                return
+            # if command in self.social_media:
+            #     await message.channel.send(f"{self.social_media[command]}")
+            #     return
             
             if command in self.custom_commands or command in self.custom_alias:
                 await self.command_manager_cog.custom_command(context)

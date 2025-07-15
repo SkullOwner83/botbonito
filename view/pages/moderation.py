@@ -1,13 +1,13 @@
 import flet as ft
-
-from view.modals.protection import ProtectionModal
+from models.appconfig import AppConfig
 from models.protection import Protection
+from view.modals.protection import ProtectionModal
 from services.moderation_manager import ModerationManager
 from ..controls import *
 from services import *
 
 class ModerationPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict) -> None:
+    def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
         super().__init__(
             route='/moderation',
             padding=0
@@ -17,7 +17,7 @@ class ModerationPage(ft.View):
         self.protections: dict[str, Protection] = moderation_manager.protections
 
         self.page = page
-        self.botconfig = botconfig
+        self.botconfig = app_config
         self.set_controls()
         self.controls.append(self.build())
 
@@ -61,8 +61,8 @@ class ModerationPage(ft.View):
     def open_settings(self, protection: Protection):
         self.page.open(ProtectionModal(protection))
 
-    def change_tab(self, e: ft.ControlEvent):
-        pass
+    # def change_tab(self, e: ft.ControlEvent):
+    #     pass
 
     def build(self) -> ft.Container:
         return ft.Container(

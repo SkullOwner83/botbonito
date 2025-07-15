@@ -22,7 +22,7 @@ class CommandsManager():
     def load_commands(self) -> None:
         with self._lock:
             self.default_commands = get_default_commands()
-            stored_config: dict = File.open(os.path.join(MyApp.commands_path))
+            stored_config: dict = File.open(MyApp.commands_path)
 
             if stored_config:
                 loaded_default_commands: dict = stored_config.get('default_commands', {})

@@ -4,8 +4,7 @@ from twitchio.ext import commands
 from twitchio.ext.commands import Context, Cog
 from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
-from models.enums import UserLevel
-from utilities.file import File
+from utilities.enums import UserLevel
 from myapp import MyApp
 from models.protection import Protection
 

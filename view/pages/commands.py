@@ -1,12 +1,13 @@
 import flet as ft
+from models.appconfig import AppConfig
+from models.commands import CommandConfig
+from services import *
 from ..controls import *
 from ..modals import CommandsModal
-from services import *
-from models.commands import CommandConfig
 from myapp import MyApp
 
 class CommandsPage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict) -> None:
+    def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
         super().__init__(
             route='/validation',
             padding=0
@@ -14,7 +15,7 @@ class CommandsPage(ft.View):
 
         self.page = page
         self.filter = ''
-        self.botconfig = botconfig
+        self.app_config = app_config
         self.commands_manager: CommandsManager = ServiceLocator.get('commands')
         self.default_commands = self.commands_manager.default_commands
         self.custom_commands = self.commands_manager.custom_commands
@@ -144,7 +145,7 @@ class CommandsPage(ft.View):
                         expand=True,
                         spacing=0,
                         controls = [
-                            Header("Comandos", self.botconfig),
+                            Header("Comandos", self.app_config),
                             
                             ft.Container(
                                 expand=True,

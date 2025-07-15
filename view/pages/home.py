@@ -1,17 +1,18 @@
 import flet as ft
+from models.appconfig import AppConfig
 from ..controls import *
 from services import *
 
 
 class HomePage(ft.View):
-    def __init__(self, page: ft.Page, botconfig: dict) -> None:
+    def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
         super().__init__(
             route='/',
             padding=0
         )
 
         self.page = page
-        self.botconfig = botconfig
+        self.app_config = app_config
         self.controls.append(self.build())
 
     def build(self) -> ft.Container:
@@ -28,7 +29,7 @@ class HomePage(ft.View):
                         expand=True,
                         spacing=0,
                         controls=[
-                            Header("Dashboard", self.botconfig),
+                            Header("Dashboard", self.app_config),
 
                             ft.Container(
                                 padding=32,

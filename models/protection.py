@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from twitchio.ext.commands import Bot, Cog, Context
 from utilities.api import Api
-from models.enums import PenaltyType
+from utilities.enums import PenaltyType
 
 class Protection:
     def __init__(self,

@@ -1,6 +1,7 @@
 import asyncio
 import flet as ft
-from models.enums import AccountType
+from models.appconfig import AppConfig
+from utilities.enums import AccountType
 from view.routes import RouteHandler
 from utilities.file import File
 from services import *
@@ -8,7 +9,7 @@ from view.modals.validation import ValidationModal
 from myapp import MyApp
 
 class MainWindow:
-    def __init__(self, page: ft.Page, route_handler: RouteHandler, botconfig: dict, credentials: dict) -> None:
+    def __init__(self, page: ft.Page, route_handler: RouteHandler, app_config: AppConfig, credentials: dict) -> None:
         self.page = page
         self.title = "Botbonito"
         self.page.title = self.title
@@ -30,7 +31,7 @@ class MainWindow:
             )
         )
 
-        self.botconfig = botconfig
+        self.app_config = app_config
         self.credentials = credentials
         self.bot_services: BotService = ServiceLocator.get('bot')
         self.websocket_service: WebsocketService = ServiceLocator.get('websocket')
@@ -40,14 +41,14 @@ class MainWindow:
     def load(self) -> None:
         bot_credentials = self.credentials.get("bot")
         user_credentials = self.credentials.get("user")
-        self.session_service.validation(user_credentials, self.botconfig, AccountType.USER)
+        self.session_service.validation(user_credentials, self.app_config, AccountType.USER)
         self.page.go('/home')
 
-        if self.session_service.validation(bot_credentials, self.botconfig, AccountType.BOT):
-            self.bot_services.start(bot_credentials, self.botconfig,)
+        if self.session_service.validation(bot_credentials, self.app_config, AccountType.BOT):
+            self.bot_services.start(bot_credentials, self.app_config,)
             File.save(MyApp.credentials_path, self.session_service.serialize())
             
             if self.session_service.is_logged_in:
-                asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.botconfig['client_id'], self.session_service.user_account.id))
+                asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.app_config.client_id, self.session_service.user_account.id))
         else:
-            self.page.open(ValidationModal(bot_credentials, self.botconfig))
+            self.page.open(ValidationModal(bot_credentials, self.app_config))

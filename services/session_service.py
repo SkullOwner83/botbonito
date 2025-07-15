@@ -1,5 +1,6 @@
 import webbrowser
 from utilities.enums import AccountType
+from models.appconfig import AppConfig
 from models.user import User
 from utilities import *
 
@@ -12,12 +13,12 @@ class SessionService:
         self.on_logout_callback = []
 
     # Validate if the token is valid or refresh it if it's expired
-    def validation(self, credentials: dict, botconfig: dict, account_type: AccountType) -> bool:
+    def validation(self, credentials: dict, app_config: AppConfig, account_type: AccountType) -> bool:
         if Token.validation(credentials['access_token']):        
-            if self.load_account(credentials, botconfig, account_type): return True
+            if self.load_account(credentials, app_config, account_type): return True
         else:
             if credentials['refresh_token']:
-                token = Token(botconfig['client_id'], botconfig['client_secret'], Constants.BOT_SCOPES, botconfig['redirect_uri'])
+                token = Token(app_config.client_id, app_config.client_secret, Constants.BOT_SCOPES, app_config.redirect_uri)
                 token_refreshed = token.refresh_access_token(credentials['refresh_token'])
                 
                 if token_refreshed:
@@ -27,16 +28,16 @@ class SessionService:
                     if Token.validation(new_token):
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
-                        self.load_account(credentials, botconfig, account_type)
+                        self.load_account(credentials, app_config, account_type)
                         print("Token has been refreshed.")
                         return True
 
         return False
 
     # Login the twitch account using the credentials
-    def login(self, botconfig: dict, account_type: str) -> bool:
+    def login(self, app_config: AppConfig, account_type: str) -> bool:
         scope = Constants.USER_SCOPES if account_type == AccountType.USER else Constants.BOT_SCOPES
-        token = Token(botconfig['client_id'], botconfig['client_secret'], scope, botconfig['redirect_uri'])
+        token = Token(app_config.client_id, app_config.client_secret, scope, app_config.redirect_uri)
         auth_url = token.generate_auth_url()
         webbrowser.open(auth_url)
         token_data = token.get_authorization()
@@ -47,7 +48,7 @@ class SessionService:
                 'refresh_token': token_data['refresh_token']
             }
         
-            if self.load_account(credentials, botconfig, account_type):
+            if self.load_account(credentials, app_config, account_type):
                 self.on_login(self.user_account if account_type == AccountType.USER else self.bot_account)
                 return True
     
@@ -62,8 +63,8 @@ class SessionService:
             self.bot_account = None
 
     # Fetch the account data from the twitch API to load the account
-    def load_account(self, credentials: dict, botconfig: dict, account_type: str) -> bool:
-        api = Api(credentials['access_token'], botconfig['client_id'])
+    def load_account(self, credentials: dict, app_config: AppConfig, account_type: str) -> bool:
+        api = Api(credentials['access_token'], app_config.client_id)
         account_data= api.get_user()
 
         if account_data:

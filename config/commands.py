@@ -1,6 +1,6 @@
 from copy import deepcopy
 from models.commands import CommandConfig
-from models.enums import UserLevel
+from utilities.enums import UserLevel
 
 @staticmethod
 def get_default_commands():
@@ -55,20 +55,20 @@ _DEFAULT_COMMANDS = {
         name='entry',
         description='Permite a los usuarios entrar en la lista para participar en un sorteo.',
         alias=['leentro'],
-        user_level=UserLevel.EVERYONE.value
+        user_level=UserLevel.FOLLOWER.value
     ),
 
     'feedback': CommandConfig(
         name='feedback',
         description='Permite al emisor iniciar y finalizar una sesión de retroalimentación de creaciones de los usuarios.',
         alias=[],
-        user_level=UserLevel.EVERYONE.value
+        user_level=UserLevel.BROADCASTER.value
     ),
 
     'send': CommandConfig(
         name='send',
         description='Permite a los usuarios enviar un enlace de sus creaciones al emisor para obtener retroalimentación.',
         alias=['demo'],
-        user_level=UserLevel.EVERYONE.value
+        user_level=UserLevel.FOLLOWER.value
     ),
 }
