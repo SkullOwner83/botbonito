@@ -1,4 +1,3 @@
-from typing import Optional, List
 import flet as ft
 from myapp import MyApp
 
@@ -8,6 +7,8 @@ class DropDown(ft.Dropdown):
             expand=True,
             value=value,
             options=options,
+            color=ft.Colors.BLACK,
+            bgcolor=ft.Colors.WHITE,
             border_width=1,
             border_radius=8,
             border_color=ft.Colors.GREY_300,

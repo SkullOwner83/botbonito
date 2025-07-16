@@ -10,6 +10,8 @@ class AppConfig:
     redirect_uri: Optional[str] = 'https://localhost:300'
     client_id: Optional[str] = ''
     client_secret: Optional[str] = ''
+    theme: Optional[str] = 'light'
+    language: Optional[str] = 'español'
     help_word: Optional[str] = 'help'
     enable_word: Optional[str] = 'enable'
     disable_word: Optional[str] = 'disable'
