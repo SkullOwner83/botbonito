@@ -108,7 +108,7 @@ class CommandsModal(Modal):
                 ft.Column(
                     spacing=0,
                     controls=[
-                        Label(text="Nivel requerido"),
+                        Label(text="Nivel requerido:"),
                         self.user_level_dropdown,
                     ]
                 ),
@@ -118,7 +118,7 @@ class CommandsModal(Modal):
                 ft.Column(
                     spacing=0,
                     controls=[
-                        Label(text="Alias de comando"),
+                        Label(text="Alias de comando:"),
                         self.alias_textbox,
                     ]
                 ),

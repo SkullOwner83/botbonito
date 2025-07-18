@@ -2,6 +2,7 @@ import flet as ft
 from models.appconfig import AppConfig
 from ..controls import *
 from services import *
+from myapp import MyApp
 
 class ConfigurationPage(ft.View):
     def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
@@ -62,8 +63,7 @@ class ConfigurationPage(ft.View):
                             ft.Container(
                                 expand=True,
                                 padding=32,
-                                alignment=ft.alignment.center,
-                                content=ft.Tabs(
+                                content=TabControl(
                                     tabs=[
                                         ft.Tab(
                                             text="General",
@@ -73,7 +73,7 @@ class ConfigurationPage(ft.View):
                                                     ft.Column(
                                                         spacing=0,
                                                         controls=[
-                                                            Label('Thema'),
+                                                            Label('Tema:'),
                                                             self.theme_dropdown
                                                         ]
                                                     ),
@@ -81,7 +81,7 @@ class ConfigurationPage(ft.View):
                                                     ft.Column(
                                                         spacing=0,
                                                         controls=[
-                                                            Label('Lenguaje'),
+                                                            Label('Lenguaje:'),
                                                             self.language_dropdown
                                                         ]
                                                     ),
@@ -102,8 +102,8 @@ class ConfigurationPage(ft.View):
 
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='twitter.png'),
-                                                                            self.twitter_textbox
+                                                                            ft.Image(width=32, src='youtube.png'),
+                                                                            self.youtube_textbox
                                                                         ]
                                                                     ),
 
@@ -111,6 +111,32 @@ class ConfigurationPage(ft.View):
                                                                         controls=[
                                                                             ft.Image(width=32, src='instagram.png'),
                                                                             self.instagram_textbox
+                                                                        ]
+                                                                    )
+                                                                ]
+                                                            ),
+
+                                                            ft.Column(
+                                                                expand=1,
+                                                                controls=[
+                                                                    ft.Row(
+                                                                        controls=[
+                                                                            ft.Image(width=32, src='twitter.png'),
+                                                                            self.twitter_textbox
+                                                                        ]
+                                                                    ),
+
+                                                                    ft.Row(
+                                                                        controls=[
+                                                                            ft.Image(width=32, src='discord.png'),
+                                                                            self.discord_textbox
+                                                                        ]
+                                                                    ),
+
+                                                                    ft.Row(
+                                                                        controls=[
+                                                                            ft.Image(width=32, src='tiktok.png'),
+                                                                            self.tiktok_textbox
                                                                         ]
                                                                     )
                                                                 ]

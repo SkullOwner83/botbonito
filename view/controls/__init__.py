@@ -1,5 +1,7 @@
+from .badge import Badge
 from .button import Button
 from .card import Card
+from .checkbox import CheckBox
 from .data_table import DataTable
 from .drop_down import DropDown
 from .header import Header
@@ -7,7 +9,6 @@ from .label import Label
 from .modal import Modal
 from .navigation_bar import NavigationBar
 from .segmented_button import SegmentedButton
+from .tab_control import TabControl
 from .tag import Tag
 from .textbox import TextBox
-from .badge import Badge
-from .checkbox import CheckBox
