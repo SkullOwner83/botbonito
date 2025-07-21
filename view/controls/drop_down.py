@@ -12,7 +12,7 @@ class DropDown(ft.Dropdown):
             fill_color=ft.Colors.WHITE,
             border_width=1,
             border_radius=8,
-            border_color=ft.Colors.GREY_300,
+            border_color=ft.Colors.GREY_500,
             content_padding=ft.padding.symmetric(horizontal=16),
             text_style=ft.TextStyle(
                 font_family=MyApp.font_secondary,

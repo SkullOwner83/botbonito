@@ -1,4 +1,5 @@
 import asyncio
+import sys
 import flet as ft
 from models.appconfig import AppConfig
 from utilities.enums import AccountType
@@ -37,7 +38,7 @@ class MainWindow:
         self.websocket_service: WebsocketService = ServiceLocator.get('websocket')
         self.session_service: SessionService = ServiceLocator.get('session')
         self.load()
-    
+
     def load(self) -> None:
         bot_credentials = self.credentials.get("bot")
         user_credentials = self.credentials.get("user")
@@ -52,3 +53,5 @@ class MainWindow:
                 asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.app_config.client_id, self.session_service.user_account.id))
         else:
             self.page.open(ValidationModal(bot_credentials, self.app_config))
+
+    

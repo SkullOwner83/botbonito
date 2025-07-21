@@ -5,10 +5,10 @@ from myapp import MyApp
 class NavigationBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.page = page
-        self.home_icon = "icons/home.svg"
-        self.commands_icon = "icons/commands.svg"
-        self.moderation_icon = "icons/moderation.svg"
-        self.configuration_icon = "icons/configuration.svg"
+        self.home_icon = "side menu/home.svg"
+        self.commands_icon = "side menu/commands.svg"
+        self.moderation_icon = "side menu/moderation.svg"
+        self.configuration_icon = "side menu/configuration.svg"
 
         super().__init__(
             bgcolor=ft.Colors.WHITE,
@@ -23,7 +23,7 @@ class NavigationBar(ft.Container):
                 ft.Container(
                     height=64,
                     padding=16,
-                    content=ft.Image(src="icons/botbonito.svg", width=150)
+                    content=ft.Image(src="side menu/botbonito.svg", width=150)
                 ),
 
                 MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),

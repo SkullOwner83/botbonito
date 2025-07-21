@@ -24,10 +24,10 @@ class Badge(ft.Container):
         )
 
 BADGE_IMAGES = {
-    UserLevel.EVERYONE: "assets/icons/everyone.png",
-    UserLevel.FOLLOWER: "assets/icons/follower.png",
-    UserLevel.MODERATOR: "assets/icons/moderator.png",
-    UserLevel.SUBSCRIBER: "assets/icons/subscriber.png",
-    UserLevel.BROADCASTER: "assets/icons/broadcaster.png",
-    UserLevel.VIP: "assets/icons/vip.png",
+    UserLevel.EVERYONE: "assets/user levels/everyone.png",
+    UserLevel.FOLLOWER: "assets/user levels/follower.png",
+    UserLevel.MODERATOR: "assets/user levels/moderator.png",
+    UserLevel.SUBSCRIBER: "assets/user levels/subscriber.png",
+    UserLevel.BROADCASTER: "assets/user levels/broadcaster.png",
+    UserLevel.VIP: "assets/user levels/vip.png",
 }

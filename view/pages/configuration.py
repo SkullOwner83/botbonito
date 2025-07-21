@@ -95,22 +95,22 @@ class ConfigurationPage(ft.View):
                                                                 controls=[
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='facebook.png'),
+                                                                            ft.Image(width=32, src='social media/facebook.png'),
                                                                             self.facebook_textbox
                                                                         ]
                                                                     ),
 
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='youtube.png'),
-                                                                            self.youtube_textbox
+                                                                            ft.Image(width=32, src='social media/instagram.png'),
+                                                                            self.instagram_textbox
                                                                         ]
                                                                     ),
 
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='instagram.png'),
-                                                                            self.instagram_textbox
+                                                                            ft.Image(width=32, src='social media/youtube.png'),
+                                                                            self.youtube_textbox
                                                                         ]
                                                                     )
                                                                 ]
@@ -121,24 +121,24 @@ class ConfigurationPage(ft.View):
                                                                 controls=[
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='twitter.png'),
+                                                                            ft.Image(width=32, src='social media/twitter.png'),
                                                                             self.twitter_textbox
                                                                         ]
                                                                     ),
 
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='discord.png'),
-                                                                            self.discord_textbox
+                                                                            ft.Image(width=32, src='social media/tiktok.png'),
+                                                                            self.tiktok_textbox
                                                                         ]
                                                                     ),
 
                                                                     ft.Row(
                                                                         controls=[
-                                                                            ft.Image(width=32, src='tiktok.png'),
-                                                                            self.tiktok_textbox
+                                                                            ft.Image(width=32, src='social media/discord.png'),
+                                                                            self.discord_textbox
                                                                         ]
-                                                                    )
+                                                                    ),
                                                                 ]
                                                             )
                                                         ]
