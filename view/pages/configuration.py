@@ -16,17 +16,37 @@ class ConfigurationPage(ft.View):
         self.set_controls()
         self.controls.append(self.build())
 
+    def restore_defaults(self) -> None:
+        self.app_config.restore_defaults()
+
+    def save_changes(self) -> None:
+        self.app_config.language = self.language_dropdown.value
+        self.app_config.theme = self.theme_dropdown.value
+        self.app_config.client_id = self.client_id_textbox.value
+        self.app_config.client_secret = self.client_secret_textbox.value
+        
+        self.app_config.social_media = {
+            'facebook': self.facebook_textbox.value,
+            'twitter': self.twitter_textbox.value,
+            'instagram': self.instagram_textbox.value,
+            'tiktok': self.tiktok_textbox.value,
+            'youtube': self.youtube_textbox.value,
+            'discord': self.discord_textbox.value
+        }
+
+        self.app_config.save(MyApp.botconfig_path)
+
     def set_controls(self) -> None:
         social_media = self.app_config.social_media
+        self.client_id_textbox = TextBox(value=self.app_config.client_id, password=True, can_reveal_password=True)
+        self.client_secret_textbox = TextBox(value=self.app_config.client_secret, password=True, can_reveal_password=True)
         self.redirect_uri_textbox = TextBox(value=self.app_config.redirect_uri, place_holder='https://localhost:300')
-        self.client_id_textbox = TextBox(value=self.app_config.client_id)
-        self.client_secret_textbox = TextBox(value=self.app_config.client_id)
-        self.facebook_textbox = TextBox(value=social_media['facebook'], height=32, border=0, expand=True, place_holder='https://facebook.com/username')
-        self.twitter_textbox = TextBox(value=social_media['twitter'], height=32, border=0, expand=True, place_holder='https://twitter.com/username')
-        self.instagram_textbox = TextBox(value=social_media['instagram'], height=32, border=0, expand=True, place_holder='https://instagram.com/username')
-        self.youtube_textbox = TextBox(value=social_media['youtube'], height=32, border=0, expand=True, place_holder='https://youtube.com/username')
-        self.discord_textbox = TextBox(value=social_media['discord'], height=32, border=0, expand=True, place_holder='https://discord.com/username')
-        self.tiktok_textbox = TextBox(value=social_media['tiktok'], height=32, border=0, expand=True, place_holder='https://tiktok.com/username')
+        self.facebook_textbox = TextBox(value=social_media.get('facebook'), height=32, border=0, expand=True, place_holder='https://facebook.com/username...')
+        self.twitter_textbox = TextBox(value=social_media.get('twitter'), height=32, border=0, expand=True, place_holder='https://twitter.com/username...')
+        self.instagram_textbox = TextBox(value=social_media.get('instagram'), height=32, border=0, expand=True, place_holder='https://instagram.com/username...')
+        self.youtube_textbox = TextBox(value=social_media.get('youtube'), height=32, border=0, expand=True, place_holder='https://youtube.com/username...')
+        self.discord_textbox = TextBox(value=social_media.get('discord'), height=32, border=0, expand=True, place_holder='https://discord.com/invite/...')
+        self.tiktok_textbox = TextBox(value=social_media.get('tiktok'), height=32, border=0, expand=True, place_holder='https://tiktok.com/username...')
 
         self.theme_dropdown = DropDown(
             value=self.app_config.theme,
@@ -62,122 +82,140 @@ class ConfigurationPage(ft.View):
 
                             ft.Container(
                                 expand=True,
-                                padding=32,
+                                padding=0,
                                 content=TabControl(
                                     tabs=[
                                         ft.Tab(
                                             text="General",
-                                            content=ft.Column(
-                                                spacing=20,
-                                                controls=[
-                                                    ft.Column(
-                                                        spacing=0,
-                                                        controls=[
-                                                            Label('Tema:'),
-                                                            self.theme_dropdown
-                                                        ]
-                                                    ),
+                                            content=ft.Container(
+                                                padding=32,
+                                                content=ft.Column(
+                                                    scroll=ft.ScrollMode.ADAPTIVE,
+                                                    spacing=20,
+                                                    controls=[
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Tema:'),
+                                                                self.theme_dropdown
+                                                            ]
+                                                        ),
 
-                                                    ft.Column(
-                                                        spacing=0,
-                                                        controls=[
-                                                            Label('Lenguaje:'),
-                                                            self.language_dropdown
-                                                        ]
-                                                    ),
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Lenguaje:'),
+                                                                self.language_dropdown
+                                                            ]
+                                                        ),
 
-                                                    Label('Redes sociales:'),
-                                                    ft.Row(
-                                                        spacing=20,
-                                                        controls=[
-                                                            ft.Column(
-                                                                expand=1,
-                                                                controls=[
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/facebook.png'),
-                                                                            self.facebook_textbox
-                                                                        ]
-                                                                    ),
+                                                        Label('Redes sociales:'),
+                                                        ft.Row(
+                                                            spacing=20,
+                                                            controls=[
+                                                                ft.Column(
+                                                                    expand=1,
+                                                                    controls=[
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/facebook.png'),
+                                                                                self.facebook_textbox
+                                                                            ]
+                                                                        ),
 
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/instagram.png'),
-                                                                            self.instagram_textbox
-                                                                        ]
-                                                                    ),
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/instagram.png'),
+                                                                                self.instagram_textbox
+                                                                            ]
+                                                                        ),
 
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/youtube.png'),
-                                                                            self.youtube_textbox
-                                                                        ]
-                                                                    )
-                                                                ]
-                                                            ),
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/youtube.png'),
+                                                                                self.youtube_textbox
+                                                                            ]
+                                                                        )
+                                                                    ]
+                                                                ),
 
-                                                            ft.Column(
-                                                                expand=1,
-                                                                controls=[
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/twitter.png'),
-                                                                            self.twitter_textbox
-                                                                        ]
-                                                                    ),
+                                                                ft.Column(
+                                                                    expand=1,
+                                                                    controls=[
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/twitter.png'),
+                                                                                self.twitter_textbox
+                                                                            ]
+                                                                        ),
 
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/tiktok.png'),
-                                                                            self.tiktok_textbox
-                                                                        ]
-                                                                    ),
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/tiktok.png'),
+                                                                                self.tiktok_textbox
+                                                                            ]
+                                                                        ),
 
-                                                                    ft.Row(
-                                                                        controls=[
-                                                                            ft.Image(width=32, src='social media/discord.png'),
-                                                                            self.discord_textbox
-                                                                        ]
-                                                                    ),
-                                                                ]
-                                                            )
-                                                        ]
-                                                    )
-                                                ]
+                                                                        ft.Row(
+                                                                            controls=[
+                                                                                ft.Image(width=32, src='social media/discord.png'),
+                                                                                self.discord_textbox
+                                                                            ]
+                                                                        ),
+                                                                    ]
+                                                                )
+                                                            ]
+                                                        )
+                                                    ]
+                                                )
                                             )
                                         ),
 
                                         ft.Tab(
                                             text='Seguridad',
-                                            content=ft.Column(
-                                                spacing=16,
-                                                controls=[
-                                                    ft.Column(
-                                                        spacing=0,
-                                                        controls=[
-                                                            Label('Client ID:'),
-                                                            self.client_id_textbox
-                                                        ]
-                                                    ),
+                                            content=ft.Container(
+                                                padding=32,
+                                                content=ft.Column(
+                                                    spacing=16,
+                                                    controls=[
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Client ID:'),
+                                                                self.client_id_textbox
+                                                            ]
+                                                        ),
 
-                                                    ft.Column(
-                                                        spacing=0,
-                                                        controls=[
-                                                            Label('Client secret:'),
-                                                            self.client_secret_textbox
-                                                        ]
-                                                    ),
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Client secret:'),
+                                                                self.client_secret_textbox
+                                                            ]
+                                                        ),
 
-                                                    ft.Column(
-                                                        spacing=0,
-                                                        controls=[
-                                                            Label('Dirección de redireccionamiento de OAuth:'),
-                                                            self.redirect_uri_textbox
-                                                        ]
-                                                    ),
-                                                ]
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Dirección de redireccionamiento de OAuth:'),
+                                                                self.redirect_uri_textbox
+                                                            ]
+                                                        ),
+                                                    ]
+                                                )
                                             )
                                         )
+                                    ]
+                                )
+                            ),
+
+                            ft.Container(
+                                padding=ft.padding.only(left=32, right=32, top=0, bottom=32),
+                                content=ft.Row(
+                                    alignment=ft.MainAxisAlignment.END,
+                                    controls=[
+                                        Button(text='Restaurar', outlined=True, on_click=lambda e: self.restore_defaults()),
+                                        Button(text='Guardar', outlined=False, on_click=lambda e: self.save_changes())
                                     ]
                                 )
                             )

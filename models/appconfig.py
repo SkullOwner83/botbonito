@@ -25,6 +25,12 @@ class AppConfig:
         'tiktok': ''
     })
 
+    def restore_defaults(self):
+        new_instance = AppConfig()
+        
+        for field in self.__dataclass_fields__:
+            setattr(self, field, getattr(new_instance, field))
+
     # Open the stored configuration file
     def open(self, path: str) -> None:
         stored_config = File.open(path)
