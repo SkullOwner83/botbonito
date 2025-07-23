@@ -151,8 +151,8 @@ class Bot(commands.Bot):
     # Activate or desactivate a command
     async def toggle_command(self, ctx: Context, command: str, value: bool) -> None:
         target_command = self.default_commands.get(command) or self.custom_commands.get(command)
-        enable_word = self.config.get('enable_word', 'enable')
-        disable_word = self.config.get('disable_word', 'disable')
+        enable_word = self.app_config.enable_word
+        disable_word = self.app_config.disable_word
         
         if value == enable_word or value == disable_word:
             if self.level_check(ctx, UserLevel.BROADCASTER):

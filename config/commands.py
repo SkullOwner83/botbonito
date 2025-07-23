@@ -41,6 +41,7 @@ _DEFAULT_COMMANDS = {
         name='speak',
         description='Permite que el bot lea el comentario del usuario en el canal del emisor.',
         alias=['say'],
+        max_length=200,
         user_level=UserLevel.EVERYONE.value
     ), 
 
