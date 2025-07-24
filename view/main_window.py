@@ -1,5 +1,4 @@
 import asyncio
-import sys
 import flet as ft
 from models.appconfig import AppConfig
 from utilities.enums import AccountType

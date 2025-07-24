@@ -7,7 +7,7 @@ class AppConfig:
     name: Optional[str] = 'BotBonito'
     prefix: Optional[str] = '!'
     channels: Optional[List[str]] = field(default_factory=list)
-    redirect_uri: Optional[str] = 'https://localhost:300'
+    redirect_uri: Optional[str] = ''
     client_id: Optional[str] = ''
     client_secret: Optional[str] = ''
     theme: Optional[str] = 'light'
@@ -17,6 +17,8 @@ class AppConfig:
     disable_word: Optional[str] = 'disable'
     start_word: Optional[str] = 'start'
     finish_word: Optional[str] = 'finish'
+    speak_volume: Optional[float] = 1
+    sounds_volume: Optional[float] = 1
     social_media: Optional[dict[str, str]] = field(default_factory=lambda: {
         'facebook': '',
         'twitter': '',
@@ -24,12 +26,6 @@ class AppConfig:
         'instagram': '',
         'tiktok': ''
     })
-
-    def restore_defaults(self):
-        new_instance = AppConfig()
-        
-        for field in self.__dataclass_fields__:
-            setattr(self, field, getattr(new_instance, field))
 
     # Open the stored configuration file
     def open(self, path: str) -> None:
@@ -43,3 +39,10 @@ class AppConfig:
     # Save the configuration in the specified path
     def save(self, path: str) -> None:
         File.save(path, self.__dict__)
+
+    # Set the default values for the configuration
+    def restore_defaults(self):
+        new_instance = AppConfig()
+        
+        for field in self.__dataclass_fields__:
+            setattr(self, field, getattr(new_instance, field))

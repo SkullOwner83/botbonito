@@ -26,7 +26,7 @@ class Bot(commands.Bot):
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self)
         self.dynamics_commands_cog = DynamicsCommands(self)
-        self.sound_manager_cog = SoundManager(self)
+        self.sound_manager_cog = SoundManager(self, app_config)
         self.voice_recognition_cog = VoiceRecognition(self, app_config)
         self.moderation_cog = Moderation(self)
         self.recognition_thread = threading.Thread(target=self.voice_recognition_cog.capture_voice_commands)
