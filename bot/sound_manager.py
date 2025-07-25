@@ -42,6 +42,7 @@ class SoundManager(commands.Cog):
             if rest_time <= 0 or self.bot.level_check(ctx, 'broadcaster'):
                 if parameter in self.sound_list:
                     sound = pygame.mixer.Sound(self.sound_list[parameter])
+                    sound.set_volume(self.app_config.sounds_volume)
                     sound.play()
                     self.snd_user_register[user] = time.time()
             else:
