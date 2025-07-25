@@ -20,6 +20,7 @@ class ProtectionModal(Modal):
             ]
         )
 
+    # Define the controls to save his reference
     def set_controls(self) -> None:
         self.reason_textbox = TextBox(value=self.protection.reason)
         self.duration_textbox = TextBox(value=self.protection.duration)
@@ -27,7 +28,7 @@ class ProtectionModal(Modal):
         self.announce_checkbox = CheckBox(text='Anunciar penalización', checked=self.protection.announce_penalty)
 
         self.penalty_dropdown = DropDown(
-            value=self.protection.penalty or PenaltyType.DELETE_MESSAGE.value,
+            value=self.protection.penalty if self.protection.penalty else PenaltyType.DELETE_MESSAGE.value,
             options=[
                 ft.DropdownOption(key=penalty_type.value, text=str.capitalize(penalty_type.value))
                 for penalty_type in PenaltyType
@@ -35,66 +36,76 @@ class ProtectionModal(Modal):
         )
 
         self.exclude_dropdown = DropDown(
-            value=self.protection.exclude or PenaltyType.DELETE_MESSAGE.value,
+            value=self.protection.exclude if self.protection.exclude else UserLevel.NO_ONE,
             options=[
                 ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value))
                 for user_level in UserLevel if not user_level in [UserLevel.EVERYONE, UserLevel.BROADCASTER]
             ]
         )
 
+    # Build the view UI of protection modal
     def build(self) -> ft.Column:
         return ft.Column(
             spacing=16,
             scroll=ft.ScrollMode.ADAPTIVE,
             controls=[
-                ft.Column(
-                    spacing=0,
-                    controls=[
-                        Label('Penalización:'),
-                        self.penalty_dropdown
-                    ]
-                ),
-
-                ft.Row(
-                    spacing=16,
+                ft.ResponsiveRow(
+                    spacing=20,
+                    run_spacing=20,
+                    columns=2,
                     controls=[
                         ft.Column(
-                            expand=1,
+                            col=2,
+                            spacing=0,
+                            controls=[
+                                Label('Penalización:'),
+                                self.penalty_dropdown
+                            ]
+                        ),
+
+                        ft.Column(
+                            col=1,
+                            spacing=0,
                             controls=[
                                 Label('Duración:'),
                                 self.duration_textbox
                             ]
                         ),
+
                         ft.Column(
-                            expand=1,
+                            col=1,
+                            spacing=0,
                             controls=[
                                 Label('Strikes:'),
                                 self.strikes_textbox
                             ]
-                        )
-                    ]
-                ),
+                        ),
 
-                ft.Column(
-                    spacing=0,
-                    controls=[
-                        Label('Excluir:'),
-                        self.exclude_dropdown
-                    ]
-                ),
+                        ft.Column(
+                            col=2,
+                            spacing=0,
+                            controls=[
+                                Label('Excluir:'),
+                                self.exclude_dropdown
+                            ]
+                        ),
 
-                ft.Column(
-                    spacing=0,
-                    controls=[
-                        Label('Razón de penalización:'),
-                        self.reason_textbox
-                    ]
-                ),
+                        ft.Column(
+                            col=2,
+                            spacing=0,
+                            controls=[
+                                Label('Razón de penalización:'),
+                                self.reason_textbox
+                            ]
+                        ),
 
-                self.announce_checkbox
+                        self.announce_checkbox
+                    ]
+                )
             ]
         )
     
+    # Update the values of protection instance and close the modal
     def save_changes(self) -> None:
         self.protection.reason = self.reason_textbox.value
         self.protection.penalty = self.penalty_dropdown.value
@@ -105,6 +116,7 @@ class ProtectionModal(Modal):
         self.moderation_manager.save_protections()
         self.on_close()
     
+    # Close the protection modal
     def on_close(self) -> None:
         self.page.close(self)
         self.page.update()

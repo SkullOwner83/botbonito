@@ -4,6 +4,7 @@ from myapp import MyApp
 class TabControl(ft.Tabs):
     def __init__(self, **kwargs) -> None:
         super().__init__(
+            scrollable=True,
             indicator_tab_size=True,
             indicator_thickness=4,
             divider_height=1,
