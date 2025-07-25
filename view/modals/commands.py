@@ -46,6 +46,7 @@ class CommandsModal(Modal):
             ]
         )
 
+    # Define the controls to save his reference
     def set_controls(self) -> None:
         self.name_textbox = TextBox(value=self.command.name)
         self.alias_textbox = TextBox(on_submit=self.add_alias)
@@ -55,19 +56,20 @@ class CommandsModal(Modal):
         self.load_alias()
        
         self.user_level_dropdown = DropDown(
-            value=self.command.user_level or UserLevel.EVERYONE,
+            value=self.command.user_level if self.command.user_level else UserLevel.EVERYONE,
             options=[
                 ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value)) 
                 for user_level in UserLevel if user_level != UserLevel.NO_ONE
             ]
         )
 
+        # Define controls only for custom commands
         if self.command_type == 'custom':
             self.response_textbox = TextBox(value=self.command.response)
-            self.delete_button.append(ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED, on_click=lambda e: self.delete_command()))
+            self.delete_button.append(ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.RED))
 
             self.response_type_dropdown = DropDown(
-                value=self.command.response_type or ResponseType.SAY,
+                value=self.command.response_type if self.command.response_type else ResponseType.SAY,
                 options=[
                     ft.DropdownOption(key=response_type.value, text=str.capitalize(response_type.value))
                     for response_type in ResponseType
@@ -92,6 +94,7 @@ class CommandsModal(Modal):
                 )
             ])
 
+    # Build the view UI of commands modal
     def build(self) -> ft.Column:
         return ft.Column(
             spacing=16,
@@ -167,9 +170,6 @@ class CommandsModal(Modal):
         self.commands_manager.save_commands()
         self.on_save() if self.on_save else None
         self.on_close()
-
-    def delete_command(self) -> None:
-        pass
 
     def on_close(self) -> None:
         self.page.close(self)
