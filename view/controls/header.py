@@ -1,4 +1,6 @@
+import webbrowser
 import flet as ft
+from utilities.enums import AccountType
 from services import *
 from utilities.file import File
 from myapp import MyApp
@@ -34,14 +36,14 @@ class Header(ft.Container):
         if self.page: self.update()
 
     def login(self) -> None:
-        if self.session_service.login(self.botconfig, 'USER'):
+        if self.session_service.login(self.botconfig, AccountType.USER):
             self.user = self.session_service.user_account
             self.update_controls()
             self.update()
             File.save(MyApp.credentials_path, self.session_service.serialize())
 
     def logout(self) -> None:
-        self.session_service.logout('USER')
+        self.session_service.logout(AccountType.USER)
         self.update_controls()
         self.update()
         File.save(MyApp.credentials_path, self.session_service.serialize())
@@ -51,6 +53,21 @@ class Header(ft.Container):
         self.username_text = ft.Text(value='Usuario', font_family=MyApp.font_primary, size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.PRIMARY, selectable=True)
         self.stream_status_text = ft.Text(value='Offline', font_family=MyApp.font_secondary, size=16, weight=ft.FontWeight.BOLD)
         self.status_dot = ft.Container(width=12, shape=ft.BoxShape.CIRCLE, bgcolor=ft.Colors.RED, content=ft.Text(''))
+
+        self.user_status = ft.Column(
+            spacing=-4,
+            alignment=ft.MainAxisAlignment.CENTER,
+            controls=[
+                self.username_text,
+                ft.Row(
+                    spacing=4,
+                    controls=[
+                        self.status_dot,
+                        self.stream_status_text
+                    ]
+                )
+            ]
+        )
 
         self.menu_button = ft.PopupMenuButton(
             width=40,
@@ -77,11 +94,14 @@ class Header(ft.Container):
         self.profile_image.src = self.user.profile_image if self.user else None
         self.profile_image.visible = self.session_service.is_logged_in
         self.username_text.value = self.user.display_name if self.user else None
+        self.user_status.visible = True if self.session_service.is_logged_in else False
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text="Cerrar sesión", on_click=lambda e: self.logout())
+            ft.PopupMenuItem(text='Mi canal', on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
+            ft.PopupMenuItem(text='Configuración', on_click=lambda e: self.page.go('/configuration')),
+            ft.PopupMenuItem(text='Cerrar sesión', on_click=lambda e: self.logout())
         ] if self.session_service.is_logged_in else [
-            ft.PopupMenuItem(text="Iniciar sesión", on_click=lambda e: self.login())
+            ft.PopupMenuItem(text='Iniciar sesión', on_click=lambda e: self.login())
         ]
 
     def build(self) -> ft.Row:
@@ -103,21 +123,7 @@ class Header(ft.Container):
                     content=ft.Row(
                         alignment= ft.MainAxisAlignment.END,
                         controls=[
-                            ft.Column(
-                                spacing=-4,
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                controls=[
-                                    self.username_text,
-                                    ft.Row(
-                                        spacing=4,
-                                        controls=[
-                                            self.status_dot,
-                                            self.stream_status_text
-                                        ]
-                                    )
-                                ]
-                            ),
-
+                            self.user_status,
                             self.menu_button,
                         ]
                     )
