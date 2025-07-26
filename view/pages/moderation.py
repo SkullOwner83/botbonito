@@ -29,20 +29,23 @@ class ModerationPage(ft.View):
         )
 
         for protection in self.protections.values():
+            enable_label = Label(text='Habilitado' if protection.enable else 'Deshabilitado', color=ft.Colors.GREY_700)
+
             self.row.controls.append(
                 Card(
                     title=protection.name, 
                     description=protection.description,
-                    padding=16,
+                    col={ "sm": 6, "md": 3, "lg": 2 },
                     icon=_PROTECTION_ICONS.get(protection.name),
+                    padding=16,
                     footer=ft.Container(
                         padding=ft.padding.only(top=8),
                         alignment=ft.alignment.center_left,
                         content=ft.Row(
                             spacing=8,
                             controls=[
-                                ft.Switch(value=protection.enable, width=32, on_change=lambda e, p=protection: self.toggle_protection(e, p),),
-                                Label(text='Habilitado' if protection.enable else 'Deshabilitado', color=ft.Colors.GREY_700),
+                                ft.Switch(value=protection.enable, width=32, on_change=lambda e, p=protection, l=enable_label: self.toggle_protection(e, p, l),),
+                                enable_label,
                                 ft.Container(
                                     expand=True,
                                     alignment=ft.alignment.center_right,
@@ -50,13 +53,14 @@ class ModerationPage(ft.View):
                                 )
                             ]
                         )
-                    ),
-                    col={ "sm": 6, "md": 3, "lg": 2 }
+                    )
                 )
             )
 
-    def toggle_protection(self, e: ft.ControlEvent, protection: Protection) -> None:
+    def toggle_protection(self, e: ft.ControlEvent, protection: Protection, label: Label) -> None:
         protection.enable = e.control.value
+        label.text = 'Habilitado' if protection.enable else 'Deshabilitado'
+        label.update()
 
     def open_settings(self, protection: Protection):
         self.page.open(ProtectionModal(protection))
