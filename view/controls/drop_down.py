@@ -9,6 +9,7 @@ class DropDown(ft.Dropdown):
             options=options,
             color=ft.Colors.BLACK,
             bgcolor=ft.Colors.WHITE,
+            filled=True,
             fill_color=ft.Colors.WHITE,
             border_width=1,
             border_radius=8,

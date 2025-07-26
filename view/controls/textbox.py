@@ -14,15 +14,17 @@ class TextBox(ft.TextField):
         ) -> None:
         super().__init__(
             value=value,
+            expand=True,
             hint_text=place_holder,
             height=height,
             bgcolor=ft.Colors.WHITE,
             hover_color=ft.Colors.TRANSPARENT,
             text_vertical_align=ft.VerticalAlignment.CENTER,
-            content_padding=ft.padding.symmetric(horizontal=16),
+            content_padding=ft.padding.symmetric(horizontal=16, vertical=0),
             on_submit=on_submit,
             border_width=border,
             border_radius=8,
+
             border_color={
                 ft.ControlState.DEFAULT: ft.Colors.GREY_300,
                 ft.ControlState.HOVERED: ft.Colors.PRIMARY
