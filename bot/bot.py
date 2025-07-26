@@ -22,10 +22,10 @@ from utilities import *
 from myapp import MyApp
 
 class Bot(commands.Bot):
-    def __init__(self, app_config: AppConfig, credentials: dict) -> None:
+    def __init__(self, app_config: AppConfig, credentials: dict[str, str]) -> None:
         # Create an  instance of the bot Cogs to handle commands
-        self.command_manager_cog = CommandManager(self)
-        self.dynamics_commands_cog = DynamicsCommands(self)
+        self.command_manager_cog = CommandManager(self, app_config, credentials)
+        self.dynamics_commands_cog = DynamicsCommands(self, app_config)
         self.sound_manager_cog = SoundManager(self, app_config)
         self.voice_recognition_cog = VoiceRecognition(self, app_config)
         self.moderation_cog = Moderation(self)
@@ -110,10 +110,9 @@ class Bot(commands.Bot):
                 await self.command_manager_cog.custom_command(context)
                 return
 
-        # Check if the message is a command
         await self.handle_commands(message)
     
-    # send random messages Frequently in the first bot Channel
+    # send random messages frequently in the first bot Channel
     async def send_frequent_messages(self) -> None:
         while True:
             await asyncio.sleep(self.frequency_message_time)
