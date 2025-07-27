@@ -26,10 +26,15 @@ class NavigationBar(ft.Container):
                     content=ft.Image(src="side menu/botbonito.svg", width=150)
                 ),
 
-                MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),
-                MenuButton('Comandos', self.commands_icon, lambda e: self.page.go('/commands')),
-                MenuButton('Moderación', self.moderation_icon, lambda e: self.page.go('/moderation')),
-                MenuButton('Configuración', self.configuration_icon, lambda e: self.page.go('/configuration'))
+                ft.ListView(
+                    expand=True,
+                    controls=[
+                        MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),
+                        MenuButton('Comandos', self.commands_icon, lambda e: self.page.go('/commands')),
+                        MenuButton('Moderación', self.moderation_icon, lambda e: self.page.go('/moderation')),
+                        MenuButton('Configuración', self.configuration_icon, lambda e: self.page.go('/configuration'))
+                    ]
+                )
             ]
         )
 
