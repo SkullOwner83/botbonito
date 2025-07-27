@@ -30,13 +30,13 @@ class CommandManager(commands.Cog):
             await ctx.send(f"Hola @{ctx.author.name}! El horario es: Martes y Jueves a partir de las 8:00pm (Zona Horaria GMT-6). Domingo si hay oportunidad, a partir de la misma hora")
 
     # Check if the user or a specified user follows the channel and since when
-    @MyApp.register_command("following")
+    @MyApp.register_command("followage")
     async def following(self, ctx: Context, target_user: str = None) -> None:
         user = target_user if target_user else ctx.author.name
         channel_name = ctx.channel.name
         api = Api(self.credentials['access_token'], self.app_config.client_id)
 
-        if await self.bot.check_command_access(ctx, 'following'):
+        if await self.bot.check_command_access(ctx, 'followage'):
             broadcaster_data = api.get_user(channel_name)
             user_data = api.get_user(user)
 
