@@ -6,7 +6,6 @@ from services.service_locator import ServiceLocator
 from view.main_window import MainWindow
 from view.routes import RouteHandler
 from services import *
-from view.modals import *
 from utilities.file import File
 from myapp import MyApp
 
@@ -15,7 +14,7 @@ def startup(page: ft.Page) -> None:
         os.makedirs(MyApp.config_path)
 
     app_config = AppConfig()
-    app_config.open(MyApp.botconfig_path)
+    app_config.open(MyApp.appconfig_path)
     credentials = File.open(MyApp.credentials_path)
     
     service_handler()

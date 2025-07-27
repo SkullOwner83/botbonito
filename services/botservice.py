@@ -1,5 +1,5 @@
 import asyncio
-import threading
+from threading import Thread
 from typing import Dict
 from bot.bot import Bot
 from models.appconfig import AppConfig
@@ -7,19 +7,18 @@ from models.appconfig import AppConfig
 class BotService():
     def __init__(self):
         self.bot_instance: Bot = None
-        self.bot_credentials: dict = {}
+        self.credentials: dict[str, str] = None
         self.app_config: AppConfig = None
         self._thread = None
         self._loop = None
 
     # Create a new thread to run the bot in the background
-    def start(self, bot_credentials: Dict, app_config: AppConfig) -> None:
+    def start(self, credentials: Dict[str, str], app_config: AppConfig) -> None:
         if self.bot_instance is None and not self._thread:
             self.app_config = app_config
-            self.bot_credentials = bot_credentials
+            self.credentials = credentials
 
-            self._thread = threading.Thread(target=self._create_bot)
-            self._thread.daemon = True
+            self._thread = Thread(target=self._create_bot, daemon=True)
             self._thread.start()
 
     # Stop the bot excecution and their thread and event loop
@@ -46,6 +45,6 @@ class BotService():
     def _create_bot(self) -> None:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self.bot_instance = Bot(self.app_config, self.bot_credentials)
+        self.bot_instance = Bot(self.app_config, self.credentials)
         self._loop.create_task(self.bot_instance.start())
         self._loop.run_forever()

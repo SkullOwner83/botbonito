@@ -1,3 +1,4 @@
+
 class Constants():
     BOT_SCOPES = [
     'chat:read',
@@ -16,3 +17,6 @@ class Constants():
         'moderator:read:followers',
         'channel:read:subscriptions'
     ]
+
+    def __new__(cls):
+        raise TypeError("La clase Constants no puede ser instanciada.")

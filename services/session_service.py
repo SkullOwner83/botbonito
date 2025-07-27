@@ -1,3 +1,4 @@
+from typing import Callable, List
 import webbrowser
 from utilities.enums import AccountType
 from models.appconfig import AppConfig
@@ -9,8 +10,8 @@ class SessionService:
         self.user_account = None
         self.bot_account = None
         self.is_logged_in = False
-        self.on_login_callback = []
-        self.on_logout_callback = []
+        self.on_login_callback: List[Callable] = []
+        self.on_logout_callback: List[Callable] = []
 
     # Validate if the token is valid or refresh it if it's expired
     def validation(self, credentials: dict, app_config: AppConfig, account_type: AccountType) -> bool:

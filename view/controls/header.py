@@ -48,7 +48,7 @@ class Header(ft.Container):
         self.update()
         File.save(MyApp.credentials_path, self.session_service.serialize())
 
-    def set_controls(self):
+    def set_controls(self) -> None:
         self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
         self.username_text = ft.Text(value='Usuario', font_family=MyApp.font_primary, size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.PRIMARY, selectable=True)
         self.stream_status_text = ft.Text(value='Offline', font_family=MyApp.font_secondary, size=16, weight=ft.FontWeight.BOLD)
@@ -90,7 +90,7 @@ class Header(ft.Container):
             ),
         )
     
-    def update_controls(self):
+    def update_controls(self) -> None:
         self.profile_image.src = self.user.profile_image if self.user else None
         self.profile_image.visible = self.session_service.is_logged_in
         self.username_text.value = self.user.display_name if self.user else None
