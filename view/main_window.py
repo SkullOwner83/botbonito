@@ -39,18 +39,26 @@ class MainWindow:
         self.load()
 
     def load(self) -> None:
-        bot_credentials = self.credentials.get("bot")
-        user_credentials = self.credentials.get("user")
-        self.session_service.validation(user_credentials, self.app_config, AccountType.USER)
-        self.page.go('/home')
+        bot_credentials = self.credentials.get('bot')
+        user_credentials = self.credentials.get('user')
+        self.bot_services.bot_credentials = bot_credentials
+        self.bot_services.app_config = self.app_config
 
-        if self.session_service.validation(bot_credentials, self.app_config, AccountType.BOT):
-            self.bot_services.start(bot_credentials, self.app_config,)
-            File.save(MyApp.credentials_path, self.session_service.serialize())
-            
-            if self.session_service.is_logged_in:
-                asyncio.run(self.websocket_service.connect(self.session_service.user_account.credentials['access_token'], self.app_config.client_id, self.session_service.user_account.id))
-        else:
-            self.page.open(ValidationModal(bot_credentials, self.app_config))
+        if self.session_service.validation(user_credentials, self.app_config, AccountType.USER):
+            self.page.go('/home')
 
-    
+            if self.session_service.validation(bot_credentials, self.app_config, AccountType.BOT):
+                self.bot_services.start()
+                File.save(MyApp.credentials_path, self.session_service.serialize())
+                
+                if self.session_service.is_logged_in:
+                    asyncio.run(
+                        self.websocket_service.connect(
+                            self.session_service.user_account.credentials['access_token'], 
+                            self.app_config.client_id, 
+                            self.session_service.user_account.id
+                        )
+                    )
+            else:
+                self.page.open(ValidationModal(bot_credentials, self.app_config))
+
