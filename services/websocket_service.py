@@ -46,13 +46,15 @@ class WebsocketService:
             try:
                 message = await websocket.recv()
                 event_data = json.loads(message)
+                payload = event_data.get('payload')
                 meta_data = event_data.get('metadata')
+                subscription_type = meta_data.get('subscription_type')
 
                 if meta_data.get('message_type') == 'notification':
-                    if meta_data.get('subscription_type') == 'stream.online': self.on_stream_online(event_data['payload'])
-                    if meta_data.get('subscription_type') == 'stream.offline': self.on_stream_offline(event_data['payload'])
-                    if meta_data.get('subscription_type') == 'channel.follow': self.on_channel_follower(event_data['payload'])
-                    if meta_data.get('subscription_type') == 'channel.subscribe': self.on_channel_subscription(event_data['payload'])
+                    if subscription_type == 'stream.online': self.on_stream_online(payload)
+                    if subscription_type == 'stream.offline': self.on_stream_offline(payload)
+                    if subscription_type == 'channel.follow': self.on_channel_follower(payload)
+                    if subscription_type == 'channel.subscribe': self.on_channel_subscription(payload)
 
             except websockets.ConnectionClosed as e:
                 print(f"Twitch websocket connection disconected: {e}")

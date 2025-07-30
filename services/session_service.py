@@ -7,8 +7,8 @@ from utilities import *
 
 class SessionService:
     def __init__(self):
-        self.user_account = None
-        self.bot_account = None
+        self.user_account: User = None
+        self.bot_account: User = None
         self.is_logged_in = False
         self.on_login_callback: List[Callable] = []
         self.on_logout_callback: List[Callable] = []
@@ -66,7 +66,7 @@ class SessionService:
     # Fetch the account data from the twitch API to load the account
     def load_account(self, credentials: dict, app_config: AppConfig, account_type: str) -> bool:
         api = Api(credentials['access_token'], app_config.client_id)
-        account_data= api.get_user()
+        account_data = api.get_user()
 
         if account_data:
             account = User(
@@ -76,7 +76,9 @@ class SessionService:
                 display_name=account_data.get('display_name'),
                 broadcaster_type=account_data.get('broadcaster_type'),
                 profile_image=account_data.get('profile_image_url'),
-                credentials=credentials
+                credentials=credentials,
+                description=account_data.get('description'),
+                account_type=account_type.value
             )
 
             if account_type == AccountType.USER: 
