@@ -22,9 +22,9 @@ from utilities import *
 from myapp import MyApp
 
 class Bot(commands.Bot):
-    def __init__(self, app_config: AppConfig, credentials: dict[str, str]) -> None:
+    def __init__(self, app_config: AppConfig, bot_credentials: dict[str, str]) -> None:
         # Create an  instance of the bot Cogs to handle commands
-        self.command_manager_cog = CommandManager(self, app_config, credentials)
+        self.command_manager_cog = CommandManager(self, app_config, bot_credentials)
         self.dynamics_commands_cog = DynamicsCommands(self, app_config)
         self.sound_manager_cog = SoundManager(self, app_config)
         self.voice_recognition_cog = VoiceRecognition(self, app_config)
@@ -33,7 +33,7 @@ class Bot(commands.Bot):
 
         # load variables from the config files
         self.app_config = app_config
-        self.token = credentials['access_token']
+        self.token = bot_credentials['access_token']
         self.client_id = app_config.client_id
         self.client_secret = app_config.client_secret
         self.name = app_config.name

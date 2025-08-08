@@ -8,10 +8,10 @@ from utilities.enums import ResponseType
 from myapp import MyApp
 
 class CommandManager(commands.Cog):
-    def __init__(self, bot: commands.Bot, app_config: AppConfig, credentials: dict[str, str]) -> None:
+    def __init__(self, bot: commands.Bot, app_config: AppConfig, bot_credentials: dict[str, str]) -> None:
         self.bot = bot
         self.app_config = app_config
-        self.credentials = credentials
+        self.bot_credentials = bot_credentials
         commands_manager: CommandsManager = ServiceLocator.get('commands')
         self.default_commands = commands_manager.default_commands
         self.custom_commands = commands_manager.custom_commands
@@ -34,7 +34,7 @@ class CommandManager(commands.Cog):
     async def following(self, ctx: Context, target_user: str = None) -> None:
         user = target_user if target_user else ctx.author.name
         channel_name = ctx.channel.name
-        api = Api(self.credentials['access_token'], self.app_config.client_id)
+        api = Api(self.bot_credentials['access_token'], self.app_config.client_id)
 
         if await self.bot.check_command_access(ctx, 'followage'):
             broadcaster_data = api.get_user(channel_name)
