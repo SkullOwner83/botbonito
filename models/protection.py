@@ -31,7 +31,7 @@ class Protection:
         self.duration = duration
         self.strikes = strikes
     
-    async def apply_penalty(self, ctx: Context, cog: Cog) -> None:
+    async def apply_penalty(self, ctx: Context, cog: Cog, moderator: str) -> None:
         user = ctx.author.name
         message = ctx.message
         penalty = self.penalty 
@@ -40,7 +40,7 @@ class Protection:
             api = Api(cog.bot.token, cog.bot.client_id)
             user_id = (api.get_user(user) or {}).get('id')
             broadcaster_id = (api.get_user(message.channel.name) or {}).get('id')
-            moderator_id = (api.get_user(cog.bot.name) or {}).get('id')
+            moderator_id = (api.get_user(moderator) or {}).get('id')
             message_id = message.tags.get('id')
 
             # Change the penalty if the user exceed the allowed strikes
