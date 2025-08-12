@@ -2,6 +2,7 @@ import os
 import re
 from twitchio.ext import commands
 from twitchio.ext.commands import Context, Cog
+from services.session_service import SessionService
 from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
 from utilities.enums import UserLevel
@@ -14,6 +15,7 @@ class Moderation(Cog):
         MyApp.bind_commands(self)
 
         moderation_manager: ModerationManager = ServiceLocator.get('moderation')
+        self.session_service: SessionService = ServiceLocator.get('session')
         self.protections: dict[str, dict] = moderation_manager.protections
         self.banned_words: dict[str, dict] = moderation_manager.banned_words
 
@@ -65,7 +67,7 @@ class Moderation(Cog):
             self.user_messages[user] = message.content
 
             if self.user_strikes['repeated_messages'].get(user, 0) >= self.repeated_messages.strikes:
-                await self.repeated_messages.apply_penalty(ctx, self)
+                await self.repeated_messages.apply_penalty(ctx, self, self.session_service.bot_account.username)
 
     # Check if the message contains a link
     async def _links_filter(self, ctx: Context) -> None:
@@ -76,7 +78,7 @@ class Moderation(Cog):
             for word in message.split():
                 if re.search(MyApp.link_pattern, word):
                     self.user_strikes['links'][user] = self.user_strikes['links'].get(user, 0) + 1
-                    await self.links_protection.apply_penalty(ctx, self)
+                    await self.links_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
                     break
 
     # Check if the message lenght is greater than the maximum allowed
@@ -87,7 +89,7 @@ class Moderation(Cog):
         if self.long_messages.enable:
             if len(message) > self.long_messages.threshold:
                 self.user_strikes['long_message'][user] = self.user_strikes['long_message'].get(user, 0) + 1
-                await self.long_messages.apply_penalty(ctx, self)
+                await self.long_messages.apply_penalty(ctx, self, self.session_service.bot_account.username)
 
     # Check if the message contains excess of uppercase
     async def _caps_filter(self, ctx: Context) -> None:
@@ -104,7 +106,7 @@ class Moderation(Cog):
 
                 if caps_ratio >= self.caps_protection.threshold:
                     self.user_strikes['excess_caps'][user] = self.user_strikes['excess_caps'].get(user, 0) + 1
-                    await self.caps_protection.apply_penalty(ctx, self)
+                    await self.caps_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
 
     # Check if the message contains excess of symbols or special characters
     async def _symbols_filter(self, ctx: Context) -> None:
@@ -120,7 +122,7 @@ class Moderation(Cog):
 
                 if caps_ratio >= self.symbols_protection.threshold:
                     self.user_strikes['excess_symbols'][user] = self.user_strikes['excess_symbols'].get(user, 0) + 1
-                    await self.symbols_protection.apply_penalty(ctx, self)
+                    await self.symbols_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
 
     # Check if the message contains excess of twitch emotes
     async def _emotes_filter(self, ctx: Context) -> None:
@@ -141,7 +143,7 @@ class Moderation(Cog):
 
                 if emote_count > self.emotes_protection.threshold:
                     self.user_strikes['excess_emotes'][user] = self.user_strikes['excess_emotes'].get(user, 0) + 1
-                    await self.symbols_protection.apply_penalty(ctx, self)
+                    await self.symbols_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
 
     # Check if the group is enable and is not a excluded user for each group
     async def _words_filter(self, ctx: Context) -> None:
@@ -152,4 +154,4 @@ class Moderation(Cog):
             if group.enable:
                 if any(word in message for word in group.words):
                     self.user_strikes['banned_words'][user] = self.user_strikes['banned_words'].get(user, 0) + 1
-                    await group.apply_penalty(ctx, self)
+                    await group.apply_penalty(ctx, self, self.session_service.bot_account.username)
