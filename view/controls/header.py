@@ -1,21 +1,23 @@
 import webbrowser
 import flet as ft
+from models.appconfig import AppConfig
 from utilities.enums import AccountType
 from services import *
 from utilities.file import File
 from myapp import MyApp
 
 class Header(ft.Container):
-    def __init__(self, tile: str, botconfig: dict) -> None:
+    def __init__(self, tile: str, app_config: AppConfig) -> None:
         super().__init__()
         self.title = tile
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
-        self.botconfig = botconfig
+        self.app_config = app_config
 
         self.session_service: SessionService = ServiceLocator.get('session')
         self.websocket_service: WebsocketService = ServiceLocator.get('websocket')
+        self.bot_service: BotService = ServiceLocator.get('bot')
         self.user = self.session_service.user_account
 
         self.websocket_service.stream_online_callback.append(self.on_stream_online)
@@ -25,28 +27,39 @@ class Header(ft.Container):
         self.content = self.build()
         self.update_controls()
 
-    def on_stream_online(self, payload):
+    def login(self) -> None:
+        if self.session_service.login(self.app_config, AccountType.USER):
+            self.user = self.session_service.user_account
+            self.app_config.channels.append(self.user.username)
+            self.app_config.save(MyApp.appconfig_path)
+            File.save(MyApp.credentials_path, self.session_service.serialize())
+            self.update_controls()
+            self.update()
+
+            if not self.bot_service.is_running:
+                self.bot_service.start()
+
+    def logout(self) -> None:
+        self.session_service.logout(AccountType.USER)
+        self.user = None
+        self.app_config.channels.clear()
+        self.app_config.save(MyApp.appconfig_path)
+        File.save(MyApp.credentials_path, self.session_service.serialize())
+        self.update_controls()
+        self.update()
+
+        if self.bot_service.is_running:
+            self.bot_service.stop()
+
+    def on_stream_online(self, payload) -> None:
         self.stream_status_text.value = 'Online'
         self.status_dot.bgcolor = ft.Colors.GREEN
         if self.page: self.update()
 
-    def on_stream_offline(self, payload):
+    def on_stream_offline(self, payload) -> None:
         self.stream_status_text.value = 'Offline'
         self.status_dot.bgcolor = ft.Colors.RED
         if self.page: self.update()
-
-    def login(self) -> None:
-        if self.session_service.login(self.botconfig, AccountType.USER):
-            self.user = self.session_service.user_account
-            self.update_controls()
-            self.update()
-            File.save(MyApp.credentials_path, self.session_service.serialize())
-
-    def logout(self) -> None:
-        self.session_service.logout(AccountType.USER)
-        self.update_controls()
-        self.update()
-        File.save(MyApp.credentials_path, self.session_service.serialize())
 
     def set_controls(self) -> None:
         self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
@@ -97,11 +110,11 @@ class Header(ft.Container):
         self.user_status.visible = True if self.session_service.is_logged_in else False
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text='Mi canal', on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
-            ft.PopupMenuItem(text='Configuración', on_click=lambda e: self.page.go('/configuration')),
-            ft.PopupMenuItem(text='Cerrar sesión', on_click=lambda e: self.logout())
+            ft.PopupMenuItem(text='Mi canal', height=32, on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
+            ft.PopupMenuItem(text='Configuración', height=32, on_click=lambda e: self.page.go('/configuration')),
+            ft.PopupMenuItem(text='Cerrar sesión', height=32, on_click=lambda e: self.logout())
         ] if self.session_service.is_logged_in else [
-            ft.PopupMenuItem(text='Iniciar sesión', on_click=lambda e: self.login())
+            ft.PopupMenuItem(text='Iniciar sesión', height=32, on_click=lambda e: self.login())
         ]
 
     def build(self) -> ft.Row:
