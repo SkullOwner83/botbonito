@@ -24,6 +24,14 @@ class ConfigurationPage(ft.View):
         self.app_config.theme = self.theme_dropdown.value
         self.app_config.client_id = self.client_id_textbox.value
         self.app_config.client_secret = self.client_secret_textbox.value
+        self.app_config.redirect_uri = self.redirect_uri_textbox.value
+
+        self.app_config.prefix = self.prefix_textbox.value
+        self.app_config.help_word = self.help_word_textbox.value
+        self.app_config.enable_word = self.enable_word_textbox.value
+        self.app_config.disable_word = self.disable_word_textbox.value
+        self.app_config.start_word = self.start_word_textbox.value
+        self.app_config.finish_word = self.finish_word_textbox.value
 
         self.app_config.speak_volume = self.speak_slider.value
         self.app_config.sounds_volume = self.sounds_slider.value
@@ -37,32 +45,18 @@ class ConfigurationPage(ft.View):
             'discord': self.discord_textbox.value
         }
 
-        self.app_config.save(MyApp.botconfig_path)
+        self.app_config.save(MyApp.appconfig_path)
 
     def set_controls(self) -> None:
         social_media = self.app_config.social_media
-        self.client_id_textbox = TextBox(value=self.app_config.client_id, password=True, can_reveal_password=True)
-        self.client_secret_textbox = TextBox(value=self.app_config.client_secret, password=True, can_reveal_password=True)
-        self.redirect_uri_textbox = TextBox(value=self.app_config.redirect_uri, place_holder='https://localhost:300')
-        self.facebook_textbox = TextBox(value=social_media.get('facebook'), height=32, border=0, expand=True, place_holder='https://facebook.com/username...')
-        self.twitter_textbox = TextBox(value=social_media.get('twitter'), height=32, border=0, expand=True, place_holder='https://twitter.com/username...')
-        self.instagram_textbox = TextBox(value=social_media.get('instagram'), height=32, border=0, expand=True, place_holder='https://instagram.com/username...')
-        self.youtube_textbox = TextBox(value=social_media.get('youtube'), height=32, border=0, expand=True, place_holder='https://youtube.com/username...')
-        self.discord_textbox = TextBox(value=social_media.get('discord'), height=32, border=0, expand=True, place_holder='https://discord.com/invite/...')
-        self.tiktok_textbox = TextBox(value=social_media.get('tiktok'), height=32, border=0, expand=True, place_holder='https://tiktok.com/username...')
 
-        self.speak_slider = ft.Slider(
-            value=self.app_config.speak_volume,
-            padding=ft.padding.symmetric(horizontal=0, vertical=4),
-            label='{value}%'
-            #on_change=lambda e: setattr(self.app_config, 'speak_volume', e.control.value)
-        )
-
-        self.sounds_slider = ft.Slider(
-            value=self.app_config.sounds_volume,
-            padding=ft.padding.symmetric(horizontal=0, vertical=4),
-            label='{value}%'
-        )
+        # General controls
+        self.facebook_textbox = TextBox(value=social_media.get('facebook'), height=32, border=0, place_holder='https://facebook.com/username...')
+        self.twitter_textbox = TextBox(value=social_media.get('twitter'), height=32, border=0, place_holder='https://twitter.com/username...')
+        self.instagram_textbox = TextBox(value=social_media.get('instagram'), height=32, border=0, place_holder='https://instagram.com/username...')
+        self.youtube_textbox = TextBox(value=social_media.get('youtube'), height=32, border=0, place_holder='https://youtube.com/username...')
+        self.discord_textbox = TextBox(value=social_media.get('discord'), height=32, border=0, place_holder='https://discord.com/invite/...')
+        self.tiktok_textbox = TextBox(value=social_media.get('tiktok'), height=32, border=0, place_holder='https://tiktok.com/username...')
 
         self.theme_dropdown = DropDown(
             value=self.app_config.theme,
@@ -80,6 +74,40 @@ class ConfigurationPage(ft.View):
             ]
         )
 
+        # Chatbot controls
+        self.prefix_textbox = TextBox(value=self.app_config.prefix)
+        self.help_word_textbox = TextBox(value=self.app_config.help_word)
+        self.enable_word_textbox = TextBox(value=self.app_config.enable_word)
+        self.disable_word_textbox = TextBox(value=self.app_config.disable_word)
+        self.start_word_textbox = TextBox(value=self.app_config.start_word)
+        self.finish_word_textbox = TextBox(value=self.app_config.finish_word)
+
+        self.bot_language_textbox = DropDown(
+            value=self.app_config.bot_language,
+            options=[
+                ft.DropdownOption(key='español', text='Español'),
+                ft.DropdownOption(key='english', text='English')
+            ]
+        )
+
+        # Security controls
+        self.client_id_textbox = TextBox(value=self.app_config.client_id, password=True, can_reveal_password=True)
+        self.client_secret_textbox = TextBox(value=self.app_config.client_secret, password=True, can_reveal_password=True)
+        self.redirect_uri_textbox = TextBox(value=self.app_config.redirect_uri, place_holder='https://localhost:300')
+
+        # Sound controls
+        self.speak_slider = ft.Slider(
+            value=self.app_config.speak_volume,
+            padding=ft.padding.symmetric(horizontal=0, vertical=4),
+            #on_change=lambda e: setattr(self.app_config, 'speak_volume', e.control.value)
+        )
+
+        self.sounds_slider = ft.Slider(
+            value=self.app_config.sounds_volume,
+            padding=ft.padding.symmetric(horizontal=0, vertical=4),
+        )
+
+    # Build the view UI of configuration page
     def build(self) -> ft.Container:
         return ft.Container(
             expand=True,
@@ -101,6 +129,7 @@ class ConfigurationPage(ft.View):
                                 padding=0,
                                 content=TabControl(
                                     tabs=[
+                                        # General settings tab
                                         ft.Tab(
                                             text="General",
                                             content=ft.Container(
@@ -126,60 +155,59 @@ class ConfigurationPage(ft.View):
                                                         ),
 
                                                         Label('Redes sociales:'),
-                                                        ft.Row(
+                                                        
+                                                        ft.ResponsiveRow(
                                                             spacing=20,
+                                                            run_spacing=8,
+                                                            columns=2,
                                                             controls=[
-                                                                ft.Column(
-                                                                    expand=1,
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
                                                                     controls=[
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/facebook.png'),
-                                                                                self.facebook_textbox
-                                                                            ]
-                                                                        ),
-
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/instagram.png'),
-                                                                                self.instagram_textbox
-                                                                            ]
-                                                                        ),
-
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/youtube.png'),
-                                                                                self.youtube_textbox
-                                                                            ]
-                                                                        )
+                                                                        ft.Image(width=32, src='social media/facebook.png'),
+                                                                        self.facebook_textbox
                                                                     ]
                                                                 ),
 
-                                                                ft.Column(
-                                                                    expand=1,
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
                                                                     controls=[
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/twitter.png'),
-                                                                                self.twitter_textbox
-                                                                            ]
-                                                                        ),
-
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/tiktok.png'),
-                                                                                self.tiktok_textbox
-                                                                            ]
-                                                                        ),
-
-                                                                        ft.Row(
-                                                                            controls=[
-                                                                                ft.Image(width=32, src='social media/discord.png'),
-                                                                                self.discord_textbox
-                                                                            ]
-                                                                        ),
+                                                                        ft.Image(width=32, src='social media/twitter.png'),
+                                                                        self.twitter_textbox
                                                                     ]
-                                                                )
+                                                                ),
+
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
+                                                                    controls=[
+                                                                        ft.Image(width=32, src='social media/instagram.png'),
+                                                                        self.instagram_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
+                                                                    controls=[
+                                                                        ft.Image(width=32, src='social media/tiktok.png'),
+                                                                        self.tiktok_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
+                                                                    controls=[
+                                                                        ft.Image(width=32, src='social media/youtube.png'),
+                                                                        self.youtube_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Row(
+                                                                    col={'sm': 2, 'md': 1 },
+                                                                    controls=[
+                                                                        ft.Image(width=32, src='social media/discord.png'),
+                                                                        self.discord_textbox
+                                                                    ]
+                                                                ),
                                                             ]
                                                         )
                                                     ]
@@ -187,6 +215,102 @@ class ConfigurationPage(ft.View):
                                             )
                                         ),
 
+                                        # Chatbot settings tab
+                                        ft.Tab(
+                                            text='Chatbot',
+                                            content=ft.Container(
+                                                padding=32,
+                                                content=ft.Column(
+                                                    spacing=20,
+                                                    scroll=ft.ScrollMode.ADAPTIVE,
+                                                    controls=[
+                                                        ft.RadioGroup(
+                                                            content=ft.Column(
+                                                                spacing=0,
+                                                                controls=[
+                                                                    ft.Radio(value='1', label='Al iniciar la aplicación'),
+                                                                    ft.Radio(value='2', label='Al iniciar stream'),
+                                                                    ft.Radio(value='3', label='Manualmente')
+                                                                ]
+                                                            )
+                                                        ),
+
+                                                        ft.Column(
+                                                            spacing=0,
+                                                            controls=[
+                                                                Label('Lenguaje del Bot:'),
+                                                                self.bot_language_textbox
+                                                            ]
+                                                        ),
+
+                                                        ft.ResponsiveRow(
+                                                            spacing=20,
+                                                            run_spacing=20,
+                                                            columns=2,
+                                                            controls=[
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Prefijo:'),
+                                                                        self.prefix_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Help word:'),
+                                                                        self.help_word_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Enable word:'),
+                                                                        self.enable_word_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Disable word:'),
+                                                                        self.disable_word_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Start word:'),
+                                                                        self.start_word_textbox
+                                                                    ]
+                                                                ),
+
+                                                                ft.Column(
+                                                                    spacing=0,
+                                                                    col={'xs': 2, 'sm': 1},
+                                                                    controls=[
+                                                                        Label('Finish word:'),
+                                                                        self.finish_word_textbox
+                                                                    ]
+                                                                ),
+                                                            ]
+                                                        ),
+
+                                                        CheckBox('Permitir a los moderadores apagar/encender comandos'),
+                                                    ]
+                                                )
+                                            )
+                                        ),
+
+                                        # Security settings tab
                                         ft.Tab(
                                             text='Seguridad',
                                             content=ft.Container(
@@ -222,6 +346,7 @@ class ConfigurationPage(ft.View):
                                             )
                                         ),
 
+                                        # Sound settings tab
                                         ft.Tab(
                                             text='Sonido',
                                             content=ft.Container(
