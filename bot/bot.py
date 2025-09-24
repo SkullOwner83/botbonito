@@ -133,6 +133,8 @@ class Bot(commands.Bot):
         user = ctx.author
         user_badges = list(user.badges.keys())
 
+        if UserLevel.BROADCASTER in user_badges: return True
+
         if level == UserLevel.FOLLOWER:
             api = Api(self.token, self.client_id)
             user_id = (api.get_user(user.name) or {}).get('id')
