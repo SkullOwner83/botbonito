@@ -101,7 +101,7 @@ class Moderation(Cog):
             total_letters = len(letters)
             uppercase_count = sum(1 for c in letters if c.isupper())
 
-            if total_letters > 5 and uppercase_count > 0:
+            if total_letters > 5 and uppercase_count > 200:
                 caps_ratio = uppercase_count / total_letters
 
                 if caps_ratio >= self.caps_protection.threshold:
