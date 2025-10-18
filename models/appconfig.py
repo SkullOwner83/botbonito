@@ -12,6 +12,13 @@ class AppConfig:
     client_secret: Optional[str] = ''
     theme: Optional[str] = 'light'
     language: Optional[str] = 'español'
+
+    always_ontop: Optional[bool] = False
+    start_with_windows: Optional[bool] = False
+    start_in_background: Optional[bool] = False
+    run_bot_mode = None # (on startup, on stream online, manually)
+
+    bot_language: Optional[str] = 'español'
     help_word: Optional[str] = 'help'
     enable_word: Optional[str] = 'enable'
     disable_word: Optional[str] = 'disable'
