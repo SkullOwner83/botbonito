@@ -10,12 +10,23 @@ from utilities.file import File
 from myapp import MyApp
 
 def startup(page: ft.Page) -> None:
-    if not os.path.exists(MyApp.config_path):
-        os.makedirs(MyApp.config_path)
-
+    os.makedirs(MyApp.config_path, exist_ok=True)
     app_config = AppConfig()
-    app_config.open(MyApp.appconfig_path)
-    credentials = File.open(MyApp.credentials_path)
+
+    try:
+        app_config.open(MyApp.appconfig_path)
+    except FileNotFoundError:
+        app_config.save(MyApp.appconfig_path)
+
+    try:
+        credentials = File.open(MyApp.credentials_path)
+    except FileNotFoundError:
+        credentials = {
+            "bot": { "access_token": "", "refresh_token": "" },
+            "user": { "access_token": "", "refresh_token": "" }
+        }
+
+        File.save(MyApp.credentials_path, credentials)
     
     service_handler()
     route_handler = RouteHandler(page, app_config)
