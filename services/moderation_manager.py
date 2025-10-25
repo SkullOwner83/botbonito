@@ -16,7 +16,12 @@ class ModerationManager():
     def load_protections(self) -> None:
         with self._lock:
             self.protections = get_protections()
-            stored_config = File.open(MyApp.moderation_path)
+
+            try:
+                stored_config = File.open(MyApp.moderation_path)
+            except FileNotFoundError:
+                stored_config = {}
+                File.save(MyApp.moderation_path, stored_config)
 
             if stored_config:
                 loaded_protections: dict = stored_config.get('protection', {})

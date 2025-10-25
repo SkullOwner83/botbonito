@@ -22,22 +22,26 @@ class CommandsManager():
     def load_commands(self) -> None:
         with self._lock:
             self.default_commands = get_default_commands()
-            stored_config: dict = File.open(MyApp.commands_path)
 
-            if stored_config:
-                loaded_default_commands: dict = stored_config.get('default_commands', {})
+            try:
+                stored_config: dict = File.open(MyApp.commands_path)
+            except FileNotFoundError:
+                stored_config = {}
+                File.save(MyApp.commands_path, stored_config)
 
-                for name, data in loaded_default_commands.items():
-                    command = self.default_commands[name]
-                        
-                    for attr, val in data.items():
-                        if hasattr(command, attr):
-                            setattr(command, attr, val)
+            loaded_default_commands: dict = stored_config.get('default_commands', {})
 
-                self.custom_commands = { 
-                    name: CommandConfig(**data) 
-                    for name, data in stored_config.get('custom_commands', {}).items() 
-                }
+            for name, data in loaded_default_commands.items():
+                command = self.default_commands[name]
+                    
+                for attr, val in data.items():
+                    if hasattr(command, attr):
+                        setattr(command, attr, val)
+
+            self.custom_commands = { 
+                name: CommandConfig(**data) 
+                for name, data in stored_config.get('custom_commands', {}).items() 
+            }
 
     # Convert the commands to a dictionary and save them to the file
     def save_commands(self) -> None:
@@ -54,4 +58,4 @@ class CommandsManager():
                     }
             }
 
-            File.save(os.path.join(MyApp.config_path, 'commands.json'), dictionary)
+            File.save(MyApp.commands_path, dictionary)
