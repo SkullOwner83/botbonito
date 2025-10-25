@@ -34,7 +34,7 @@ _DEFAULT_COMMANDS = {
         name='play',
         alias=[],
         description='Permite al usuario reproducir un sonido en el canal del emisor.',
-        user_level=UserLevel.EVERYONE.value
+        user_level=UserLevel.FOLLOWER.value
     ),
 
     'speak': CommandConfig(
@@ -42,20 +42,20 @@ _DEFAULT_COMMANDS = {
         description='Permite que el bot lea el comentario del usuario en el canal del emisor.',
         alias=['say'],
         max_length=200,
-        user_level=UserLevel.EVERYONE.value
+        user_level=UserLevel.FOLLOWER.value
     ), 
 
     'giveaway': CommandConfig(
         name='giveaway',
         description='Permite al emisor iniciar y finalizar la recopilación de usuarios para un sorteo.',
-        alias=['sorteo'],
+        alias=[''],
         user_level=UserLevel.BROADCASTER.value
     ),
 
     'giveaway_entry': CommandConfig(
         name='entry',
         description='Permite a los usuarios entrar en la lista para participar en un sorteo.',
-        alias=['leentro'],
+        alias=[''],
         user_level=UserLevel.FOLLOWER.value
     ),
 
