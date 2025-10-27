@@ -24,6 +24,8 @@ class AppConfig:
     disable_word: Optional[str] = 'disable'
     start_word: Optional[str] = 'start'
     finish_word: Optional[str] = 'finish'
+    
+    speak_cooldown: Optional[int] = 3
     speak_volume: Optional[float] = 1
     sounds_volume: Optional[float] = 1
     social_media: Optional[dict[str, str]] = field(default_factory=lambda: {
