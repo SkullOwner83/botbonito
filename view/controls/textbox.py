@@ -10,8 +10,16 @@ class TextBox(ft.TextField):
             height: Optional[int] = 40,
             border: Optional[int] = 1,
             on_submit: Optional[Callable] = None,
+            one_word: Optional[bool] = False,
+            is_alpha: Optional[bool] = False,
+            is_numeric: Optional[bool] = False,
             **kwargs
         ) -> None:
+
+        self.one_word = one_word
+        self.is_alpha = is_alpha
+        self.is_numeric = is_numeric
+
         super().__init__(
             value=value,
             expand=True,
@@ -24,6 +32,8 @@ class TextBox(ft.TextField):
             on_submit=on_submit,
             border_width=border,
             border_radius=8,
+            on_blur=self.handle_blur,
+            input_filter=self.build_filter(),
 
             border_color={
                 ft.ControlState.DEFAULT: ft.Colors.GREY_300,
@@ -43,3 +53,26 @@ class TextBox(ft.TextField):
             ),
             **kwargs
         )
+
+    def build_filter(self):
+        patterns = []
+
+        if self.is_numeric: patterns.append(r'0-9')
+        if self.is_alpha: patterns.append(r'a-zA-Z')
+        if not self.one_word and len(patterns) > 0: patterns[-1] += r' '
+        if not patterns: return None
+
+        regex = f"^[{''.join(patterns)}]*$"
+        print(regex)
+
+        return ft.InputFilter(
+            allow=True,
+            regex_string=regex,
+            replacement_string=""
+        )
+
+
+    def handle_blur(self, e: ft.ControlEvent):
+        if self.is_numeric and e.control.value == '':
+            e.control.value = '0'
+            e.control.update()

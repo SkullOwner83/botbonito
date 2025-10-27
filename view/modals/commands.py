@@ -1,6 +1,5 @@
 from typing import Callable, Optional
 import flet as ft
-
 from services import *
 from ..controls import *
 from models.commands import CommandConfig
@@ -48,9 +47,10 @@ class CommandsModal(Modal):
 
     # Define the controls to save his reference
     def set_controls(self) -> None:
-        self.name_textbox = TextBox(value=self.command.name)
-        self.alias_textbox = TextBox(on_submit=self.add_alias)
+        self.name_textbox = TextBox(value=self.command.name, one_word=True, is_alpha=True)
+        self.alias_textbox = TextBox(on_submit=self.add_alias, one_word=True, is_alpha=True)
         self.alias_container = ft.Row(wrap=True)
+        self.error_message = Label(text="", color=ft.Colors.RED)
         self.customs_controls = []
         self.delete_button = []
         self.load_alias()
@@ -97,6 +97,7 @@ class CommandsModal(Modal):
     # Build the view UI of commands modal
     def build(self) -> ft.Column:
         return ft.Column(
+            expand=True,
             spacing=16,
             scroll=ft.ScrollMode.ADAPTIVE,
             controls=[

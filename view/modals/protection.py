@@ -23,8 +23,8 @@ class ProtectionModal(Modal):
     # Define the controls to save his reference
     def set_controls(self) -> None:
         self.reason_textbox = TextBox(value=self.protection.reason)
-        self.duration_textbox = TextBox(value=self.protection.duration)
-        self.strikes_textbox = TextBox(value=self.protection.strikes)
+        self.duration_textbox = TextBox(value=self.protection.duration, one_word=True, is_numeric=True)
+        self.strikes_textbox = TextBox(value=self.protection.strikes, one_word=True, is_numeric=True)
         self.announce_checkbox = CheckBox(text='Anunciar penalización', checked=self.protection.announce_penalty)
 
         self.penalty_dropdown = DropDown(
