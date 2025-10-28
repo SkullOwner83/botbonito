@@ -3,6 +3,7 @@ from models.appconfig import AppConfig
 from ..controls import *
 from services import *
 from myapp import MyApp
+from ..theme import Theme
 
 class ConfigurationPage(ft.View):
     def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
@@ -33,6 +34,7 @@ class ConfigurationPage(ft.View):
         self.app_config.start_word = self.start_word_textbox.value
         self.app_config.finish_word = self.finish_word_textbox.value
 
+        self.app_config.announce_speaker = self.announce_speaker_checkbox.value
         self.app_config.speak_volume = self.speak_slider.value
         self.app_config.sounds_volume = self.sounds_slider.value
         
@@ -46,6 +48,7 @@ class ConfigurationPage(ft.View):
         }
 
         self.app_config.save(MyApp.appconfig_path)
+        Theme.apply(self.page, self.app_config.theme)
 
     def set_controls(self) -> None:
         social_media = self.app_config.social_media
@@ -96,6 +99,8 @@ class ConfigurationPage(ft.View):
         self.redirect_uri_textbox = TextBox(value=self.app_config.redirect_uri, place_holder='https://localhost:300')
 
         # Sound controls
+        self.announce_speaker_checkbox = CheckBox(text="Mencionar nombre del usuario al leer comentario.", checked=self.app_config.announce_speaker)
+
         self.speak_slider = ft.Slider(
             value=self.app_config.speak_volume,
             padding=ft.padding.symmetric(horizontal=0, vertical=4),
@@ -364,7 +369,7 @@ class ConfigurationPage(ft.View):
                                                                     col={'sm':2, 'md':1},
                                                                     controls=[
                                                                         Label('Volumen de narrador:'),
-                                                                        self.speak_slider,
+                                                                        self.speak_slider
                                                                     ]
                                                                 ),
                                                                 ft.Column(
@@ -375,6 +380,12 @@ class ConfigurationPage(ft.View):
                                                                         self.sounds_slider
                                                                     ]
                                                                 )
+                                                            ]
+                                                        ),
+
+                                                        ft.Column(
+                                                            controls=[
+                                                                self.announce_speaker_checkbox
                                                             ]
                                                         )
                                                     ]

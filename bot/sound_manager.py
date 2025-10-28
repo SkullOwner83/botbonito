@@ -11,10 +11,12 @@ from models.appconfig import AppConfig
 from utilities.enums import UserLevel
 from utilities.file import File
 from myapp import MyApp
+from typing import TYPE_CHECKING
+if TYPE_CHECKING: from bot.bot import Bot
 
 class SoundManager(commands.Cog):
     def __init__(self, bot: commands.bot, app_config: AppConfig) -> None:
-        self.bot: commands.bot = bot
+        self.bot: Bot = bot
         self.app_config = app_config
         commands_manager: CommandsManager = ServiceLocator.get('commands')
         self.default_commands = commands_manager.default_commands
@@ -29,14 +31,14 @@ class SoundManager(commands.Cog):
 
     @commands.Cog.event()
     async def event_ready(self):
-        print(f"[{self.__class__.__name__}] Bot listo. Iniciando la tarea de reproducción de audio.")
+        print(f"[{self.__class__.__name__}] Audio player queue started.")
         self.bot.loop.create_task(self.audio_player_task())
 
     # Asynchronous loop that consumes the audio queue and plays each file sequentially
     async def audio_player_task(self):
         while True:
             # Waits until there is an audio file in the queue
-            audio_data = await self.audio_queue.get() 
+            audio_data: dict = await self.audio_queue.get() 
             filepath = audio_data.get('filepath')
             volume = audio_data.get('volume', self.app_config.speak_volume)
             
@@ -84,9 +86,12 @@ class SoundManager(commands.Cog):
             # Check if the user's cooldown has already passed and the command is in the sound list to play the sound
             if rest_time <= 0 or self.bot.level_check(ctx, UserLevel.BROADCASTER):
                 if parameter in self.sound_list:
-                    sound = pygame.mixer.Sound(self.sound_list[parameter])
-                    sound.set_volume(self.app_config.sounds_volume)
-                    sound.play()
+                    await self.audio_queue.put({
+                        'filepath': self.sound_list[parameter],
+                        'volume': self.app_config.sounds_volume,
+                        'should_delete': False
+                    })
+            
                     self.snd_user_register[user] = time.time()
             else:
                 await ctx.send(f"@{user} Espera un poco más para volver a usar un sonido. Tiempo restante ({round(rest_time)}s)")
@@ -111,10 +116,9 @@ class SoundManager(commands.Cog):
             if len(message) <= command_config.max_length:
                 # Check if the user cooldown has already passed to speak the text
                 if rest_time <= 0 or self.bot.level_check(ctx, UserLevel.BROADCASTER):
-                    temp_filename = f"tts_{ctx.author.name}_{time.time()}.mp3"
-            
                     try:
-                        tts_message = f"{ctx.author.name} dice: {message}"
+                        temp_filename = f"tts_{ctx.author.name}_{time.time()}.mp3"
+                        tts_message = f"{user} dice: {message}" if self.app_config.announce_speaker else message
                         engine = gTTS(text=tts_message, lang="es", slow=False)
                         engine.save(temp_filename)
                         
@@ -124,6 +128,8 @@ class SoundManager(commands.Cog):
                             'volume': self.app_config.speak_volume,
                             'should_delete': True
                         })
+
+                        #self.spk_user_register[user] = time.time()
                     except Exception as e:
                         print(f"Error al generar el audio: {e}")
                         await ctx.send(f"@{user} Hubo un problema al generar el audio.")
@@ -131,3 +137,5 @@ class SoundManager(commands.Cog):
                     await ctx.send(f"@{user} Espera un poco más para volver a usar el lector de texto. Tiempo restante ({round(rest_time)}s)")
             else:
                 await ctx.send(f"@{user} Has escrito un mensaje demasiado largo. El máximo de caracteres es {command_config.max_length} caracteres")
+
+
