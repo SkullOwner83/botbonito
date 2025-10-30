@@ -4,15 +4,9 @@ from models.commands import CommandConfig
 from services import *
 from ..controls import *
 from ..modals import CommandsModal
-from myapp import MyApp
 
-class CommandsPage(ft.View):
+class CommandsPage(ft.Container):
     def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
-        super().__init__(
-            route='/validation',
-            padding=0
-        )
-
         self.page = page
         self.filter = ''
         self.app_config = app_config
@@ -21,9 +15,9 @@ class CommandsPage(ft.View):
         self.custom_commands = self.commands_manager.custom_commands
         
         self.set_controls()
-        self.controls.append(self.build())
         self.load_data(self.default_commands_table)
         self.load_data(self.custom_commands_table)
+        super().__init__(padding=32, content=self.build())
 
     def load_data(self, table: DataTable = None, filter: str = '') -> None:
         table = self.target_table if table is None else table
@@ -132,75 +126,50 @@ class CommandsPage(ft.View):
 
     # Build the view UI and load the data into the tables
     def build(self) -> ft.Container:
-        return ft.Container(
-            expand=True,
-            bgcolor=ft.Colors.GREY_100,
-            content=ft.Row(
-                expand=True,
-                spacing=0,
-                controls =[
-                    NavigationBar(self.page),
-                    
-                    ft.Column(
-                        expand=True,
-                        spacing=0,
-                        controls = [
-                            Header("Comandos", self.app_config),
-                            
-                            ft.Container(
-                                expand=True,
-                                padding=32,
-                                alignment=ft.alignment.top_center,
-                                content=ft.Column(
-                                    spacing=20,
-                                    controls=[
-                                        ft.Row(
-                                            spacing=20,
-                                            controls=[
-                                                ft.Container(
-                                                    content=SegmentedButton(
-                                                        on_change=self.change_tab,
-                                                        segments=[
-                                                            ft.Segment(value="1", label=ft.Text("Predeterminados")),
-                                                            ft.Segment(value="2", label=ft.Text("Personalizados")),
-                                                        ]
-                                                    )
-                                                ),
-
-                                                ft.Container(
-                                                    expand=True,
-                                                    alignment=ft.alignment.center_right,
-                                                    content=TextBox(
-                                                        width=350,
-                                                        height=32,
-                                                        border=0,
-                                                        prefix_icon=ft.Icons.SEARCH,
-                                                        place_holder='Buscar comando...',
-                                                        on_change=self.search_command
-                                                    )
-                                                ),
-
-                                                self.add_command_button
-                                            ]
-                                        ),
-
-                                        ft.Column(
-                                            expand=True,
-                                            controls=[
-                                                ft.Stack(
-                                                    expand=True,
-                                                    controls=[
-                                                        self.default_commands_table,
-                                                        self.custom_commands_table
-                                                    ]
-                                                )
-                                            ]
-                                        )
-                                    ]
-                                )
+        return ft.Column(
+            spacing=20,
+            controls=[
+                ft.Row(
+                    spacing=20,
+                    controls=[
+                        ft.Container(
+                            content=SegmentedButton(
+                                on_change=self.change_tab,
+                                segments=[
+                                    ft.Segment(value="1", label=ft.Text("Predeterminados")),
+                                    ft.Segment(value="2", label=ft.Text("Personalizados")),
+                                ]
                             )
-                        ]
-                    )
-                ]
-            )
+                        ),
+
+                        ft.Container(
+                            expand=True,
+                            alignment=ft.alignment.center_right,
+                            content=TextBox(
+                                width=350,
+                                height=32,
+                                border=0,
+                                prefix_icon=ft.Icons.SEARCH,
+                                place_holder='Buscar comando...',
+                                on_change=self.search_command
+                            )
+                        ),
+
+                        self.add_command_button
+                    ]
+                ),
+
+                ft.Column(
+                    expand=True,
+                    controls=[
+                        ft.Stack(
+                            expand=True,
+                            controls=[
+                                self.default_commands_table,
+                                self.custom_commands_table
+                            ]
+                        )
+                    ]
+                )
+            ]
         )

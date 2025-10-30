@@ -6,20 +6,15 @@ from services.moderation_manager import ModerationManager
 from ..controls import *
 from services import *
 
-class ModerationPage(ft.View):
+class ModerationPage(ft.Container):
     def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
-        super().__init__(
-            route='/moderation',
-            padding=0
-        )
-
         moderation_manager: ModerationManager = ServiceLocator.get('moderation')
         self.protections: dict[str, Protection] = moderation_manager.protections
 
         self.page = page
         self.botconfig = app_config
         self.set_controls()
-        self.controls.append(self.build())
+        super().__init__(padding=32, content=self.build())
 
     def set_controls(self):
         self.row = ft.ResponsiveRow(
@@ -69,47 +64,23 @@ class ModerationPage(ft.View):
     #     pass
 
     def build(self) -> ft.Container:
-        return ft.Container(
-            expand=True,
-            bgcolor=ft.Colors.GREY_100,
-            content=ft.Row(
-                expand=True,
-                spacing=0,
-                controls =[
-                    NavigationBar(self.page),
+        return ft.Column(
+            spacing=20,
+            controls=[
+                # SegmentedButton(
+                #     on_change=self.change_tab,
+                #     segments=[
+                #         ft.Segment(value='1', label=ft.Text('Protecciones')),
+                #         ft.Segment(value='2', label=ft.Text('Palabras prohibidas'))
+                #     ]
+                # ),
 
-                    ft.Column(
-                        expand=True,
-                        spacing=0,
-                        controls=[
-                            Header("Moderación", self.botconfig),
-
-                            ft.Container(
-                                expand=True,
-                                padding=32,
-                                content=ft.Column(
-                                    spacing=20,
-                                    controls=[
-                                        # SegmentedButton(
-                                        #     on_change=self.change_tab,
-                                        #     segments=[
-                                        #         ft.Segment(value='1', label=ft.Text('Protecciones')),
-                                        #         ft.Segment(value='2', label=ft.Text('Palabras prohibidas'))
-                                        #     ]
-                                        # ),
-
-                                        ft.Column(
-                                            expand=True,
-                                            scroll=ft.ScrollMode.ALWAYS,
-                                            controls=[self.row]
-                                        )
-                                    ]
-                                )
-                            )
-                        ]
-                    )
-                ]
-            )
+                ft.Column(
+                    expand=True,
+                    scroll=ft.ScrollMode.ALWAYS,
+                    controls=[self.row]
+                )
+            ]
         )
     
 _PROTECTION_ICONS = {

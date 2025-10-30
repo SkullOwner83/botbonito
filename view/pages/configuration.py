@@ -5,17 +5,12 @@ from services import *
 from myapp import MyApp
 from ..theme import Theme
 
-class ConfigurationPage(ft.View):
+class ConfigurationPage(ft.Container):
     def __init__(self, page: ft.Page, app_config: AppConfig) -> None:
-        super().__init__(
-            route='/configuration',
-            padding=0,
-        )
-
         self.page = page
         self.app_config = app_config
         self.set_controls()
-        self.controls.append(self.build())
+        super().__init__(content=self.build())
 
     def restore_defaults(self) -> None:
         self.app_config.restore_defaults()
@@ -114,300 +109,286 @@ class ConfigurationPage(ft.View):
 
     # Build the view UI of configuration page
     def build(self) -> ft.Container:
-        return ft.Container(
+        return ft.Column(
             expand=True,
-            bgcolor=ft.Colors.GREY_100,
-            content=ft.Row(
-                expand=True,
-                spacing=0,
-                controls =[
-                    NavigationBar(self.page),
+            spacing=0,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    padding=0,
+                    content=TabControl(
+                        tabs=[
+                            # General settings tab
+                            ft.Tab(
+                                text="General",
+                                content=ft.Container(
+                                    padding=32,
+                                    content=ft.Column(
+                                        scroll=ft.ScrollMode.ADAPTIVE,
+                                        spacing=20,
+                                        controls=[
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Tema:'),
+                                                    self.theme_dropdown
+                                                ]
+                                            ),
 
-                    ft.Column(
-                        expand=True,
-                        spacing=0,
-                        controls=[
-                            Header("Configuración", self.app_config),
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Lenguaje:'),
+                                                    self.language_dropdown
+                                                ]
+                                            ),
 
-                            ft.Container(
-                                expand=True,
-                                padding=0,
-                                content=TabControl(
-                                    tabs=[
-                                        # General settings tab
-                                        ft.Tab(
-                                            text="General",
-                                            content=ft.Container(
-                                                padding=32,
-                                                content=ft.Column(
-                                                    scroll=ft.ScrollMode.ADAPTIVE,
-                                                    spacing=20,
-                                                    controls=[
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Tema:'),
-                                                                self.theme_dropdown
-                                                            ]
-                                                        ),
+                                            Label('Redes sociales:'),
+                                            
+                                            ft.ResponsiveRow(
+                                                spacing=20,
+                                                run_spacing=8,
+                                                columns=2,
+                                                controls=[
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/facebook.png'),
+                                                            self.facebook_textbox
+                                                        ]
+                                                    ),
 
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Lenguaje:'),
-                                                                self.language_dropdown
-                                                            ]
-                                                        ),
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/twitter.png'),
+                                                            self.twitter_textbox
+                                                        ]
+                                                    ),
 
-                                                        Label('Redes sociales:'),
-                                                        
-                                                        ft.ResponsiveRow(
-                                                            spacing=20,
-                                                            run_spacing=8,
-                                                            columns=2,
-                                                            controls=[
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/facebook.png'),
-                                                                        self.facebook_textbox
-                                                                    ]
-                                                                ),
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/instagram.png'),
+                                                            self.instagram_textbox
+                                                        ]
+                                                    ),
 
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/twitter.png'),
-                                                                        self.twitter_textbox
-                                                                    ]
-                                                                ),
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/tiktok.png'),
+                                                            self.tiktok_textbox
+                                                        ]
+                                                    ),
 
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/instagram.png'),
-                                                                        self.instagram_textbox
-                                                                    ]
-                                                                ),
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/youtube.png'),
+                                                            self.youtube_textbox
+                                                        ]
+                                                    ),
 
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/tiktok.png'),
-                                                                        self.tiktok_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/youtube.png'),
-                                                                        self.youtube_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Row(
-                                                                    col={'sm': 2, 'md': 1 },
-                                                                    controls=[
-                                                                        ft.Image(width=32, src='social media/discord.png'),
-                                                                        self.discord_textbox
-                                                                    ]
-                                                                ),
-                                                            ]
-                                                        )
-                                                    ]
-                                                )
+                                                    ft.Row(
+                                                        col={'sm': 2, 'md': 1 },
+                                                        controls=[
+                                                            ft.Image(width=32, src='social media/discord.png'),
+                                                            self.discord_textbox
+                                                        ]
+                                                    ),
+                                                ]
                                             )
-                                        ),
-
-                                        # Chatbot settings tab
-                                        ft.Tab(
-                                            text='Chatbot',
-                                            content=ft.Container(
-                                                padding=32,
-                                                content=ft.Column(
-                                                    spacing=20,
-                                                    scroll=ft.ScrollMode.ADAPTIVE,
-                                                    controls=[
-                                                        ft.RadioGroup(
-                                                            content=ft.Column(
-                                                                spacing=0,
-                                                                controls=[
-                                                                    ft.Radio(value='1', label='Al iniciar la aplicación'),
-                                                                    ft.Radio(value='2', label='Al iniciar stream'),
-                                                                    ft.Radio(value='3', label='Manualmente')
-                                                                ]
-                                                            )
-                                                        ),
-
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Lenguaje del Bot:'),
-                                                                self.bot_language_textbox
-                                                            ]
-                                                        ),
-
-                                                        ft.ResponsiveRow(
-                                                            spacing=20,
-                                                            run_spacing=20,
-                                                            columns=2,
-                                                            controls=[
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Prefijo:'),
-                                                                        self.prefix_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Help word:'),
-                                                                        self.help_word_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Enable word:'),
-                                                                        self.enable_word_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Disable word:'),
-                                                                        self.disable_word_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Start word:'),
-                                                                        self.start_word_textbox
-                                                                    ]
-                                                                ),
-
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'xs': 2, 'sm': 1},
-                                                                    controls=[
-                                                                        Label('Finish word:'),
-                                                                        self.finish_word_textbox
-                                                                    ]
-                                                                ),
-                                                            ]
-                                                        ),
-
-                                                        CheckBox('Permitir a los moderadores apagar/encender comandos'),
-                                                    ]
-                                                )
-                                            )
-                                        ),
-
-                                        # Security settings tab
-                                        ft.Tab(
-                                            text='Seguridad',
-                                            content=ft.Container(
-                                                padding=32,
-                                                content=ft.Column(
-                                                    spacing=16,
-                                                    controls=[
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Client ID:'),
-                                                                self.client_id_textbox
-                                                            ]
-                                                        ),
-
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Client secret:'),
-                                                                self.client_secret_textbox
-                                                            ]
-                                                        ),
-
-                                                        ft.Column(
-                                                            spacing=0,
-                                                            controls=[
-                                                                Label('Dirección de redireccionamiento de OAuth:'),
-                                                                self.redirect_uri_textbox
-                                                            ]
-                                                        ),
-                                                    ]
-                                                )
-                                            )
-                                        ),
-
-                                        # Sound settings tab
-                                        ft.Tab(
-                                            text='Sonido',
-                                            content=ft.Container(
-                                                padding=32,
-                                                content=ft.Column(
-                                                    spacing=0,
-                                                    controls=[
-                                                        ft.ResponsiveRow(
-                                                            spacing=32,
-                                                            run_spacing=20,
-                                                            columns=2,
-                                                            controls=[
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'sm':2, 'md':1},
-                                                                    controls=[
-                                                                        Label('Volumen de narrador:'),
-                                                                        self.speak_slider
-                                                                    ]
-                                                                ),
-                                                                ft.Column(
-                                                                    spacing=0,
-                                                                    col={'sm':2, 'md':1},
-                                                                    controls=[
-                                                                        Label('Volumen de sonidos:'),
-                                                                        self.sounds_slider
-                                                                    ]
-                                                                )
-                                                            ]
-                                                        ),
-
-                                                        ft.Column(
-                                                            controls=[
-                                                                self.announce_speaker_checkbox
-                                                            ]
-                                                        )
-                                                    ]
-                                                )
-                                            )
-                                        )
-                                    ]
+                                        ]
+                                    )
                                 )
                             ),
 
-                            ft.Container(
-                                padding=ft.padding.only(left=32, right=32, top=0, bottom=32),
-                                content=ft.Row(
-                                    alignment=ft.MainAxisAlignment.END,
-                                    controls=[
-                                        Button(text='Restaurar', outlined=True, on_click=lambda e: self.restore_defaults()),
-                                        Button(text='Guardar', outlined=False, on_click=lambda e: self.save_changes())
-                                    ]
+                            # Chatbot settings tab
+                            ft.Tab(
+                                text='Chatbot',
+                                content=ft.Container(
+                                    padding=32,
+                                    content=ft.Column(
+                                        spacing=20,
+                                        scroll=ft.ScrollMode.ADAPTIVE,
+                                        controls=[
+                                            ft.RadioGroup(
+                                                content=ft.Column(
+                                                    spacing=0,
+                                                    controls=[
+                                                        ft.Radio(value='1', label='Al iniciar la aplicación'),
+                                                        ft.Radio(value='2', label='Al iniciar stream'),
+                                                        ft.Radio(value='3', label='Manualmente')
+                                                    ]
+                                                )
+                                            ),
+
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Lenguaje del Bot:'),
+                                                    self.bot_language_textbox
+                                                ]
+                                            ),
+
+                                            ft.ResponsiveRow(
+                                                spacing=20,
+                                                run_spacing=20,
+                                                columns=2,
+                                                controls=[
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Prefijo:'),
+                                                            self.prefix_textbox
+                                                        ]
+                                                    ),
+
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Help word:'),
+                                                            self.help_word_textbox
+                                                        ]
+                                                    ),
+
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Enable word:'),
+                                                            self.enable_word_textbox
+                                                        ]
+                                                    ),
+
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Disable word:'),
+                                                            self.disable_word_textbox
+                                                        ]
+                                                    ),
+
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Start word:'),
+                                                            self.start_word_textbox
+                                                        ]
+                                                    ),
+
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'xs': 2, 'sm': 1},
+                                                        controls=[
+                                                            Label('Finish word:'),
+                                                            self.finish_word_textbox
+                                                        ]
+                                                    ),
+                                                ]
+                                            ),
+
+                                            CheckBox('Permitir a los moderadores apagar/encender comandos'),
+                                        ]
+                                    )
+                                )
+                            ),
+
+                            # Security settings tab
+                            ft.Tab(
+                                text='Seguridad',
+                                content=ft.Container(
+                                    padding=32,
+                                    content=ft.Column(
+                                        spacing=16,
+                                        controls=[
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Client ID:'),
+                                                    self.client_id_textbox
+                                                ]
+                                            ),
+
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Client secret:'),
+                                                    self.client_secret_textbox
+                                                ]
+                                            ),
+
+                                            ft.Column(
+                                                spacing=0,
+                                                controls=[
+                                                    Label('Dirección de redireccionamiento de OAuth:'),
+                                                    self.redirect_uri_textbox
+                                                ]
+                                            ),
+                                        ]
+                                    )
+                                )
+                            ),
+
+                            # Sound settings tab
+                            ft.Tab(
+                                text='Sonido',
+                                content=ft.Container(
+                                    padding=32,
+                                    content=ft.Column(
+                                        spacing=0,
+                                        controls=[
+                                            ft.ResponsiveRow(
+                                                spacing=32,
+                                                run_spacing=20,
+                                                columns=2,
+                                                controls=[
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'sm':2, 'md':1},
+                                                        controls=[
+                                                            Label('Volumen de narrador:'),
+                                                            self.speak_slider
+                                                        ]
+                                                    ),
+                                                    ft.Column(
+                                                        spacing=0,
+                                                        col={'sm':2, 'md':1},
+                                                        controls=[
+                                                            Label('Volumen de sonidos:'),
+                                                            self.sounds_slider
+                                                        ]
+                                                    )
+                                                ]
+                                            ),
+
+                                            ft.Column(
+                                                controls=[
+                                                    self.announce_speaker_checkbox
+                                                ]
+                                            )
+                                        ]
+                                    )
                                 )
                             )
                         ]
                     )
-                ]
-            )
+                ),
+
+                ft.Container(
+                    padding=ft.padding.only(left=32, right=32, top=0, bottom=32),
+                    content=ft.Row(
+                        alignment=ft.MainAxisAlignment.END,
+                        controls=[
+                            Button(text='Restaurar', outlined=True, on_click=lambda e: self.restore_defaults()),
+                            Button(text='Guardar', outlined=False, on_click=lambda e: self.save_changes())
+                        ]
+                    )
+                )
+            ]
         )
