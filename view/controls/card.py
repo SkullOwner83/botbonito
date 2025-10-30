@@ -34,7 +34,7 @@ class Card(ft.Container):
         )
 
     def set_controls(self):
-        self.icon_control = [ft.Icon(name=self.icon)] if self.icon else []
+        self.icon_control = [ft.Icon(name=self.icon, color=ft.Colors.PRIMARY)] if self.icon else []
         self.value_control = [
             ft.Text(
                 value=self.value,

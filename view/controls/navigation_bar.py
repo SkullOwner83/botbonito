@@ -5,10 +5,10 @@ from myapp import MyApp
 class NavigationBar(ft.Container):
     def __init__(self, page: ft.Page) -> None:
         self.page = page
-        self.home_icon = "side menu/home.svg"
-        self.commands_icon = "side menu/commands.svg"
-        self.moderation_icon = "side menu/moderation.svg"
-        self.configuration_icon = "side menu/configuration.svg"
+        self.home_icon = ft.Icons.HOME_FILLED
+        self.commands_icon = ft.Icons.TERMINAL_ROUNDED
+        self.moderation_icon = ft.Icons.SHIELD_ROUNDED
+        self.configuration_icon = ft.Icons.SETTINGS_ROUNDED
 
         super().__init__(
             bgcolor=ft.Colors.WHITE,
@@ -32,6 +32,7 @@ class NavigationBar(ft.Container):
                         MenuButton('Inicio', self.home_icon, lambda e: self.page.go('/')),
                         MenuButton('Comandos', self.commands_icon, lambda e: self.page.go('/commands')),
                         MenuButton('Moderación', self.moderation_icon, lambda e: self.page.go('/moderation')),
+                        # MenuButton('Eventos', self.moderation_icon, lambda e: self.page.go('/events')),
                         MenuButton('Configuración', self.configuration_icon, lambda e: self.page.go('/configuration'))
                     ]
                 )
@@ -56,12 +57,9 @@ class MenuButton(ft.Container):
     def build(self) -> ft.Row:
         return ft.Row(
             spacing=8,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls = [
-                ft.Container(
-                    width=18,
-                    height=18,
-                    content=ft.Image(src=self.icon),
-                ),
+                ft.Icon(name=self.icon, color=ft.Colors.BLACK),
 
                 ft.Text(
                     value=self.text,

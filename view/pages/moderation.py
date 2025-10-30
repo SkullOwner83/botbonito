@@ -44,7 +44,7 @@ class ModerationPage(ft.Container):
                                 ft.Container(
                                     expand=True,
                                     alignment=ft.alignment.center_right,
-                                    content=ft.IconButton(icon=ft.Icons.SETTINGS, on_click=lambda e, p=protection: self.open_settings(p))
+                                    content=ft.IconButton(icon=ft.Icons.SETTINGS_ROUNDED, on_click=lambda e, p=protection: self.open_settings(p))
                                 )
                             ]
                         )
@@ -85,9 +85,9 @@ class ModerationPage(ft.Container):
     
 _PROTECTION_ICONS = {
     'links': ft.Icons.ATTACHMENT,
-    'repeated_messages': ft.Icons.REPEAT,
-    'long_messages': ft.Icons.MESSAGE,
+    'repeated_messages': ft.Icons.REPEAT_ROUNDED,
+    'long_messages': ft.Icons.MESSAGE_ROUNDED,
     'excess_caps': ft.Icons.TITLE_ROUNDED,
-    'excess_emotes': ft.Icons.EMOJI_EMOTIONS,
-    'excess_symbols': ft.Icons.EMOJI_SYMBOLS
+    'excess_emotes': ft.Icons.EMOJI_EMOTIONS_ROUNDED,
+    'excess_symbols': ft.Icons.EMOJI_SYMBOLS_ROUNDED
 }

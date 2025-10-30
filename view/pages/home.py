@@ -41,10 +41,10 @@ class HomePage(ft.Container):
                     spacing=20,
                     run_spacing=20,
                     controls=[
-                        Card(title='seguidores', value='0', icon=ft.Icons.FAVORITE, col={ "xs": 4, "sm": 2, "md": 1 }),
-                        Card(title='suscriptores', value='0', icon=ft.Icons.STAR, col={ "xs": 4, "sm": 2, "md": 1 }),
-                        Card(title='vistas', value='0', icon=ft.Icons.REMOVE_RED_EYE, col={ "xs": 4, "sm": 2, "md": 1 }),
-                        Card(title='bits', value='0', icon=ft.Icons.PAYMENTS, col={ "xs": 4, "sm": 2, "md": 1 })
+                        Card(title='seguidores', value='0', icon=ft.Icons.FAVORITE_ROUNDED, col={ "xs": 4, "sm": 2, "md": 1 }),
+                        Card(title='suscriptores', value='0', icon=ft.Icons.STAR_ROUNDED, col={ "xs": 4, "sm": 2, "md": 1 }),
+                        Card(title='vistas', value='0', icon=ft.Icons.REMOVE_RED_EYE_ROUNDED, col={ "xs": 4, "sm": 2, "md": 1 }),
+                        Card(title='bits', value='0', icon=ft.Icons.PAYMENTS_ROUNDED, col={ "xs": 4, "sm": 2, "md": 1 })
                     ]
                 )
             ]
