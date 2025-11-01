@@ -4,10 +4,10 @@ class UserLevel(str, Enum):
     NO_ONE = 'no one'
     EVERYONE = 'everyone'
     FOLLOWER = 'follower'
+    VIP = 'vip'
     MODERATOR = 'moderator'
     SUBSCRIBER = 'subscriber'
     BROADCASTER = 'broadcaster'
-    VIP = 'vip'
 
 class AccountType(str, Enum):
     BOT = 'bot'

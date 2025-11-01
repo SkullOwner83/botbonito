@@ -1,5 +1,5 @@
 import flet as ft
-from utilities.enums import UserLevel
+from utilities.constants import Constants
 from myapp import MyApp
 
 class Badge(ft.Container):
@@ -9,7 +9,7 @@ class Badge(ft.Container):
                 spacing=4,
                 controls=[
                     ft.Image(
-                        src=BADGE_IMAGES.get(name),
+                        src=Constants.USER_LEVEL_ICONS.get(name),
                         width=20,
                         height=20,
                     ),
@@ -23,11 +23,3 @@ class Badge(ft.Container):
             )
         )
 
-BADGE_IMAGES = {
-    UserLevel.EVERYONE: "user levels/everyone.png",
-    UserLevel.FOLLOWER: "user levels/follower.png",
-    UserLevel.MODERATOR: "user levels/moderator.png",
-    UserLevel.SUBSCRIBER: "user levels/subscriber.png",
-    UserLevel.BROADCASTER: "user levels/broadcaster.png",
-    UserLevel.VIP: "user levels/vip.png",
-}
