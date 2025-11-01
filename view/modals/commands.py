@@ -1,6 +1,7 @@
 from typing import Callable, Optional
 import flet as ft
 from services import *
+from utilities.constants import Constants
 from ..controls import *
 from models.commands import CommandConfig
 from utilities.enums import UserLevel, ResponseType
@@ -57,8 +58,14 @@ class CommandsModal(Modal):
        
         self.user_level_dropdown = DropDown(
             value=self.command.user_level if self.command.user_level else UserLevel.EVERYONE,
+            icon=ft.Image(src=Constants.USER_LEVEL_ICONS.get(self.command.user_level)),
+            on_change=lambda e: setattr(self.user_level_dropdown, 'icon', ft.Image(src=Constants.USER_LEVEL_ICONS.get(e.control.value))),
             options=[
-                ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value)) 
+                ft.DropdownOption(
+                    key=user_level.value,
+                    text=str.capitalize(user_level.value),
+                    leading_icon=ft.Image(src=Constants.USER_LEVEL_ICONS.get(user_level), width=20, height=20)
+                ) 
                 for user_level in UserLevel if user_level != UserLevel.NO_ONE
             ]
         )

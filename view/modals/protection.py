@@ -1,6 +1,7 @@
 import flet as ft
 from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
+from utilities.constants import Constants
 from utilities.enums import PenaltyType, UserLevel
 from models.protection import Protection
 from view.controls import *
@@ -29,16 +30,28 @@ class ProtectionModal(Modal):
 
         self.penalty_dropdown = DropDown(
             value=self.protection.penalty if self.protection.penalty else PenaltyType.DELETE_MESSAGE.value,
+            icon=ft.Icon(name=Constants.PENALTY_ICONS.get(self.protection.penalty), color=ft.Colors.BLACK),
+            on_change=lambda e: setattr(self.penalty_dropdown, 'icon', ft.Icon(name=Constants.PENALTY_ICONS.get(e.control.value), color=ft.Colors.BLACK)),
             options=[
-                ft.DropdownOption(key=penalty_type.value, text=str.capitalize(penalty_type.value))
+                ft.DropdownOption(
+                    key=penalty_type.value, 
+                    text=str.capitalize(penalty_type.value),
+                    leading_icon=ft.Icon(name=Constants.PENALTY_ICONS.get(penalty_type), color=ft.Colors.BLACK)
+                )
                 for penalty_type in PenaltyType
             ]
         )
 
         self.exclude_dropdown = DropDown(
             value=self.protection.exclude if self.protection.exclude else UserLevel.NO_ONE,
+            icon=ft.Image(src=Constants.USER_LEVEL_ICONS.get(self.protection.exclude)),
+            on_change=lambda e: setattr(self.exclude_dropdown, 'icon', ft.Image(src=Constants.USER_LEVEL_ICONS.get(e.control.value, 'everyone'))),
             options=[
-                ft.DropdownOption(key=user_level.value, text=str.capitalize(user_level.value))
+                ft.DropdownOption(
+                    key=user_level.value, 
+                    text=str.capitalize(user_level.value),
+                    leading_icon=ft.Image(src=Constants.USER_LEVEL_ICONS.get(user_level), width=20, height=20)
+                    )
                 for user_level in UserLevel if not user_level in [UserLevel.EVERYONE, UserLevel.BROADCASTER]
             ]
         )
