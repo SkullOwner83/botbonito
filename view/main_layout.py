@@ -8,6 +8,8 @@ class MainLayout(ft.View):
         self.page = page
         self.app_config = app_config
 
+        self.header = Header('', app_config)
+
         self.content_container = ft.Container(
             expand=True,
             alignment=ft.alignment.top_center,
@@ -29,7 +31,7 @@ class MainLayout(ft.View):
                                 expand=True,
                                 spacing=0,
                                 controls=[
-                                    Header("Comandos", app_config),
+                                    self.header,
                                     self.content_container
                                 ],
                             ),
@@ -39,7 +41,7 @@ class MainLayout(ft.View):
             ]
         )
 
-    def set_content(self, new_content: ft.Control):
-        """Actualiza solo el contenido central sin recargar el layout completo."""
+    def set_view(self, new_content: ft.Control, new_title: str):
+        self.header.set_title(new_title)
         self.content_container.content = new_content
         self.content_container.update()

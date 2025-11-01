@@ -12,11 +12,15 @@ class SessionService:
         self.is_logged_in = False
         self.on_login_callback: List[Callable] = []
         self.on_logout_callback: List[Callable] = []
+        self.on_validate_callback: List[Callable] =[]
 
     # Validate if the token is valid or refresh it if it's expired
     def validation(self, credentials: dict, app_config: AppConfig, account_type: AccountType) -> bool:
         if Token.validation(credentials['access_token']):        
-            if self.load_account(credentials, app_config, account_type): return True
+            if self.load_account(credentials, app_config, account_type): 
+                self.on_validate()
+                return True
+
         else:
             if credentials['refresh_token']:
                 token = Token(app_config.client_id, app_config.client_secret, Constants.BOT_SCOPES, app_config.redirect_uri)
@@ -30,6 +34,7 @@ class SessionService:
                         credentials['access_token'] = new_token
                         credentials['refresh_token'] = new_refresh_token
                         self.load_account(credentials, app_config, account_type)
+                        self.on_validate()
                         print("Token has been refreshed.")
                         return True
 
@@ -104,10 +109,15 @@ class SessionService:
 
         return dictionary
 
+
     def on_login(self, account: User) -> None:
         for callback in self.on_login_callback:
             callback(account)
     
     def on_logout(self) -> None:
         for callback in self.on_logout_callback:
+            callback()
+
+    def on_validate(self) -> None:
+        for callback in self.on_validate_callback:
             callback()

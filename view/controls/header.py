@@ -7,9 +7,9 @@ from utilities.file import File
 from myapp import MyApp
 
 class Header(ft.Container):
-    def __init__(self, tile: str, app_config: AppConfig) -> None:
+    def __init__(self, title: str, app_config: AppConfig) -> None:
         super().__init__()
-        self.title = tile
+        self.title = title
         self.height = 64
         self.padding = ft.padding.symmetric(horizontal=32)
         self.border = ft.border.only(bottom=ft.border.BorderSide(1, ft.Colors.GREY_400))
@@ -20,6 +20,7 @@ class Header(ft.Container):
         self.bot_service: BotService = ServiceLocator.get('bot')
         self.user = self.session_service.user_account
 
+        self.session_service.on_validate_callback.append(self.on_validate)
         self.websocket_service.stream_online_callback.append(self.on_stream_online)
         self.websocket_service.stream_offline_callback.append(self.on_stream_offline)
         
@@ -30,7 +31,10 @@ class Header(ft.Container):
     def login(self) -> None:
         if self.session_service.login(self.app_config, AccountType.USER):
             self.user = self.session_service.user_account
-            self.app_config.channels.append(self.user.username)
+            
+            if not self.user.username in self.app_config.channels:
+                self.app_config.channels.append(self.user.username)
+
             self.app_config.save(MyApp.appconfig_path)
             File.save(MyApp.credentials_path, self.session_service.serialize())
             self.update_controls()
@@ -51,6 +55,11 @@ class Header(ft.Container):
         if self.bot_service.is_running:
             self.bot_service.stop()
 
+    def on_validate(self) -> None:
+        self.user = self.session_service.user_account
+        self.update_controls()
+        self.update()
+
     def on_stream_online(self, payload) -> None:
         self.stream_status_text.value = 'Online'
         self.status_dot.bgcolor = ft.Colors.GREEN
@@ -66,6 +75,13 @@ class Header(ft.Container):
         self.username_text = ft.Text(value='Usuario', font_family=MyApp.font_primary, size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.PRIMARY, selectable=True)
         self.stream_status_text = ft.Text(value='Offline', font_family=MyApp.font_secondary, size=16, weight=ft.FontWeight.BOLD)
         self.status_dot = ft.Container(width=12, shape=ft.BoxShape.CIRCLE, bgcolor=ft.Colors.RED, content=ft.Text(''))
+
+        self.title_text = ft.Text(
+            value=self.title,
+            font_family=MyApp.font_primary,
+            weight=ft.FontWeight.BOLD,
+            size=24
+        )
 
         self.user_status = ft.Column(
             spacing=-4,
@@ -110,12 +126,16 @@ class Header(ft.Container):
         self.user_status.visible = True if self.session_service.is_logged_in else False
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text='Mi canal', height=32, on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
-            ft.PopupMenuItem(text='Configuración', height=32, on_click=lambda e: self.page.go('/configuration')),
-            ft.PopupMenuItem(text='Cerrar sesión', height=32, on_click=lambda e: self.logout())
+            ft.PopupMenuItem(text='Mi canal', height=32, icon=ft.Icons.PERSON_ROUNDED, on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
+            ft.PopupMenuItem(text='Configuración', height=32, icon=ft.Icons.SETTINGS_ROUNDED, on_click=lambda e: self.page.go('/configuration')),
+            ft.PopupMenuItem(text='Cerrar sesión', height=32, icon=ft.Icons.LOGOUT_ROUNDED, on_click=lambda e: self.logout())
         ] if self.session_service.is_logged_in else [
-            ft.PopupMenuItem(text='Iniciar sesión', height=32, on_click=lambda e: self.login())
+            ft.PopupMenuItem(text='Iniciar sesión', height=32, icon=ft.Icons.LOGIN_ROUNDED, on_click=lambda e: self.login())
         ]
+
+    def set_title(self, new_title):
+        self.title_text.value = new_title
+        self.title_text.update()
 
     def build(self) -> ft.Row:
         return ft.Row(
@@ -123,12 +143,7 @@ class Header(ft.Container):
             controls= [
                 ft.Container(
                     expand=True,
-                    content=ft.Text(
-                        value=self.title,
-                        font_family=MyApp.font_primary,
-                        weight=ft.FontWeight.BOLD,
-                        size=24
-                    )
+                    content=self.title_text
                 ),
 
                 ft.Container(
