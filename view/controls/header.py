@@ -70,6 +70,10 @@ class Header(ft.Container):
         self.status_dot.bgcolor = ft.Colors.RED
         if self.page: self.update()
 
+    def set_title(self, new_title):
+        self.title_text.value = new_title
+        self.title_text.update()
+
     def set_controls(self) -> None:
         self.profile_image = ft.Image(fit=ft.ImageFit.COVER)
         self.username_text = ft.Text(value='Usuario', font_family=MyApp.font_primary, size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.PRIMARY, selectable=True)
@@ -126,16 +130,54 @@ class Header(ft.Container):
         self.user_status.visible = True if self.session_service.is_logged_in else False
 
         self.menu_button.items = [
-            ft.PopupMenuItem(text='Mi canal', height=32, icon=ft.Icons.PERSON_ROUNDED, on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')),
-            ft.PopupMenuItem(text='Configuración', height=32, icon=ft.Icons.SETTINGS_ROUNDED, on_click=lambda e: self.page.go('/configuration')),
-            ft.PopupMenuItem(text='Cerrar sesión', height=32, icon=ft.Icons.LOGOUT_ROUNDED, on_click=lambda e: self.logout())
-        ] if self.session_service.is_logged_in else [
-            ft.PopupMenuItem(text='Iniciar sesión', height=32, icon=ft.Icons.LOGIN_ROUNDED, on_click=lambda e: self.login())
-        ]
+            ft.PopupMenuItem(
+                height=32,
+                content=ft.Row(
+                    spacing=8, 
+                    controls=[
+                        ft.Icon(name=ft.Icons.PERSON_ROUNDED, color=ft.Colors.BLACK),
+                        ft.Text(value='Mi canal'),
+                    ]
+                ),
+                on_click=lambda e: webbrowser.open(f'https://www.twitch.tv/{self.session_service.user_account.username}')
+            ),
 
-    def set_title(self, new_title):
-        self.title_text.value = new_title
-        self.title_text.update()
+            ft.PopupMenuItem(
+                height=32,
+                content=ft.Row(
+                    spacing=8, 
+                    controls=[
+                        ft.Icon(name=ft.Icons.SETTINGS_ROUNDED, color=ft.Colors.BLACK),
+                        ft.Text(value='Configuración'),
+                    ]
+                ),
+                on_click=lambda e: self.page.go('/configuration')
+            ),
+
+            ft.PopupMenuItem(
+                height=32, 
+                content=ft.Row(
+                    spacing=8,
+                    controls=[
+                        ft.Icon(name=ft.Icons.LOGOUT_ROUNDED, color=ft.Colors.BLACK),
+                        ft.Text(value='Cerrar sesión'),
+                    ]
+                ),
+                on_click=lambda e: self.logout()
+            )
+        ] if self.session_service.is_logged_in else [
+            ft.PopupMenuItem(
+                height=32,
+                content=ft.Row(
+                    spacing=8,
+                    controls=[
+                        ft.Icon(name=ft.Icons.LOGIN_ROUNDED, color=ft.Colors.BLACK),
+                        ft.Text(value='Iniciar sesión'),
+                    ]
+                ),
+                on_click=lambda e: self.login()
+            )
+        ]
 
     def build(self) -> ft.Row:
         return ft.Row(
@@ -158,3 +200,4 @@ class Header(ft.Container):
                 )
             ]
         )
+    
