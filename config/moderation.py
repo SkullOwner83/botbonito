@@ -3,7 +3,7 @@ from models.protection import Protection
 from utilities.enums import UserLevel, PenaltyType
 
 @staticmethod
-def get_protections():
+def get_protections() -> dict [str, Protection]:
     return deepcopy(_PROTECTIONS)
 
 _PROTECTIONS = {

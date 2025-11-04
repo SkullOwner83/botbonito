@@ -1,6 +1,5 @@
 import asyncio
 from threading import Thread
-from typing import Dict
 from bot.bot import Bot
 from models.appconfig import AppConfig
 

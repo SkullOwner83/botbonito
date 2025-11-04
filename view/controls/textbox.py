@@ -63,7 +63,6 @@ class TextBox(ft.TextField):
         if not patterns: return None
 
         regex = f"^[{''.join(patterns)}]*$"
-        print(regex)
 
         return ft.InputFilter(
             allow=True,

@@ -3,20 +3,20 @@ from models.commands import CommandConfig
 from utilities.enums import UserLevel
 
 @staticmethod
-def get_default_commands():
+def get_default_commands() -> dict[str, CommandConfig]:
     return deepcopy(_DEFAULT_COMMANDS)
 
 _DEFAULT_COMMANDS = {
     'help': CommandConfig(
         name='help',
         description='Muestra la lista de comandos disponibles que el usuario puede usar.',
-        alias=['ayuda'],
+        alias=[],
         user_level=UserLevel.EVERYONE.value
     ),
 
     'schedule': CommandConfig(
         name='schedule',
-        alias=['horario'],
+        alias=[],
         description='Muestra el horario de transmisción del emisor.',
         user_level=UserLevel.EVERYONE.value
     ),

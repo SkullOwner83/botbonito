@@ -1,4 +1,3 @@
-import os
 from threading import Lock
 from utilities.file import File
 from models.commands import CommandConfig
