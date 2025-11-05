@@ -1,3 +1,4 @@
+import inspect
 import socket
 import asyncio
 import json
@@ -12,8 +13,9 @@ class WebsocketService:
         self.stream_offline_callback = []
         self.channel_follower_callback =[]
         self.channel_subscription_callback = []
+        self.channel_raid_callback = []
 
-    # Connect with the twitch websocket
+    # Connect with the twitch websocket for Event Sub
     async def connect(self, token, client_id, broadcaster_id):
         uri = 'wss://eventsub.wss.twitch.tv/ws'
         retry_delay = 5
@@ -51,14 +53,15 @@ class WebsocketService:
                 subscription_type = meta_data.get('subscription_type')
 
                 if meta_data.get('message_type') == 'notification':
-                    if subscription_type == 'stream.online': self.on_stream_online(payload)
-                    if subscription_type == 'stream.offline': self.on_stream_offline(payload)
-                    if subscription_type == 'channel.follow': self.on_channel_follower(payload)
-                    if subscription_type == 'channel.subscribe': self.on_channel_subscription(payload)
+                    if subscription_type == 'stream.online': await self.on_stream_online(payload)
+                    if subscription_type == 'stream.offline': await self.on_stream_offline(payload)
+                    if subscription_type == 'channel.follow': await self.on_channel_follower(payload)
+                    if subscription_type == 'channel.subscribe': await self.on_channel_subscription(payload)
+                    if subscription_type == 'channel.raid': await self.on_channel_raid(payload)
 
             except websockets.ConnectionClosed as e:
                 print(f"Twitch websocket connection disconected: {e}")
-                is_connected = False
+                self.is_connected = False
                 break
 
     # Create a event subscriptions from twich
@@ -76,18 +79,28 @@ class WebsocketService:
         api.create_subscription(broadcaster_id, self.session_id, 'channel.follow', version=2)
         api.create_subscription(broadcaster_id, self.session_id, 'channel.subscribe')
 
-    def on_stream_online(self, payload: dict):
-        for callback in self.stream_online_callback:
-            callback(payload)
-    
-    def on_stream_offline(self, payload: dict):
-        for callback in self.stream_offline_callback:
+    async def run_callback(self, callback: callable, payload):
+        if inspect.iscoroutinefunction(callback):
+            await callback(payload)
+        else:
             callback(payload)
 
-    def on_channel_follower(self, payload: dict):
-        for callback in self.channel_follower_callback:
-            callback(payload)
+    async def on_stream_online(self, payload: dict):
+        for callback in self.stream_online_callback:
+            await self.run_callback(callback, payload)
     
-    def on_channel_subscription(self, payload: dict):
+    async def on_stream_offline(self, payload: dict):
+        for callback in self.stream_offline_callback:
+            await self.run_callback(callback, payload)
+
+    async def on_channel_follower(self, payload: dict):
+        for callback in self.channel_follower_callback:
+            await self.run_callback(callback, payload)
+    
+    async def on_channel_subscription(self, payload: dict):
         for callback in self.channel_subscription_callback:
-            callback(payload)
+            await self.run_callback(callback, payload)
+
+    async def on_channel_raid(self, payload: dict):
+        for callback in self.channel_raid_callback:
+            await self.run_callback(callback, payload)
