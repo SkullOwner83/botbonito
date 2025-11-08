@@ -7,11 +7,6 @@ class NavigationBar(ft.Container):
         self.page = page
         self.current_route = page.route
         self.menu_buttons = []
-
-        self.home_icon = ft.Icons.HOME_FILLED
-        self.commands_icon = ft.Icons.TERMINAL_ROUNDED
-        self.moderation_icon = ft.Icons.SHIELD_ROUNDED
-        self.configuration_icon = ft.Icons.SETTINGS_ROUNDED
         self.set_controls()
 
         super().__init__(
@@ -33,10 +28,11 @@ class NavigationBar(ft.Container):
 
     def set_controls(self):
         self.menu_buttons = [
-            MenuButton('Inicio', self.home_icon, '/', self),
-            MenuButton('Comandos', self.commands_icon, '/commands', self),
-            MenuButton('Moderación', self.moderation_icon, '/moderation', self),
-            MenuButton('Configuración', self.configuration_icon, '/configuration', self)
+            MenuButton('Inicio', ft.Icons.HOME_FILLED, '/', self),
+            MenuButton('Comandos', ft.Icons.TERMINAL_ROUNDED, '/commands', self),
+            MenuButton('Eventos', ft.Icons.AUTO_AWESOME_ROUNDED, '/events', self),
+            MenuButton('Moderación', ft.Icons.SHIELD_ROUNDED, '/moderation', self),
+            MenuButton('Configuración', ft.Icons.SETTINGS_ROUNDED, '/configuration', self)
         ]
 
     def build(self):
