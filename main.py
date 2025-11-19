@@ -1,6 +1,7 @@
 import os
 import flet as ft
 from models.appconfig import AppConfig
+from services.event_service import EventService
 from services.moderation_manager import ModerationManager
 from services.service_locator import ServiceLocator
 from view.main_window import MainWindow
@@ -38,11 +39,12 @@ def service_handler():
     ServiceLocator.register('session', SessionService())
     ServiceLocator.register('websocket', WebsocketService())
     ServiceLocator.register('commands', CommandsManager())
+    ServiceLocator.register('events', EventService())
     ServiceLocator.register('moderation', ModerationManager())
 
 if __name__ == "__main__":
     ft.app(
         target=startup,
         assets_dir='assets'
-        #view=ft.WEB_BROWSER,
+        # ,view=ft.WEB_BROWSER,
     )
