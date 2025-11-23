@@ -13,17 +13,12 @@ class RouteHandler:
 
     def route_change(self, e) -> None:
         match self.page.route:
-            case "/home": self.layout.set_content(HomePage(self.page, self.app_config))
-            case "/commands": self.layout.set_content(CommandsPage(self.page, self.app_config))
-            case "/moderation": self.layout.set_content(ModerationPage(self.page, self.app_config))
-            case "/configuration": self.layout.set_content(ConfigurationPage(self.page, self.app_config))
-            case _: self.layout.set_content(HomePage(self.page, self.app_config))
-
-    def view_pop(self, e: ft.ViewPopEvent) -> None:
-        self.page.views[1].can_pop
-        self.page.views.pop()
-        top_view: ft.View = self.page.views[-1]
-        self.page.route = top_view.route
+            case "/home": self.layout.set_view(HomePage(self.page, self.app_config), 'Dashboard')
+            case "/commands": self.layout.set_view(CommandsPage(self.page, self.app_config), 'Comandos')
+            case "/events": self.layout.set_view(EventsPage(self.page, self.app_config), 'Eventos')
+            case "/moderation": self.layout.set_view(ModerationPage(self.page, self.app_config), 'Moderación')
+            case "/configuration": self.layout.set_view(ConfigurationPage(self.page, self.app_config), 'Configuración')
+            case _: self.layout.set_view(HomePage(self.page, self.app_config), 'Dashboard')
 
     def goto(self, page: str = '/') -> None:
         self.page.go(page)
