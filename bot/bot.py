@@ -1,4 +1,3 @@
-import os
 import re
 import time
 import random
@@ -12,6 +11,7 @@ from twitchio.ext.commands import Context
 from bot.voice_recognition import VoiceRecognition
 from bot.sound_manager import SoundManager
 from bot.command_manager import CommandManager
+from bot.event_manager import EventManager
 from bot.dynamics_commands import DynamicsCommands
 from bot.moderation import Moderation
 from models.appconfig import AppConfig
@@ -25,6 +25,7 @@ class Bot(commands.Bot):
     def __init__(self, app_config: AppConfig, bot_credentials: dict[str, str]) -> None:
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self, app_config, bot_credentials)
+        self.event_manager_cog = EventManager(self, app_config)
         self.dynamics_commands_cog = DynamicsCommands(self, app_config)
         self.sound_manager_cog = SoundManager(self, app_config)
         self.voice_recognition_cog = VoiceRecognition(self, app_config)
@@ -112,14 +113,6 @@ class Bot(commands.Bot):
 
         await self.handle_commands(message)
     
-    # send random messages frequently in the first bot Channel
-    async def send_frequent_messages(self) -> None:
-        while True:
-            await asyncio.sleep(self.frequency_message_time)
-            random.seed(int(time.time()))
-            message = random.choice(self.frequency_messages)
-            await self.send_message(message)
-    
     # Find the current channel when doesn't have the context and send a message from the bot
     async def send_message(self, message: str) -> None:
         for channel_name in self.channels:
@@ -127,6 +120,14 @@ class Bot(commands.Bot):
 
             if channel:
                 await channel.send(message)
+
+    # send random messages frequently in the first bot Channel
+    async def send_frequent_messages(self) -> None:
+        while True:
+            await asyncio.sleep(self.frequency_message_time)
+            random.seed(int(time.time()))
+            message = random.choice(self.frequency_messages)
+            await self.send_message(message)
 
     # Check if the user has a specific role in the channel
     def level_check(self, ctx: Context, level: str) -> bool:
