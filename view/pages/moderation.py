@@ -44,7 +44,7 @@ class ModerationPage(ft.Container):
                                 ft.Container(
                                     expand=True,
                                     alignment=ft.alignment.center_right,
-                                    content=ft.IconButton(icon=ft.Icons.SETTINGS_ROUNDED, on_click=lambda e, p=protection: self.open_settings(p))
+                                    content=ft.IconButton(icon=ft.Icons.SETTINGS_ROUNDED, icon_color=ft.Colors.GREY_700, on_click=lambda e, p=protection: self.open_settings(p))
                                 )
                             ]
                         )
