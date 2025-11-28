@@ -44,7 +44,7 @@ class EventSubModal(Modal):
         self.announce_checkbox = CheckBox('Anunciar evento.', self.event.announce_response)
         params = ", ".join(f"{{{p}}}" for p in self.event.params)
         self.params_label = ft.Text(
-            value=f'Parametros: {params}',
+            value=f'Parametros: {params}' if len(params) > 0 else '',
             color=ft.Colors.GREY_700,
             font_family=MyApp.font_secondary,
             size=16
@@ -53,6 +53,7 @@ class EventSubModal(Modal):
     def build(self) -> ft.Column:
         return ft.Column(
             spacing=16,
+            scroll=ft.ScrollMode.ADAPTIVE,
             controls=[
                 ft.Column(
                     spacing=0,

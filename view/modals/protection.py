@@ -59,12 +59,12 @@ class ProtectionModal(Modal):
     # Build the view UI of protection modal
     def build(self) -> ft.Column:
         return ft.Column(
-            spacing=20,
+            spacing=16,
             scroll=ft.ScrollMode.ADAPTIVE,
             controls=[
                 ft.ResponsiveRow(
-                    spacing=20,
-                    run_spacing=20,
+                    spacing=16,
+                    run_spacing=16,
                     columns=2,
                     controls=[
                         ft.Column(
