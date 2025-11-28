@@ -15,6 +15,7 @@ class EventManager():
         websocket_manager.stream_online_callback.append(self.on_stream_online)
         websocket_manager.channel_follow_callback.append(self.on_channel_follow)
         websocket_manager.channel_subscription_callback.append(self.on_channel_subscribe)
+        websocket_manager.channel_update_callback.append(self.on_channel_update)
     
     async def on_stream_onffline(self, payload: dict) -> None:
         event_config = self.events_manager.events.get('stream.offline')
@@ -50,5 +51,16 @@ class EventManager():
         followed_at = data.get('followed_at')
         response = event_config.response.format(user=user_name, user_id=user_id, followed_at=followed_at)
 
+        if event_config.enable:
+            await self.bot.send_message(response)
+
+    async def on_channel_update(self, payload: dict) -> None:
+        event_config = self.events_manager.events.get('channel.update')
+        data: dict = payload.get('event', {})
+        title = data.get('title')
+        category = data.get('category_name')
+        language = data.get('language')
+        response = event_config.response.format(title=title, category=category, language=language)
+        
         if event_config.enable:
             await self.bot.send_message(response)

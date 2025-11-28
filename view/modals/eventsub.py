@@ -1,5 +1,6 @@
 import flet as ft
 from models.eventsub import EventSub
+from myapp import MyApp
 from services.event_service import EventService
 from services.service_locator import ServiceLocator
 from view.controls.checkbox import CheckBox
@@ -41,6 +42,13 @@ class EventSubModal(Modal):
     def set_controls(self) -> None:
         self.response_textbox = TextBox(value=self.event.response)
         self.announce_checkbox = CheckBox('Anunciar evento.', self.event.announce_response)
+        params = ", ".join(f"{{{p}}}" for p in self.event.params)
+        self.params_label = ft.Text(
+            value=f'Parametros: {params}',
+            color=ft.Colors.GREY_700,
+            font_family=MyApp.font_secondary,
+            size=16
+        )
 
     def build(self) -> ft.Column:
         return ft.Column(
@@ -50,7 +58,8 @@ class EventSubModal(Modal):
                     spacing=0,
                     controls=[
                         Label('Respuesta del evento:'),
-                        self.response_textbox
+                        self.response_textbox,
+                        self.params_label
                     ]
                 ),
 
