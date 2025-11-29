@@ -28,5 +28,20 @@ _EVENT_SUBS = {
         name='Channel update',
         description='La información del canal del emisor ha sido actualizada.',
         params=['title', 'category', 'language']
+    ),
+    'channel.goal.begin': EventSub(
+        name='Channel goal begin',
+        description='El emisor del canal ha iniciado una nueva meta.',
+        params=['type', 'current_amount', 'target_amount', 'started_at']
+    ),
+    'channel.goal.progress': EventSub(
+        name='Channel goal progress',
+        description='Hubo un progreso positivo o negativo en una meta del emisor.',
+        params=['type', 'current_amount', 'target_amount', 'started_at']
+    ),
+    'channel.goal.end': EventSub(
+        name='Channel goal end',
+        description='Una meta ha sido finalizada por progreso o por el emisor.',
+        params=['type', 'is_achieved', 'current_amount', 'target_amount', 'started_at', 'ended_at']
     )
 }

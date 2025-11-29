@@ -14,6 +14,9 @@ class WebsocketService:
         self.channel_follow_callback =[]
         self.channel_subscription_callback = []
         self.channel_update_callback = []
+        self.channel_goal_begin_callback = []
+        self.channel_goal_progress_callback = []
+        self.channel_goal_end_callback = []
 
     # Connect with the twitch websocket for Event Sub
     async def connect(self, token, client_id, broadcaster_id):
@@ -58,6 +61,9 @@ class WebsocketService:
                     if subscription_type == 'channel.follow': await self.on_channel_follow(payload)
                     if subscription_type == 'channel.subscribe': await self.on_channel_subscription(payload)
                     if subscription_type == 'channel.update': await self.on_channel_update(payload)
+                    if subscription_type == 'channel.goal.begin': await self.on_channel_goal_begin(payload)
+                    if subscription_type == 'channel.goal.progress': await self.on_channel_goal_progress(payload)
+                    if subscription_type == 'channel.goal.end': await self.on_channel_goal_end(payload)
 
             except websockets.ConnectionClosed as e:
                 print(f"Twitch websocket connection disconected: {e}")
@@ -79,6 +85,9 @@ class WebsocketService:
         api.create_subscription(broadcaster_id, self.session_id, 'channel.follow', version=2)
         api.create_subscription(broadcaster_id, self.session_id, 'channel.subscribe')
         api.create_subscription(broadcaster_id, self.session_id, 'channel.update')
+        api.create_subscription(broadcaster_id, self.session_id, 'channel.goal.begin')
+        api.create_subscription(broadcaster_id, self.session_id, 'channel.goal.progress')
+        api.create_subscription(broadcaster_id, self.session_id, 'channel.goal.end')
 
     async def run_callback(self, callback: callable, payload):
         if inspect.iscoroutinefunction(callback):
@@ -104,4 +113,16 @@ class WebsocketService:
 
     async def on_channel_update(self, payload: dict):
         for callback in self.channel_update_callback:
+            await self.run_callback(callback, payload)
+
+    async def on_channel_goal_begin(self, payload: dict):
+        for callback in self.channel_goal_begin_callback:
+            await self.run_callback(callback, payload)
+
+    async def on_channel_goal_progress(self, payload: dict):
+        for callback in self.channel_goal_progress_callback:
+            await self.run_callback(callback, payload)
+
+    async def on_channel_goal_end(self, payload: dict):
+        for callback in self.channel_goal_end_callback:
             await self.run_callback(callback, payload)
