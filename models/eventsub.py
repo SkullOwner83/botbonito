@@ -3,7 +3,7 @@ from typing import List
 
 @dataclass
 class EventSub:
-    name: str = ''
+    name: str
     description: str = ''
     enable: bool = True
     response: str = ''

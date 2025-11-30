@@ -1,14 +1,9 @@
+from dataclasses import dataclass
 from typing import Optional
 
+@dataclass
 class Credentials:
-    def __init__(
-        self,
-        access_token: str,
-        refresh_token: str,
-        client_id: Optional[str] = "",
-        client_secret: Optional[str] = "",
-    ):
-        self.access_token = access_token
-        self.refresh_token = refresh_token
-        self.client_id = client_id
-        self.client_secret = client_secret
+    access_token: str
+    refresh_token: str
+    client_id: str = ''
+    client_secret: str = ''

@@ -1,35 +1,22 @@
-from typing import Optional, List
-
-from twitchio.ext.commands import Bot, Cog, Context
+from dataclasses import dataclass
+from typing import List
+from twitchio.ext.commands import Cog, Context
 from utilities.api import Api
-from utilities.enums import PenaltyType
+from utilities.enums import PenaltyType, UserLevel
 
+@dataclass
 class Protection:
-    def __init__(self,
-        name: str = None,
-        description: str = None,
-        enable: bool = True,
-        penalty: Optional[str] = None,
-        announce_penalty: Optional[bool] = True,
-        reason: Optional[str] = None,
-        exclude: Optional[str] = 'no_one',
-        words: Optional[List[str]] = None,
-        threshold: Optional[float] = 0,
-        duration: Optional[int] = 0,
-        strikes: Optional[int] = 0
-    ):
-
-        self.name = name
-        self.description = description
-        self.enable = enable
-        self.penalty = penalty
-        self.announce_penalty = announce_penalty
-        self.reason = reason
-        self.exclude = exclude
-        self.words = words
-        self.threshold = threshold
-        self.duration = duration
-        self.strikes = strikes
+    name: str = None
+    description: str = ''
+    enable: bool = True
+    penalty: str = ''
+    announce_penalty: bool = True
+    reason: str = ''
+    exclude: str = UserLevel.NO_ONE
+    words: List[str] = None
+    threshold: float = 0
+    duration: int = 0
+    strikes: int = 0
     
     async def apply_penalty(self, ctx: Context, cog: Cog, moderator: str) -> None:
         user = ctx.author.name
@@ -58,4 +45,4 @@ class Protection:
                 await ctx.send(self.reason)
 
     def __repr__(self):
-        return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}">'
+        return f'<Protection "{self.name}": penalty="{self.penalty}" enable="{self.enable}" id={id(self)}>'

@@ -1,35 +1,35 @@
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import List
 from utilities import *
 
 @dataclass
 class AppConfig:
-    name: Optional[str] = 'BotBonito'
-    prefix: Optional[str] = '!'
-    channels: Optional[List[str]] = field(default_factory=list)
-    redirect_uri: Optional[str] = ''
-    client_id: Optional[str] = ''
-    client_secret: Optional[str] = ''
-    theme: Optional[str] = 'light'
-    language: Optional[str] = 'español'
+    name: str = 'BotBonito'
+    prefix: str = '!'
+    channels: List[str] = field(default_factory=list)
+    redirect_uri: str = ''
+    client_id: str = ''
+    client_secret: str = ''
+    theme: str = 'light'
+    language: str = 'español'
 
-    always_ontop: Optional[bool] = False
-    start_with_windows: Optional[bool] = False
-    start_in_background: Optional[bool] = False
+    always_ontop: bool = False
+    start_with_windows: bool = False
+    start_in_background: bool = False
     run_bot_mode = None # (on startup, on stream online, manually)
 
-    bot_language: Optional[str] = 'español'
-    help_word: Optional[str] = 'help'
-    enable_word: Optional[str] = 'enable'
-    disable_word: Optional[str] = 'disable'
-    start_word: Optional[str] = 'start'
-    finish_word: Optional[str] = 'finish'
+    bot_language: str = 'español'
+    help_word: str = 'help'
+    enable_word: str = 'enable'
+    disable_word: str = 'disable'
+    start_word: str = 'start'
+    finish_word: str = 'finish'
     
-    announce_speaker: Optional[bool] = True
-    speak_cooldown: Optional[int] = 3
-    speak_volume: Optional[float] = 1
-    sounds_volume: Optional[float] = 1
-    social_media: Optional[dict[str, str]] = field(default_factory=lambda: {
+    announce_speaker: bool = True
+    speak_cooldown: int = 3
+    speak_volume: float = 1
+    sounds_volume: float = 1
+    social_media: dict[str, str] = field(default_factory=lambda: {
         'facebook': '',
         'twitter': '',
         'discord': '',
