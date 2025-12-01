@@ -21,6 +21,19 @@ class ProtectionModal(Modal):
             ]
         )
 
+    def apply_penalty_state(self, value: str):
+        if value == PenaltyType.TIME_OUT.value:
+            self.penalty_column.col = 4
+            self.duration_column.visible = True
+        else:
+            self.penalty_column.col = 6
+            self.duration_column.visible = False
+
+    def on_penalty_changed(self, e: ft.ControlEvent):
+        self.penalty_dropdown.icon = ft.Icon(name=Constants.PENALTY_ICONS.get(e.control.value), color=ft.Colors.BLACK)
+        self.apply_penalty_state(e.control.value)
+        self.update()
+
     # Define the controls to save his reference
     def set_controls(self) -> None:
         self.reason_textbox = TextBox(value=self.protection.reason)
@@ -31,7 +44,7 @@ class ProtectionModal(Modal):
         self.penalty_dropdown = DropDown(
             value=self.protection.penalty if self.protection.penalty else PenaltyType.DELETE_MESSAGE.value,
             icon=ft.Icon(name=Constants.PENALTY_ICONS.get(self.protection.penalty), color=ft.Colors.BLACK),
-            on_change=lambda e: setattr(self.penalty_dropdown, 'icon', ft.Icon(name=Constants.PENALTY_ICONS.get(e.control.value), color=ft.Colors.BLACK)),
+            on_change=self.on_penalty_changed,
             options=[
                 ft.DropdownOption(
                     key=penalty_type.value, 
@@ -39,6 +52,24 @@ class ProtectionModal(Modal):
                     leading_icon=ft.Icon(name=Constants.PENALTY_ICONS.get(penalty_type), color=ft.Colors.BLACK)
                 )
                 for penalty_type in PenaltyType
+            ]
+        )
+
+        self.penalty_column = ft.Column(
+            col=4,
+            spacing=0,
+            controls=[
+                Label('Penalización:'),
+                self.penalty_dropdown
+            ]
+        )
+
+        self.duration_column = ft.Column(
+            col=2,
+            spacing=0,
+            controls=[
+                Label('Duración:'),
+                self.duration_textbox
             ]
         )
 
@@ -56,6 +87,8 @@ class ProtectionModal(Modal):
             ]
         )
 
+        self.apply_penalty_state(self.penalty_dropdown.value)
+
     # Build the view UI of protection modal
     def build(self) -> ft.Column:
         return ft.Column(
@@ -65,37 +98,13 @@ class ProtectionModal(Modal):
                 ft.ResponsiveRow(
                     spacing=16,
                     run_spacing=16,
-                    columns=2,
+                    columns=6,
                     controls=[
-                        ft.Column(
-                            col=2,
-                            spacing=0,
-                            controls=[
-                                Label('Penalización:'),
-                                self.penalty_dropdown
-                            ]
-                        ),
+                        self.penalty_column,
+                        self.duration_column,
 
                         ft.Column(
-                            col=1,
-                            spacing=0,
-                            controls=[
-                                Label('Duración:'),
-                                self.duration_textbox
-                            ]
-                        ),
-
-                        ft.Column(
-                            col=1,
-                            spacing=0,
-                            controls=[
-                                Label('Strikes:'),
-                                self.strikes_textbox
-                            ]
-                        ),
-
-                        ft.Column(
-                            col=2,
+                            col=6,
                             spacing=0,
                             controls=[
                                 Label('Excluir:'),
@@ -104,7 +113,7 @@ class ProtectionModal(Modal):
                         ),
 
                         ft.Column(
-                            col=2,
+                            col=6,
                             spacing=0,
                             controls=[
                                 Label('Razón de penalización:'),
