@@ -38,7 +38,6 @@ class Moderation(Cog):
         repeated_messages: Protection = self.protections.get('repeated_messages')
         message: str = ctx.message.content
         user: str = ctx.message.author.name
-        MAX_REPEATED_MESSAGES = 3
 
         if not repeated_messages.enable:
             return False
@@ -50,7 +49,7 @@ class Moderation(Cog):
 
         self.user_messages[user] = message
 
-        if self.spam_strikes.get(user, 0) >= MAX_REPEATED_MESSAGES:
+        if self.spam_strikes.get(user, 0) >= repeated_messages.threshold - 1:
             self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
             await repeated_messages.apply_penalty(ctx, self, self.session_service.bot_account.username)
             return True
