@@ -13,8 +13,8 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE.value,
         reason='Por seguridad, no esta permitido enviar links.',
         exclude=UserLevel.MODERATOR.value,
-        duration=0,
-        strikes=0
+        threshold=0,
+        duration=0
     ),
 
     'repeated_messages': Protection(
@@ -23,8 +23,8 @@ _PROTECTIONS = {
         penalty=PenaltyType.TIME_OUT.value,
         reason='Spam: Envío repetitivo de mensajes idénticos.',
         exclude=UserLevel.MODERATOR.value,
-        duration=0,
-        strikes=3
+        threshold=3,
+        duration=60
     ),
 
     'long_messages': Protection(
@@ -33,9 +33,8 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE.value,
         reason='Envío de mensaje demasiado largo.',
         exclude=UserLevel.MODERATOR.value,
-        threshold=300,
-        duration=0,
-        strikes=0
+        threshold=500,
+        duration=0
     ),
 
     'excess_caps': Protection(
@@ -45,8 +44,7 @@ _PROTECTIONS = {
         reason='Envio de mensaje con uso excesivo de mayusculas.',
         exclude=UserLevel.MODERATOR.value,
         threshold=0.8,
-        duration=0,
-        strikes=0
+        duration=0
     ),
 
     'excess_symbols': Protection(
@@ -56,8 +54,7 @@ _PROTECTIONS = {
         reason='Envio de mensaje con uso excesivo de simbolos.',
         exclude=UserLevel.MODERATOR.value,
         threshold=0.8,
-        duration=0,
-        strikes=0
+        duration=0
     ),
 
     'excess_emotes': Protection(
@@ -67,7 +64,6 @@ _PROTECTIONS = {
         reason='Envio de mensaje con uso excesivo de emotes.',
         exclude=UserLevel.MODERATOR.value,
         threshold=30,
-        duration=0,
-        strikes=0
+        duration=0
     ),
 }
