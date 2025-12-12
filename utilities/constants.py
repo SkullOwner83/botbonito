@@ -36,5 +36,14 @@ class Constants():
         'channel:read:subscriptions'
     ]
 
+    PROTECTION_THRESHOLD_RANGES = {
+        'links': (0, 0, 0),
+        'repeated_messages': (2, 6, 1),
+        'long_messages': (50, 1000, 50),
+        'excess_caps': (0, 1, 0.1),
+        'excess_symbols': (0, 1, 0.1),
+        'excess_emotes': (0, 1, 0.1),
+    }
+
     def __new__(cls):
         raise TypeError('The Constants class cannot be instantiated.')
