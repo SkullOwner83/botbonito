@@ -7,6 +7,7 @@ class MyApp:
     config_path = os.path.join(appdata_path, 'Bot Bonito')
     appconfig_path = os.path.join(config_path, "config.json")
     commands_path = os.path.join(config_path, 'commands.json')
+    events_path = os.path.join(config_path, 'events.json')
     moderation_path = os.path.join(config_path, 'moderation.json')
     credentials_path = os.path.join(config_path, 'credentials.json')
     command_registry: dict[str, Callable] = {}
