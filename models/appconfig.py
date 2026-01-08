@@ -24,6 +24,7 @@ class AppConfig:
     disable_word: str = 'disable'
     start_word: str = 'start'
     finish_word: str = 'finish'
+    wake_word: str = "jarvis"
     
     announce_speaker: bool = True
     speak_cooldown: int = 3

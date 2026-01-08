@@ -68,6 +68,7 @@ class Bot(commands.Bot):
         self.add_cog(self.sound_manager_cog)
         self.add_cog(self.command_manager_cog)
         self.add_cog(self.dynamics_commands_cog)
+        self.add_cog(self.voice_recognition_cog)
         self.create_commands()
 
     # Create commands from 

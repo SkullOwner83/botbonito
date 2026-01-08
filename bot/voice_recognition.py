@@ -1,72 +1,83 @@
-import os
 import asyncio
+from threading import Thread
+from typing import TYPE_CHECKING
+import unicodedata
+from twitchio import Message, Chatter
 from twitchio.ext import commands
-from twitchio import Message
 import speech_recognition as sr
 from models.appconfig import AppConfig
-from utilities.file import File
-from myapp import MyApp
+if TYPE_CHECKING: from bot.bot import Bot
 
 class VoiceRecognition(commands.Cog):
     def __init__(self, bot: commands.Bot, app_config: AppConfig) -> None:
-        self.bot = bot
+        self.bot: Bot = bot
+        self.app_config = app_config
         self.r = sr.Recognizer()
-        self.wake_word = 'Bot'#config['wake_word']
-        self.user_alias = File.open(os.path.join(MyApp.config_path, "useralias.json"))
+    
+    # Create speech recognition loop when the bot is ready
+    @commands.Cog.event()
+    async def event_ready(self):
+        print(f"[{self.__class__.__name__}] Speech recognition started.")
+        Thread(target=self.capture_voice_commands, daemon=True).start()
 
     # Create a loop to listen for audio input and recognize the voice
     def capture_voice_commands(self) -> None:
         while True:
+            command: str = ""
+            
             with sr.Microphone() as source:
                 self.r.adjust_for_ambient_noise(source)
                 audio = self.r.listen(source)
-            
-            command = ""
 
             try:
                 command = self.r.recognize_google(audio, language="es-ES")
                 command = command.lower()
+                command = unicodedata.normalize('NFD', command)
+                command =  ''.join(c for c in command if unicodedata.category(c) != 'Mn')
+
             except sr.UnknownValueError:
                 print("No se entendió el audio.")
-
             except sr.RequestError as e:
                 print(f"Error con el reconocimiento de voz: {e}")
 
             # Check if the recognized command is the wake word and excecute the command
-            if command and command.startswith(self.wake_word):
-                command = command.replace(self.wake_word, "").strip()
-                self.handle_voice_command(command)
-                print(command)
-
-    # Get a main loop and execute the voice command or send the complete message
-    def handle_voice_command(self, command: str) -> None:
-        loop = self.bot.loop
-
-        if any(word in command for word in ["saluda", "saludo", "salúdame"]) and len(command) > 1:
-            for user, alias in self.user_alias.items():
-                if any(name in command for name in alias):
-                    message = f"¡Hola! @{user}, ¿Cómo estás?"
-                    asyncio.run_coroutine_threadsafe(self.send_message(message), loop)
-                    return
-        
-        # send the complete command to simulate a user message and execute if it's a command
-        asyncio.run_coroutine_threadsafe(self.execute_commands(command), loop)
+            if command and command.startswith(self.app_config.wake_word):
+                command = command.replace(self.app_config.wake_word, "").strip()
+                asyncio.run_coroutine_threadsafe(
+                    self.execute_command(command),
+                    self.bot.loop
+                )
 
     # Create a fake message to execute the command
-    async def execute_commands(self, command: str) -> None:
-        fake_message = Message(
-            content=f"!{command}",
-            author=self.bot.connected_channels[0],
-            channel=self.bot.connected_channels[0],
-            tags={}, 
-            bot=self
-        )
-
-        if command in self.bot.social_media:
-            await self.send_message(self.bot.social_media[command])
+    async def execute_command(self, command: str) -> None:
+        if not self.bot.connected_channels:
             return
         
-        await self.bot.handle_commands(fake_message)
+        fake_user = Chatter(
+            websocket=self.bot._connection, 
+            name=self.bot.nick, 
+            channel=self.bot.connected_channels[0],
+            tags={
+                "user-id": "0",
+                "display-name": self.bot.nick,
+                "color": "#FFFFFF",
+                "badges": "broadcaster/1", 
+                "subscriber": "0",
+                "mod": "1",
+                "turbo": "0"
+            }
+        )
 
-    async def send_message(self, message):
-        await self.bot.send_message(message)
+        try:
+            fake_message = Message(
+                content=f"{self.bot.prefix}{command}",
+                author=fake_user,
+                channel=self.bot.connected_channels[0],
+                bot=self.bot,
+                tags={}
+            )
+            
+            print(f"Ejecutando comando de voz: {command}")
+            await self.bot.handle_commands(fake_message)
+        except Exception as e:
+            print(f"Error al procesar handle_commands: {e}")
