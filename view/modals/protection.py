@@ -63,6 +63,11 @@ class ProtectionModal(Modal):
         self.threshold_label.value = self.safe_threshold
         self.threshold_label.update()
 
+    # Set the slider value to the safe stored value when the user finishes moving it    
+    def on_slider_change_end(self, e: ft.ControlEvent):
+        e.control.value = self.safe_threshold
+        e.control.update()
+
     # Update the values of protection instance and close the modal
     def save_changes(self) -> None:
         self.protection.reason = self.reason_textbox.value
@@ -137,6 +142,7 @@ class ProtectionModal(Modal):
             max=self.max_threshold,
             value=self.safe_threshold,
             on_change=self.on_slider_change,
+            on_change_end=self.on_slider_change_end,
             padding=ft.padding.symmetric(vertical=4)
         )
 
