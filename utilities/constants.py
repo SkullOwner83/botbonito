@@ -40,9 +40,9 @@ class Constants():
         'links': (0, 0, 0),
         'repeated_messages': (2, 6, 1),
         'long_messages': (50, 1000, 50),
-        'excess_caps': (0, 1, 0.1),
-        'excess_symbols': (0, 1, 0.1),
-        'excess_emotes': (0, 1, 0.1),
+        'excess_caps': (50, 1000, 50),
+        'excess_symbols': (50, 1000, 50),
+        'excess_emotes': (50, 1000, 50),
     }
 
     def __new__(cls):

@@ -103,18 +103,14 @@ class Moderation(Cog):
             return False
 
         letters = [c for c in message if c.isalpha()]
-        total_letters = len(letters)
         uppercase_count = sum(1 for c in letters if c.isupper())
 
-        if total_letters > 5 and uppercase_count > 200:
-            caps_ratio = uppercase_count / total_letters
+        if uppercase_count >= caps_protection.threshold:
+            if caps_protection.mark_strike:
+                self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
 
-            if caps_ratio >= caps_protection.threshold:
-                if caps_protection.mark_strike:
-                    self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
-
-                await caps_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
-                return True
+            await caps_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
+            return True
             
         return False
 

@@ -46,5 +46,6 @@ if __name__ == "__main__":
     ft.app(
         target=startup,
         assets_dir='assets'
+        , 
         # ,view=ft.WEB_BROWSER,
     )
