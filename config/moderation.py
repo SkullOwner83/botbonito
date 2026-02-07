@@ -43,7 +43,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE.value,
         reason='Envio de mensaje con uso excesivo de mayusculas.',
         exclude=UserLevel.MODERATOR.value,
-        threshold=0.8,
+        threshold=200,
         duration=0
     ),
 
@@ -53,7 +53,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE.value,
         reason='Envio de mensaje con uso excesivo de simbolos.',
         exclude=UserLevel.MODERATOR.value,
-        threshold=0.8,
+        threshold=300,
         duration=0
     ),
 
@@ -63,7 +63,7 @@ _PROTECTIONS = {
         penalty=PenaltyType.DELETE_MESSAGE.value,
         reason='Envio de mensaje con uso excesivo de emotes.',
         exclude=UserLevel.MODERATOR.value,
-        threshold=30,
+        threshold=50,
         duration=0
     ),
 }

@@ -39,10 +39,10 @@ class Constants():
     PROTECTION_THRESHOLD_RANGES = {
         'links': (0, 0, 0),
         'repeated_messages': (2, 6, 1),
-        'long_messages': (50, 1000, 50),
-        'excess_caps': (50, 1000, 50),
-        'excess_symbols': (50, 1000, 50),
-        'excess_emotes': (50, 1000, 50),
+        'long_messages': (50, 500, 50),
+        'excess_caps': (50, 500, 50),
+        'excess_symbols': (50, 500, 50),
+        'excess_emotes': (50, 500, 50),
     }
 
     def __new__(cls):

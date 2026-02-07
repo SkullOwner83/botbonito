@@ -36,7 +36,8 @@ class VoiceRecognition(commands.Cog):
                 command =  ''.join(c for c in command if unicodedata.category(c) != 'Mn')
 
             except sr.UnknownValueError:
-                print("No se entendió el audio.")
+                pass
+                #print("No se entendió el audio.")
             except sr.RequestError as e:
                 print(f"Error con el reconocimiento de voz: {e}")
 

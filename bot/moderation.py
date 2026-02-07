@@ -105,7 +105,7 @@ class Moderation(Cog):
         letters = [c for c in message if c.isalpha()]
         uppercase_count = sum(1 for c in letters if c.isupper())
 
-        if uppercase_count >= caps_protection.threshold:
+        if uppercase_count > caps_protection.threshold:
             if caps_protection.mark_strike:
                 self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
 
@@ -123,18 +123,14 @@ class Moderation(Cog):
         if not symbols_protection.enable:
             return False
 
-        total_letters = len(message)
-        symbols_count = sum(1 for c in message if not c.isalnum())
+        symbols_count = sum(1 for c in message if not c.isalnum() and not c.isspace())
 
-        if total_letters > 5 and symbols_count > 0:
-            caps_ratio = symbols_count / total_letters
+        if symbols_count > symbols_protection.threshold:
+            if symbols_protection.mark_strike:
+                self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
 
-            if caps_ratio >= symbols_protection.threshold:
-                if symbols_protection.mark_strike:
-                    self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
-
-                await symbols_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
-                return True
+            await symbols_protection.apply_penalty(ctx, self, self.session_service.bot_account.username)
+            return True
         
         return False
 
