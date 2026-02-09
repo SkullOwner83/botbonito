@@ -42,7 +42,7 @@ class Constants():
         'long_messages': (50, 500, 50),
         'excess_caps': (50, 500, 50),
         'excess_symbols': (50, 500, 50),
-        'excess_emotes': (50, 500, 50),
+        'excess_emotes': (10, 300, 10),
     }
 
     def __new__(cls):

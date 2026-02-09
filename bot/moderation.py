@@ -84,6 +84,9 @@ class Moderation(Cog):
         if not long_messages.enable:
             return False 
         
+        emotes_tag: str = ctx.message.tags.get('emotes')
+        message = self.remove_emotes_from_message(message, emotes_tag)
+        
         if len(message) > long_messages.threshold:
             if long_messages.mark_strike:
                 self.user_strikes[user] = self.user_strikes.get(user, 0) + 1
@@ -177,3 +180,22 @@ class Moderation(Cog):
                 
         
         return False
+
+
+    def remove_emotes_from_message(self, content: str, emotes_tag: str) -> str:
+        if not emotes_tag:
+            return content
+
+        ranges = []
+
+        for emote in emotes_tag.split('/'):
+            _, positions = emote.split(':')
+            for pos in positions.split(','):
+                start, end = map(int, pos.split('-'))
+                ranges.append((start, end))
+
+        # Ordenar rangos de atrás hacia adelante
+        for start, end in sorted(ranges, reverse=True):
+            content = content[:start] + content[end + 1:]
+
+        return content
