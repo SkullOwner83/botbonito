@@ -22,16 +22,18 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=parameters if user else None)
+            data = response.json()
 
             if response.status_code == 200:
-                data = response.json()
 
                 if len(data['data']) > 0:
                     return data['data'][0]
                 else:
                     print("No se ha encontrado el usuario")
             else:
-                print(f"Error {data['status']}: {data['message']}")
+                status = data.get('status', response.status_code)
+                message = data.get('message', 'Error desconocido')
+                print(f"Error {status}: {message}")
         except requests.RequestException as error:
             print(f"Error: {error}")
 
@@ -53,9 +55,9 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=parameters)
+            data = response.json()
 
             if response.status_code == 200:
-                data = response.json()
 
                 if len(data['data']) > 0:
                     date_object = datetime.strptime(data["data"][0]["followed_at"], "%Y-%m-%dT%H:%M:%SZ")
@@ -64,7 +66,9 @@ class Api():
                 else:
                     print("El usuario no sigue al canal especificado")
             else:
-                print(f"Error {data['status']}: {data['message']}")
+                status = data.get('status', response.status_code)
+                message = data.get('message', 'Error desconocido')
+                print(f"Error {status}: {message}")
         except requests.RequestException as error:
             print(f"Error: {error}")
 
