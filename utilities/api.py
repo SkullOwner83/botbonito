@@ -64,6 +64,7 @@ class Api():
                 else:
                     print("El usuario no sigue al canal especificado")
             else:
+                pass
                 print(f"Error {data['status']}: {data['message']}")
         except requests.RequestException as error:
             print(f"Error: {error}")
