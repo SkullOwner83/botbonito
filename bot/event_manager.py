@@ -1,13 +1,12 @@
 from typing import TYPE_CHECKING
 from twitchio.ext import commands
-from models.appconfig import AppConfig
 from services.event_service import EventService
 from services.service_locator import ServiceLocator
 from services.websocket_service import WebsocketService
 if TYPE_CHECKING: from bot.bot import Bot
 
 class EventManager():
-    def __init__(self, bot: commands.Bot, app_config: AppConfig):
+    def __init__(self, bot: commands.Bot):
         self.bot: Bot = bot
         self.events_manager: EventService = ServiceLocator.get('events')
         websocket_manager: WebsocketService = ServiceLocator.get('websocket')
@@ -30,7 +29,9 @@ class EventManager():
         event_config = self.events_manager.events.get('stream.online')
         data: dict = payload.get('event', {})
         started_at = data.get('started_at')
-        response = event_config.response.format(started_at=started_at)
+        response = event_config.response.format(
+            started_at=started_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -41,7 +42,9 @@ class EventManager():
         user_name = data.get('user_name')
         user_id = data.get('user_id')
         followed_at = data.get('followed_at')
-        response = event_config.response.format(user=user_name, user_id=user_id, followed_at=followed_at)
+        response = event_config.response.format(
+            user=user_name, user_id=user_id, followed_at=followed_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -52,7 +55,9 @@ class EventManager():
         user_name = data.get('user_name')
         user_id = data.get('user_id')
         followed_at = data.get('followed_at')
-        response = event_config.response.format(user=user_name, user_id=user_id, followed_at=followed_at)
+        response = event_config.response.format(
+            user=user_name, user_id=user_id, followed_at=followed_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -63,7 +68,9 @@ class EventManager():
         title = data.get('title')
         category = data.get('category_name')
         language = data.get('language')
-        response = event_config.response.format(title=title, category=category, language=language)
+        response = event_config.response.format(
+            title=title, category=category, language=language
+        )
         
         if event_config.enable:
             await self.bot.send_message(response)
@@ -75,7 +82,9 @@ class EventManager():
         current_amount = data.get('current_amount')
         target_amount = data.get('target_amount')
         started_at = data.get('started_at')
-        response = event_config.response.format(type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at)
+        response = event_config.response.format(
+            type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -87,7 +96,9 @@ class EventManager():
         current_amount = data.get('current_amount')
         target_amount = data.get('target_amount')
         started_at = data.get('started_at')
-        response = event_config.response.format(type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at)
+        response = event_config.response.format(
+            type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -99,7 +110,9 @@ class EventManager():
         current_amount = data.get('current_amount')
         target_amount = data.get('target_amount')
         started_at = data.get('started_at')
-        response = event_config.response.format(type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at)
+        response = event_config.response.format(
+            type=type, current_amount=current_amount, target_amount=target_amount, started_at=started_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)
@@ -113,7 +126,10 @@ class EventManager():
         target_amount = data.get('target_amount')
         started_at = data.get('started_at')
         ended_at = data.get('ended_at')
-        response = event_config.response.format(type=type, is_achieved=is_achieved, current_amount=current_amount, target_amount=target_amount, started_at=started_at, ended_at=ended_at)
+        response = event_config.response.format(
+            type=type, is_achieved=is_achieved, current_amount=current_amount,
+            target_amount=target_amount, started_at=started_at, ended_at=ended_at
+        )
 
         if event_config.enable:
             await self.bot.send_message(response)

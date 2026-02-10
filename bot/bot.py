@@ -1,7 +1,4 @@
 import re
-import time
-import random
-import asyncio
 import threading
 
 from twitchio import Message
@@ -25,12 +22,14 @@ class Bot(commands.Bot):
     def __init__(self, app_config: AppConfig, bot_credentials: dict[str, str]) -> None:
         # Create an  instance of the bot Cogs to handle commands
         self.command_manager_cog = CommandManager(self, app_config, bot_credentials)
-        self.event_manager_cog = EventManager(self, app_config)
+        self.event_manager_cog = EventManager(self)
         self.dynamics_commands_cog = DynamicsCommands(self, app_config)
         self.sound_manager_cog = SoundManager(self, app_config)
         self.voice_recognition_cog = VoiceRecognition(self, app_config)
         self.moderation_cog = Moderation(self)
-        self.recognition_thread = threading.Thread(target=self.voice_recognition_cog.capture_voice_commands)
+        self.recognition_thread = threading.Thread(
+            target=self.voice_recognition_cog.capture_voice_commands
+        )
 
         # load variables from the config files
         self.app_config = app_config
@@ -85,9 +84,6 @@ class Bot(commands.Bot):
     async def event_ready(self) -> None:
         print("Hi, I'm ready!")
         await self.send_message("Hola, soy el bot bonito del Skull.")
-        
-        #asyncio.create_task(self.send_frequent_messages())
-        #self.recognition_thread.start()
 
     # Check chat messages event
     async def event_message(self, message: Message) -> None:
@@ -121,14 +117,6 @@ class Bot(commands.Bot):
 
             if channel:
                 await channel.send(message)
-
-    # send random messages frequently in the first bot Channel
-    async def send_frequent_messages(self) -> None:
-        while True:
-            await asyncio.sleep(self.frequency_message_time)
-            random.seed(int(time.time()))
-            message = random.choice(self.frequency_messages)
-            await self.send_message(message)
 
     # Check if the user has a specific role in the channel
     def level_check(self, ctx: Context, level: str) -> bool:
