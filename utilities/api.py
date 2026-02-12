@@ -89,12 +89,14 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers, params=params)
+            data = response.json()
 
             if response.status_code == 200:
-                data = response.json()
                 return data['data']
             else:
-                print(f"Error {data['status']}: {data['message']}")
+                status = data.get('status', response.status_code)
+                message = data.get('message', 'Error desconocido')
+                print(f"Error {status}: {message}")
         except requests.RequestException as error:
             print(f"Error: {error}")
         
@@ -177,12 +179,14 @@ class Api():
 
         try:
             response = requests.get(url, headers=headers)
+            data = response.json()
 
             if response.status_code == 200:
-                data = response.json()
                 return data['data']
             else:
-                print(f"Error {response.status_code}: {response.content}")
+                status = data.get('status', response.status_code)
+                message = data.get('message', 'Error desconocido')
+                print(f"Error {status}: {message}")
         except requests.RequestException as error:
             print(f"Error: {error}")
         
